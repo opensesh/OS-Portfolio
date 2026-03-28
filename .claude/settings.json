@@ -1,8 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Write(/Users/alexbouhdary/OS-Portfolio/**)",
-      "Edit(/Users/alexbouhdary/OS-Portfolio/**)"
+      "Write(/Users/alexbouhdary/Documents/GitHub.nosync/OS-Portfolio/**)",
+      "Edit(/Users/alexbouhdary/Documents/GitHub.nosync/OS-Portfolio/**)"
     ]
   }
 }

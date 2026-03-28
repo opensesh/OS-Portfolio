@@ -4,6 +4,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { footerNavItems, socialLinks } from "@/data/navigation";
+import { TriplingText } from "@/components/shared/tripling-text";
+import { SectionLabel } from "@/components/shared/section-label";
 
 // Simple SVG icons for social platforms
 function GithubIcon({ className }: { className?: string }) {
@@ -96,20 +98,15 @@ export function Footer() {
 
           {/* Company Links */}
           <div>
-            <h3 className="text-sm font-semibold text-fg-primary mb-4 uppercase tracking-wider">
-              Company
-            </h3>
+            <SectionLabel className="mb-4" animate={false}>Company</SectionLabel>
             <ul className="space-y-3">
               {footerNavItems.company.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={cn(
-                      "text-sm text-fg-secondary",
-                      "hover:text-fg-brand transition-colors duration-200"
-                    )}
+                    className="text-sm inline-block"
                   >
-                    {item.label}
+                    <TriplingText>{item.label}</TriplingText>
                   </Link>
                 </li>
               ))}
@@ -118,20 +115,15 @@ export function Footer() {
 
           {/* Resources Links */}
           <div>
-            <h3 className="text-sm font-semibold text-fg-primary mb-4 uppercase tracking-wider">
-              Resources
-            </h3>
+            <SectionLabel className="mb-4" animate={false}>Resources</SectionLabel>
             <ul className="space-y-3">
               {footerNavItems.resources.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={cn(
-                      "text-sm text-fg-secondary",
-                      "hover:text-fg-brand transition-colors duration-200"
-                    )}
+                    className="text-sm inline-block"
                   >
-                    {item.label}
+                    <TriplingText>{item.label}</TriplingText>
                   </Link>
                 </li>
               ))}
@@ -140,9 +132,7 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-sm font-semibold text-fg-primary mb-4 uppercase tracking-wider">
-              Newsletter
-            </h3>
+            <SectionLabel className="mb-4" animate={false}>Newsletter</SectionLabel>
             <p className="text-sm text-fg-secondary mb-4">
               Get updates on design, AI, and creative tools.
             </p>

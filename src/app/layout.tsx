@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { SkipLink } from "@/components/shared/skip-link";
 
 // Using Inter as fallback until Neue Haas Grotesk fonts are added
 const inter = Inter({
@@ -49,6 +50,16 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFAEE" },
+    { media: "(prefers-color-scheme: dark)", color: "#191919" },
+  ],
+  width: "device-width",
+  initialScale: 1,
 };
 
 // Inline script to prevent flash of wrong theme
@@ -77,8 +88,11 @@ export default function RootLayout({
         className={`${inter.variable} font-body min-h-screen flex flex-col antialiased`}
       >
         <ThemeProvider>
+          <SkipLink />
           <Header />
-          <main className="flex-1 pt-16 md:pt-20">{children}</main>
+          <main id="main-content" className="flex-1 pt-16 md:pt-20">
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
       </body>

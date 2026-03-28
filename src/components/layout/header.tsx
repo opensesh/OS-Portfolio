@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
@@ -13,19 +13,18 @@ import { Button } from "@/components/shared/button";
 import { mainNavItems } from "@/data/navigation";
 
 export function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const pathname = usePathname();
 
-  // Handle scroll state for header styling
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+  // Track scroll position
+  const { scrollY } = useScroll();
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Update scroll progress (0 to 1)
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const progress = Math.min(latest / 100, 1);
+    setScrollProgress(progress);
+  });
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -44,24 +43,54 @@ export function Header() {
     };
   }, [isMobileMenuOpen]);
 
+  // Interpolate values based on scroll progress
+  const bgOpacity = scrollProgress * 0.95;
+  const blurAmount = scrollProgress * 20;
+  const borderOpacity = scrollProgress;
+  const logoScale = 1 - scrollProgress * 0.1; // 1 -> 0.9
+  const navHeight = 80 - scrollProgress * 16; // 80px -> 64px
+
   return (
     <>
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50",
-          "transition-all duration-300",
-          isScrolled
-            ? "bg-bg-primary/80 backdrop-blur-lg border-b border-border-secondary"
-            : "bg-transparent"
-        )}
+        className="fixed top-0 left-0 right-0 z-50"
       >
-        <div className="container-main">
-          <nav className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
-            <Logo />
+        {/* Background with progressive opacity */}
+        <div
+          className="absolute inset-0 bg-bg-primary transition-opacity duration-100"
+          style={{ opacity: bgOpacity }}
+        />
+
+        {/* Progressive backdrop blur */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backdropFilter: `blur(${blurAmount}px)`,
+            WebkitBackdropFilter: `blur(${blurAmount}px)`,
+          }}
+        />
+
+        {/* Bottom border with animated opacity */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-px bg-border-secondary transition-opacity duration-100"
+          style={{ opacity: borderOpacity }}
+        />
+
+        <div className="container-main relative">
+          <nav
+            className="flex items-center justify-between transition-all duration-100"
+            style={{ height: `${navHeight}px` }}
+          >
+            {/* Logo with scale transform */}
+            <div
+              className="transition-transform duration-100 origin-left"
+              style={{ transform: `scale(${logoScale})` }}
+            >
+              <Logo />
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1">

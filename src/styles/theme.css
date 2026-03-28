@@ -1,0 +1,223 @@
+/* =============================================================================
+   Open Session Design System - Theme Variables
+   Based on BOS-3.0 Design Tokens
+   ============================================================================= */
+
+:root {
+  /* -------------------------------------------------------------------------
+     Brand Colors
+     ------------------------------------------------------------------------- */
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #ff7a38;
+  --color-brand-500: #fe5102; /* Aperol - Primary */
+  --color-brand-600: #e64400;
+  --color-brand-700: #c73a00;
+  --color-brand-800: #9a3000;
+  --color-brand-900: #7c2800;
+  --color-brand-950: #431400;
+
+  /* -------------------------------------------------------------------------
+     Warm Gray Scale (tinted toward Vanilla)
+     ------------------------------------------------------------------------- */
+  --color-gray-50: #faf8f5;
+  --color-gray-100: #f5f3f0;
+  --color-gray-200: #e7e5e2;
+  --color-gray-300: #d6d3d1;
+  --color-gray-400: #a8a29e;
+  --color-gray-500: #78716c;
+  --color-gray-600: #57534e;
+  --color-gray-700: #44403a;
+  --color-gray-800: #363230;
+  --color-gray-900: #262322;
+  --color-gray-950: #1c1a17;
+
+  /* -------------------------------------------------------------------------
+     Semantic Colors - Light Mode
+     ------------------------------------------------------------------------- */
+
+  /* Backgrounds */
+  --bg-primary: #faf8f5;       /* Page background - Soft vanilla */
+  --bg-secondary: #f5f3f0;     /* Elevated surfaces */
+  --bg-tertiary: #e7e5e2;      /* Subtle containers */
+  --bg-inverse: #1c1a17;       /* Dark backgrounds */
+
+  /* Brand backgrounds */
+  --bg-brand-solid: #fe5102;   /* Aperol solid */
+  --bg-brand-subtle: #fff7ed;  /* Light brand tint */
+
+  /* Foregrounds / Text */
+  --fg-primary: #1c1a17;       /* Primary text */
+  --fg-secondary: #57534e;     /* Secondary text */
+  --fg-tertiary: #78716c;      /* Muted text */
+  --fg-inverse: #faf8f5;       /* Text on dark */
+  --fg-brand: #fe5102;         /* Brand colored text */
+
+  /* Borders */
+  --border-primary: #d6d3d1;   /* Interactive borders */
+  --border-secondary: #e7e5e2; /* Container borders */
+  --border-tertiary: #f5f3f0;  /* Subtle borders */
+  --border-brand: #fe5102;     /* Brand accent borders */
+
+  /* Button colors */
+  --button-primary-bg: #fe5102;
+  --button-primary-fg: #ffffff;
+  --button-primary-hover: #e64400;
+
+  --button-secondary-bg: transparent;
+  --button-secondary-fg: #1c1a17;
+  --button-secondary-border: #d6d3d1;
+  --button-secondary-hover: #f5f3f0;
+
+  /* Focus ring */
+  --focus-ring: #fe5102;
+  --focus-ring-offset: #faf8f5;
+
+  /* Shadows */
+  --shadow-color: 28 26 23;
+  --shadow-sm: 0 1px 2px 0 rgb(var(--shadow-color) / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / 0.08), 0 2px 4px -2px rgb(var(--shadow-color) / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / 0.08), 0 4px 6px -4px rgb(var(--shadow-color) / 0.05);
+  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / 0.1), 0 8px 10px -6px rgb(var(--shadow-color) / 0.05);
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark {
+  /* Backgrounds */
+  --bg-primary: #191919;       /* Charcoal */
+  --bg-secondary: #262322;     /* Elevated surfaces */
+  --bg-tertiary: #363230;      /* Subtle containers */
+  --bg-inverse: #faf8f5;       /* Light backgrounds */
+
+  /* Brand backgrounds */
+  --bg-brand-solid: #fe5102;
+  --bg-brand-subtle: #431400;
+
+  /* Foregrounds / Text */
+  --fg-primary: #fffaee;       /* Vanilla */
+  --fg-secondary: #a8a29e;
+  --fg-tertiary: #78716c;
+  --fg-inverse: #1c1a17;
+  --fg-brand: #ff7a38;         /* Lighter brand for readability */
+
+  /* Borders */
+  --border-primary: #44403a;
+  --border-secondary: #363230;
+  --border-tertiary: #262322;
+  --border-brand: #fe5102;
+
+  /* Button colors */
+  --button-primary-bg: #fe5102;
+  --button-primary-fg: #ffffff;
+  --button-primary-hover: #ff7a38;
+
+  --button-secondary-bg: transparent;
+  --button-secondary-fg: #fffaee;
+  --button-secondary-border: #44403a;
+  --button-secondary-hover: #363230;
+
+  /* Focus ring */
+  --focus-ring: #ff7a38;
+  --focus-ring-offset: #191919;
+
+  /* Shadows - more subtle in dark mode */
+  --shadow-color: 0 0 0;
+  --shadow-sm: 0 1px 2px 0 rgb(var(--shadow-color) / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / 0.4), 0 2px 4px -2px rgb(var(--shadow-color) / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / 0.4), 0 4px 6px -4px rgb(var(--shadow-color) / 0.3);
+  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / 0.5), 0 8px 10px -6px rgb(var(--shadow-color) / 0.3);
+}
+
+/* =============================================================================
+   Typography
+   ============================================================================= */
+
+:root {
+  /* Font Families */
+  --font-display: 'Neue Haas Grotesk Display', 'Inter', system-ui, sans-serif;
+  --font-body: 'Neue Haas Grotesk Text', 'Inter', system-ui, sans-serif;
+  --font-accent: 'Offbit', 'SF Mono', monospace;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+  /* Font Sizes */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+  --text-5xl: 3rem;        /* 48px */
+  --text-6xl: 3.75rem;     /* 60px */
+  --text-7xl: 4.5rem;      /* 72px */
+  --text-8xl: 6rem;        /* 96px */
+
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+}
+
+/* =============================================================================
+   Motion / Animation
+   ============================================================================= */
+
+:root {
+  /* Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 400ms;
+  --duration-slowest: 600ms;
+
+  /* Easings */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =============================================================================
+   Spacing & Layout
+   ============================================================================= */
+
+:root {
+  /* Container widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1440px;
+
+  /* Section padding */
+  --section-padding-y: 5rem;
+  --section-padding-x: 1.5rem;
+
+  /* Border radius */
+  --radius-none: 0;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* CTA button radius - rounded per brand guidelines */
+  --radius-cta: 1.875rem; /* 30px */
+}

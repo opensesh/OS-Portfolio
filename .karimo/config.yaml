@@ -1,0 +1,30 @@
+# KARIMO Configuration
+# Generated: 2026-03-27
+
+project:
+  name: os-portfolio
+  runtime: node
+  framework: nextjs
+  version: "16"
+
+commands:
+  build: npm run build
+  lint: npm run lint
+  test: null
+  typecheck: null
+  dev: npm run dev
+
+boundaries:
+  never_touch:
+    - "node_modules/**"
+    - ".git/**"
+    - ".next/**"
+    - "package-lock.json"
+  require_review:
+    - "package.json"
+    - "next.config.ts"
+    - "tsconfig.json"
+
+preferences:
+  commit_style: conventional
+  branch_prefix: feat/karimo

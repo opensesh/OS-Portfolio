@@ -1,0 +1,740 @@
+# KARIMO Tasks: inspo-clone
+# Generated: 2026-03-27
+# Total Tasks: 50
+
+prd_id: inspo-clone
+version: 1
+
+phases:
+  - id: foundation
+    name: Foundation
+    description: Project setup, design system, and base layout components
+
+  - id: home
+    name: Home Page
+    description: Hero, marquee, stats, process, work, services, FAQ, CTA
+
+  - id: projects
+    name: Projects
+    description: Project listing and detail pages
+
+  - id: about
+    name: About
+    description: Team, story, and values page
+
+  - id: blog
+    name: Blog
+    description: Blog listing and article template
+
+  - id: additional
+    name: Additional Pages
+    description: Templates, Workshop, Contact, Legal, 404
+
+  - id: polish
+    name: Polish
+    description: Animations, SEO, performance, accessibility
+
+tasks:
+  # ============================================
+  # PHASE 1: FOUNDATION (8 tasks)
+  # ============================================
+  - id: F-001
+    phase: foundation
+    title: Design system setup
+    description: |
+      Import BOS-3.0 design tokens into Tailwind config.
+      Create theme.css with CSS variables for light/dark mode.
+      Set up color scales, spacing, typography tokens.
+    complexity: 3
+    dependencies: []
+    files:
+      - tailwind.config.ts
+      - src/styles/globals.css
+      - src/styles/theme.css
+
+  - id: F-002
+    phase: foundation
+    title: Typography and font loading
+    description: |
+      Set up @font-face for Neue Haas Grotesk (Display + Text) and Offbit.
+      Configure next/font or manual loading with preload.
+      Add font-family utilities to Tailwind config.
+    complexity: 2
+    dependencies: [F-001]
+    files:
+      - src/styles/fonts.css
+      - src/app/layout.tsx
+      - tailwind.config.ts
+
+  - id: F-003
+    phase: foundation
+    title: Dark mode implementation
+    description: |
+      Implement .dark class toggle on <html> element.
+      Create ThemeProvider with system preference detection.
+      Add localStorage persistence for user preference.
+      Prevent flash of wrong theme on load.
+    complexity: 3
+    dependencies: [F-001]
+    files:
+      - src/components/providers/theme-provider.tsx
+      - src/app/layout.tsx
+      - src/styles/theme.css
+
+  - id: F-004
+    phase: foundation
+    title: Base layout component
+    description: |
+      Create root layout with semantic HTML structure.
+      Add skip-to-main link for accessibility.
+      Set up metadata defaults.
+      Include font loading and providers.
+    complexity: 2
+    dependencies: [F-002, F-003]
+    files:
+      - src/app/layout.tsx
+      - src/components/layout/root-layout.tsx
+
+  - id: F-005
+    phase: foundation
+    title: Header component
+    description: |
+      Build minimal header with logo + single CTA.
+      Implement sticky behavior with scroll awareness.
+      Add theme toggle button.
+      Responsive design with hamburger for mobile.
+    complexity: 3
+    dependencies: [F-004]
+    files:
+      - src/components/layout/header.tsx
+      - src/components/layout/logo.tsx
+
+  - id: F-006
+    phase: foundation
+    title: Footer component
+    description: |
+      Multi-column footer with navigation links.
+      Social icons row.
+      Email subscription form placeholder.
+      Legal links (Terms, Privacy).
+      Copyright notice.
+    complexity: 2
+    dependencies: [F-004]
+    files:
+      - src/components/layout/footer.tsx
+      - src/data/navigation.ts
+
+  - id: F-007
+    phase: foundation
+    title: Mobile menu overlay
+    description: |
+      Full-screen menu overlay for mobile.
+      Animated open/close transitions.
+      Focus trap for accessibility.
+      Close on route change.
+    complexity: 3
+    dependencies: [F-005]
+    files:
+      - src/components/layout/mobile-menu.tsx
+
+  - id: F-008
+    phase: foundation
+    title: Page transition wrapper
+    description: |
+      Create AnimatePresence wrapper for page transitions.
+      Implement fade out/in between routes.
+      Handle exit animations properly.
+    complexity: 3
+    dependencies: [F-004]
+    files:
+      - src/components/layout/page-transition.tsx
+      - src/app/template.tsx
+
+  # ============================================
+  # PHASE 2: HOME PAGE (10 tasks)
+  # ============================================
+  - id: H-001
+    phase: home
+    title: Hero section
+    description: |
+      Large bold headline with animated word-by-word reveal.
+      Two CTAs (primary + secondary).
+      Optional announcement banner.
+      Staggered fade-in on load.
+    complexity: 4
+    dependencies: [F-008]
+    files:
+      - src/components/home/hero.tsx
+      - src/lib/motion.ts
+
+  - id: H-002
+    phase: home
+    title: Logo marquee
+    description: |
+      Infinite horizontal scroll of client logos.
+      CSS animation for smooth loop.
+      Pause on hover.
+      "Trusted by" or "+ Many more" text.
+    complexity: 3
+    dependencies: [F-001]
+    files:
+      - src/components/home/logo-marquee.tsx
+      - src/data/clients.ts
+
+  - id: H-003
+    phase: home
+    title: Stats counter with animation
+    description: |
+      Animated odometer-style number counters.
+      Scroll-triggered animation (only when visible).
+      Format: "XXX+" with label below.
+      Use Intersection Observer.
+    complexity: 4
+    dependencies: [F-001]
+    files:
+      - src/components/home/stats-counter.tsx
+      - src/hooks/use-in-view.ts
+
+  - id: H-004
+    phase: home
+    title: Process section
+    description: |
+      4-step numbered process (01, 02, 03, 04).
+      `// Process` monospace subtitle.
+      Icon or image for each step.
+      Scroll reveal animations.
+    complexity: 3
+    dependencies: [F-001]
+    files:
+      - src/components/home/process-section.tsx
+      - src/data/process.ts
+
+  - id: H-005
+    phase: home
+    title: Featured work grid
+    description: |
+      3-4 featured project cards.
+      Image with hover scale effect.
+      Category tags: [Type]—[Industry].
+      Link to project detail page.
+    complexity: 3
+    dependencies: [F-001]
+    files:
+      - src/components/home/featured-work.tsx
+      - src/components/projects/project-card.tsx
+      - src/data/projects.ts
+
+  - id: H-006
+    phase: home
+    title: Services section
+    description: |
+      4 service pillars with icons.
+      Collapsible/expandable cards.
+      Service tags/pills for each.
+      Hover states.
+    complexity: 3
+    dependencies: [F-001]
+    files:
+      - src/components/home/services-section.tsx
+      - src/components/home/service-card.tsx
+      - src/data/services.ts
+
+  - id: H-007
+    phase: home
+    title: FAQ accordion
+    description: |
+      Smooth height animation on expand/collapse.
+      Only one open at a time (optional).
+      Accessible keyboard navigation.
+      Plus/minus or chevron indicator.
+    complexity: 3
+    dependencies: [F-001]
+    files:
+      - src/components/shared/faq-accordion.tsx
+      - src/data/faq.ts
+
+  - id: H-008
+    phase: home
+    title: CTA section
+    description: |
+      Full-width CTA banner.
+      Bold headline + description.
+      Primary button linking to contact.
+      Optional background pattern.
+    complexity: 2
+    dependencies: [F-001]
+    files:
+      - src/components/home/cta-section.tsx
+
+  - id: H-009
+    phase: home
+    title: Newsletter form
+    description: |
+      Email input + submit button.
+      Validation (email format).
+      Success/error states.
+      Can be embedded in footer or standalone.
+    complexity: 2
+    dependencies: [F-001]
+    files:
+      - src/components/shared/newsletter-form.tsx
+
+  - id: H-010
+    phase: home
+    title: Home page assembly
+    description: |
+      Assemble all home sections in correct order.
+      Add section spacing and dividers.
+      Verify responsive behavior.
+      Test all animations.
+    complexity: 2
+    dependencies: [H-001, H-002, H-003, H-004, H-005, H-006, H-007, H-008, H-009]
+    files:
+      - src/app/page.tsx
+
+  # ============================================
+  # PHASE 3: PROJECTS (6 tasks)
+  # ============================================
+  - id: P-001
+    phase: projects
+    title: Project data structure
+    description: |
+      Define TypeScript interfaces for Project.
+      Create projects data file with 5+ entries.
+      Include: title, slug, category, industry, thumbnail, description, year.
+    complexity: 2
+    dependencies: []
+    files:
+      - src/types/project.ts
+      - src/data/projects.ts
+
+  - id: P-002
+    phase: projects
+    title: Project grid component
+    description: |
+      Responsive grid layout (3 cols desktop, 2 tablet, 1 mobile).
+      Gap and padding consistent with design.
+      Loading skeleton support.
+    complexity: 2
+    dependencies: [P-001]
+    files:
+      - src/components/projects/project-grid.tsx
+
+  - id: P-003
+    phase: projects
+    title: Project filters
+    description: |
+      Category filter buttons/pills.
+      All / Brand / Digital / Strategy options.
+      Active state styling.
+      Filter logic to show/hide projects.
+    complexity: 3
+    dependencies: [P-001]
+    files:
+      - src/components/projects/project-filters.tsx
+
+  - id: P-004
+    phase: projects
+    title: Project card with hover
+    description: |
+      Image container with aspect ratio.
+      Hover: image scale 1.02-1.05.
+      Title, category tag, year overlay.
+      Link wrapper to detail page.
+    complexity: 3
+    dependencies: [P-001]
+    files:
+      - src/components/projects/project-card.tsx
+
+  - id: P-005
+    phase: projects
+    title: Project detail template
+    description: |
+      Hero with project title, meta (year, category, client).
+      Full-width hero image.
+      Content sections with images + text.
+      Next/previous project navigation.
+    complexity: 4
+    dependencies: [P-001]
+    files:
+      - src/app/projects/[slug]/page.tsx
+      - src/components/projects/project-detail.tsx
+
+  - id: P-006
+    phase: projects
+    title: Projects page assembly
+    description: |
+      Assemble filters + grid on /projects page.
+      Add page header with title.
+      SEO meta tags.
+      Test filtering behavior.
+    complexity: 2
+    dependencies: [P-002, P-003, P-004]
+    files:
+      - src/app/projects/page.tsx
+
+  # ============================================
+  # PHASE 4: ABOUT (4 tasks)
+  # ============================================
+  - id: A-001
+    phase: about
+    title: About hero
+    description: |
+      Large headline about Open Session.
+      Intro paragraph with story.
+      Optional hero image or illustration.
+    complexity: 2
+    dependencies: [F-008]
+    files:
+      - src/components/about/about-hero.tsx
+
+  - id: A-002
+    phase: about
+    title: Team section
+    description: |
+      Team member cards with photos.
+      Name, role, optional bio.
+      Social links for each member.
+      Grid layout responsive.
+    complexity: 3
+    dependencies: []
+    files:
+      - src/components/about/team-section.tsx
+      - src/data/team.ts
+
+  - id: A-003
+    phase: about
+    title: Values section
+    description: |
+      Company values or "How we work" section.
+      Icon + title + description for each.
+      3-4 values displayed.
+    complexity: 2
+    dependencies: []
+    files:
+      - src/components/about/values-section.tsx
+      - src/data/values.ts
+
+  - id: A-004
+    phase: about
+    title: About page assembly
+    description: |
+      Assemble hero, team, values sections.
+      Add stats counter (reuse from home).
+      CTA section at bottom.
+      SEO meta tags.
+    complexity: 2
+    dependencies: [A-001, A-002, A-003]
+    files:
+      - src/app/about/page.tsx
+
+  # ============================================
+  # PHASE 5: BLOG (6 tasks)
+  # ============================================
+  - id: B-001
+    phase: blog
+    title: Blog data structure
+    description: |
+      Define TypeScript interfaces for BlogPost.
+      Create blog posts data file with 3+ entries.
+      Include: title, slug, excerpt, content, author, date, category, thumbnail.
+    complexity: 2
+    dependencies: []
+    files:
+      - src/types/blog.ts
+      - src/data/blog.ts
+
+  - id: B-002
+    phase: blog
+    title: Blog grid component
+    description: |
+      Responsive grid for blog cards.
+      Featured post larger on top (optional).
+      Load more or pagination.
+    complexity: 2
+    dependencies: [B-001]
+    files:
+      - src/components/blog/blog-grid.tsx
+
+  - id: B-003
+    phase: blog
+    title: Blog card
+    description: |
+      Thumbnail image with aspect ratio.
+      Title, excerpt, date, category tag.
+      Hover effects matching project cards.
+      Link to blog post.
+    complexity: 2
+    dependencies: [B-001]
+    files:
+      - src/components/blog/blog-card.tsx
+
+  - id: B-004
+    phase: blog
+    title: Blog post template
+    description: |
+      Article hero with title, meta, thumbnail.
+      Rich content area (prose styling).
+      Author bio section.
+      Related posts at bottom.
+    complexity: 4
+    dependencies: [B-001]
+    files:
+      - src/app/blog/[slug]/page.tsx
+      - src/components/blog/blog-post.tsx
+
+  - id: B-005
+    phase: blog
+    title: Blog list page
+    description: |
+      Page header with title.
+      Category filters (optional).
+      Blog grid with all posts.
+      SEO meta tags.
+    complexity: 2
+    dependencies: [B-002, B-003]
+    files:
+      - src/app/blog/page.tsx
+
+  - id: B-006
+    phase: blog
+    title: Blog category filters
+    description: |
+      Filter pills for blog categories.
+      All / Design / AI / Process options.
+      Active state and filter logic.
+    complexity: 2
+    dependencies: [B-001]
+    files:
+      - src/components/blog/blog-filters.tsx
+
+  # ============================================
+  # PHASE 6: ADDITIONAL PAGES (6 tasks)
+  # ============================================
+  - id: X-001
+    phase: additional
+    title: Templates page
+    description: |
+      Free resources/templates grid.
+      Card with preview, title, description.
+      Download CTA button.
+      Coming soon state for future items.
+    complexity: 3
+    dependencies: [F-008]
+    files:
+      - src/app/templates/page.tsx
+      - src/components/templates/template-card.tsx
+      - src/data/templates.ts
+
+  - id: X-002
+    phase: additional
+    title: Workshop page
+    description: |
+      Services/consulting overview.
+      Pricing table or packages (if applicable).
+      Process explanation.
+      Booking CTA.
+    complexity: 3
+    dependencies: [F-008]
+    files:
+      - src/app/workshop/page.tsx
+      - src/components/workshop/service-pricing.tsx
+
+  - id: X-003
+    phase: additional
+    title: Contact page
+    description: |
+      Contact form component.
+      Calendar booking embed (Cal.com or similar).
+      Office/contact info sidebar.
+      Social links.
+    complexity: 3
+    dependencies: [X-004]
+    files:
+      - src/app/contact/page.tsx
+
+  - id: X-004
+    phase: additional
+    title: Contact form component
+    description: |
+      Name, email, company, message fields.
+      Budget selector (dropdown or buttons).
+      Submit with loading state.
+      Success/error handling.
+      Form validation.
+    complexity: 4
+    dependencies: []
+    files:
+      - src/components/shared/contact-form.tsx
+      - src/app/api/contact/route.ts
+
+  - id: X-005
+    phase: additional
+    title: Legal pages
+    description: |
+      Terms of Service page.
+      Privacy Policy page.
+      Simple prose layout.
+      Back link to home.
+    complexity: 1
+    dependencies: [F-004]
+    files:
+      - src/app/terms/page.tsx
+      - src/app/privacy/page.tsx
+
+  - id: X-006
+    phase: additional
+    title: 404 page
+    description: |
+      Custom 404 not found page.
+      Branded design matching site.
+      Link back to home.
+      Search suggestion (optional).
+    complexity: 1
+    dependencies: [F-004]
+    files:
+      - src/app/not-found.tsx
+
+  # ============================================
+  # PHASE 7: POLISH (10 tasks)
+  # ============================================
+  - id: Z-001
+    phase: polish
+    title: Loading states
+    description: |
+      "LOADING" text animation pattern.
+      Skeleton screens for cards/grids.
+      Page loading indicator.
+      Suspense boundaries.
+    complexity: 3
+    dependencies: []
+    files:
+      - src/components/shared/loading.tsx
+      - src/components/shared/skeleton.tsx
+      - src/app/loading.tsx
+
+  - id: Z-002
+    phase: polish
+    title: Scroll animations
+    description: |
+      Elements reveal on scroll-into-view.
+      Staggered reveal for lists.
+      Parallax effects (subtle).
+      Use Intersection Observer + Framer Motion.
+    complexity: 4
+    dependencies: []
+    files:
+      - src/components/shared/scroll-reveal.tsx
+      - src/hooks/use-scroll-animation.ts
+
+  - id: Z-003
+    phase: polish
+    title: Image optimization
+    description: |
+      Configure Next.js Image component usage.
+      Add blur placeholders for all images.
+      Implement lazy loading.
+      Optimize image sizes for breakpoints.
+    complexity: 2
+    dependencies: []
+    files:
+      - next.config.ts
+      - src/components/shared/optimized-image.tsx
+
+  - id: Z-004
+    phase: polish
+    title: SEO meta tags
+    description: |
+      Add meta tags to all pages.
+      Dynamic titles and descriptions.
+      Canonical URLs.
+      Structured data (JSON-LD) for org.
+    complexity: 3
+    dependencies: []
+    files:
+      - src/app/layout.tsx
+      - src/lib/seo.ts
+
+  - id: Z-005
+    phase: polish
+    title: OpenGraph images
+    description: |
+      Create OG image template.
+      Generate OG images for each page.
+      Add Twitter card meta tags.
+      Test with social preview tools.
+    complexity: 3
+    dependencies: [Z-004]
+    files:
+      - src/app/opengraph-image.tsx
+      - src/app/projects/[slug]/opengraph-image.tsx
+      - src/app/blog/[slug]/opengraph-image.tsx
+
+  - id: Z-006
+    phase: polish
+    title: Sitemap and robots
+    description: |
+      Generate sitemap.xml with all pages.
+      Create robots.txt with rules.
+      Submit to search console (manual step).
+    complexity: 2
+    dependencies: []
+    files:
+      - src/app/sitemap.ts
+      - src/app/robots.ts
+
+  - id: Z-007
+    phase: polish
+    title: Analytics setup
+    description: |
+      Add Google Analytics or Plausible.
+      Event tracking for CTAs.
+      Page view tracking.
+      Privacy-conscious implementation.
+    complexity: 2
+    dependencies: []
+    files:
+      - src/components/analytics.tsx
+      - src/app/layout.tsx
+
+  - id: Z-008
+    phase: polish
+    title: Performance optimization
+    description: |
+      Audit bundle size.
+      Code splitting for routes.
+      Preload critical assets.
+      Optimize fonts loading.
+      Target Lighthouse 90+.
+    complexity: 3
+    dependencies: []
+    files:
+      - next.config.ts
+
+  - id: Z-009
+    phase: polish
+    title: Accessibility audit
+    description: |
+      Run axe-core or similar tool.
+      Fix any a11y violations.
+      Test keyboard navigation.
+      Verify screen reader experience.
+      Add skip links if missing.
+    complexity: 3
+    dependencies: []
+    files:
+      - Multiple files as needed
+
+  - id: Z-010
+    phase: polish
+    title: Final QA and deploy
+    description: |
+      Full site walkthrough.
+      Cross-browser testing.
+      Mobile device testing.
+      Fix any visual bugs.
+      Deploy to Vercel.
+    complexity: 2
+    dependencies: [Z-001, Z-002, Z-003, Z-004, Z-005, Z-006, Z-007, Z-008, Z-009]
+    files:
+      - vercel.json (if needed)

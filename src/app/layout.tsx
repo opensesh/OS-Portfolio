@@ -1,17 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { SkipLink } from "@/components/shared/skip-link";
-
-// Using Inter as fallback until Neue Haas Grotesk fonts are added
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -84,9 +76,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body
-        className={`${inter.variable} font-body min-h-screen flex flex-col antialiased`}
-      >
+      <body className="font-body min-h-screen flex flex-col antialiased">
         <ThemeProvider>
           <SkipLink />
           <Header />

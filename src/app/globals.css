@@ -2,6 +2,69 @@
 @import "../styles/theme.css";
 
 /* =============================================================================
+   Font Face Declarations - Open Session Typography System
+   ============================================================================= */
+
+/* Neue Haas Display - Display/Headings */
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayRoman.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Neue Haas Text - Body Copy */
+@font-face {
+  font-family: 'Neue Haas Text';
+  src: url('/fonts/NeueHaasTextRegular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Text';
+  src: url('/fonts/NeueHaasTextMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Text';
+  src: url('/fonts/NeueHaasTextBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* OffBit 101 Bold - Accent/Labels (max 2 per viewport) */
+@font-face {
+  font-family: 'OffBit';
+  src: url('/fonts/OffBit-101Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =============================================================================
    Tailwind Theme Mapping
    Using @theme inline for Tailwind v4 compatibility
    ============================================================================= */
@@ -55,10 +118,10 @@
   --color-warm-gray-950: var(--color-gray-950);
 
   /* Font families */
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
-  --font-accent: var(--font-accent);
-  --font-mono: var(--font-mono);
+  --font-family-display: 'Neue Haas Display', system-ui, sans-serif;
+  --font-family-body: 'Neue Haas Text', system-ui, sans-serif;
+  --font-family-accent: 'OffBit', 'SF Mono', monospace;
+  --font-family-mono: 'SF Mono', 'Fira Code', monospace;
 
   /* Shadows */
   --shadow-sm: var(--shadow-sm);
@@ -149,7 +212,9 @@ body {
 
 .text-accent {
   font-family: var(--font-accent);
-  font-weight: 400;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
 }
 
 .text-mono {
@@ -157,19 +222,22 @@ body {
 }
 
 /* =============================================================================
-   Section Label (// Section pattern from Good Fella)
+   Section Label - OffBit 101 Bold Treatment
    ============================================================================= */
 
 .section-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-family: var(--font-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
   color: var(--fg-tertiary);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
+  letter-spacing: var(--tracking-widest);
 }
 
-.section-label::before {
-  content: "// ";
+/* Aperol color on dark backgrounds */
+.dark .section-label,
+.section-label--brand {
+  color: var(--fg-brand);
 }
 
 /* =============================================================================

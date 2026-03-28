@@ -139,38 +139,42 @@
 
 :root {
   /* Font Families */
-  --font-display: 'Neue Haas Grotesk Display', 'Inter', system-ui, sans-serif;
-  --font-body: 'Neue Haas Grotesk Text', 'Inter', system-ui, sans-serif;
-  --font-accent: 'Offbit', 'SF Mono', monospace;
+  --font-display: 'Neue Haas Display', system-ui, sans-serif;
+  --font-body: 'Neue Haas Text', system-ui, sans-serif;
+  --font-accent: 'OffBit', 'SF Mono', monospace;
   --font-mono: 'SF Mono', 'Fira Code', monospace;
 
-  /* Font Sizes */
-  --text-xs: 0.75rem;      /* 12px */
+  /* Font Sizes - BOS-3.0 Type Scale */
+  --text-xs: 0.75rem;      /* 12px - Label */
   --text-sm: 0.875rem;     /* 14px */
-  --text-base: 1rem;       /* 16px */
-  --text-lg: 1.125rem;     /* 18px */
-  --text-xl: 1.25rem;      /* 20px */
-  --text-2xl: 1.5rem;      /* 24px */
-  --text-3xl: 1.875rem;    /* 30px */
+  --text-base: 1rem;       /* 16px - Body 2, Button */
+  --text-lg: 1.125rem;     /* 18px - H6 mobile */
+  --text-xl: 1.25rem;      /* 20px - Body 1, H5 mobile */
+  --text-2xl: 1.5rem;      /* 24px - H6 desktop, H4 mobile */
+  --text-3xl: 1.875rem;    /* 30px - H5 tablet */
   --text-4xl: 2.25rem;     /* 36px */
-  --text-5xl: 3rem;        /* 48px */
-  --text-6xl: 3.75rem;     /* 60px */
+  --text-5xl: 3rem;        /* 48px - H2 desktop */
+  --text-6xl: 3.75rem;     /* 60px - Display 1 mobile */
   --text-7xl: 4.5rem;      /* 72px */
   --text-8xl: 6rem;        /* 96px */
+  --text-9xl: 7rem;        /* 112px - Display 2 tablet */
+  --text-10xl: 7.5rem;     /* 120px - Display 2 desktop */
+  --text-display: 10rem;   /* 160px - Display 1 desktop */
 
   /* Line Heights */
   --leading-none: 1;
   --leading-tight: 1.1;
-  --leading-snug: 1.25;
+  --leading-snug: 1.2;
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
 
   /* Letter Spacing */
-  --tracking-tighter: -0.05em;
-  --tracking-tight: -0.025em;
-  --tracking-normal: 0;
-  --tracking-wide: 0.025em;
-  --tracking-wider: 0.05em;
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.02em;  /* Display/Headings */
+  --tracking-normal: 0;       /* Body */
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;    /* OffBit labels, uppercase */
+  --tracking-widest: 0.2em;
 }
 
 /* =============================================================================

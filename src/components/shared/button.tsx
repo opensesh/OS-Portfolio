@@ -32,24 +32,47 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: cn(
+    "relative overflow-hidden",
     "bg-bg-brand-solid text-white",
-    "hover:opacity-90",
+    // Sliding background effect
+    "before:absolute before:inset-0 before:bg-bg-inverse",
+    "before:origin-left before:scale-x-0",
+    "before:transition-transform before:duration-300 before:ease-out",
+    "hover:before:scale-x-100",
+    "hover:scale-[1.02]",
     "focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
   ),
   secondary: cn(
+    "relative overflow-hidden",
     "bg-transparent text-fg-primary",
     "border border-border-primary",
-    "hover:bg-bg-secondary",
+    // Sliding background effect
+    "before:absolute before:inset-0 before:bg-bg-brand-solid",
+    "before:origin-left before:scale-x-0",
+    "before:transition-transform before:duration-300 before:ease-out",
+    "hover:before:scale-x-100",
+    "hover:text-white hover:border-bg-brand-solid",
+    "hover:scale-[1.02]",
     "focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
   ),
   ghost: cn(
+    "relative overflow-hidden",
     "bg-transparent text-fg-primary",
-    "hover:bg-bg-secondary",
+    // Subtle background on hover
+    "before:absolute before:inset-0 before:bg-bg-secondary",
+    "before:origin-left before:scale-x-0",
+    "before:transition-transform before:duration-300 before:ease-out",
+    "hover:before:scale-x-100",
     "focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
   ),
   link: cn(
+    "relative",
     "bg-transparent text-fg-brand",
-    "underline-offset-4 hover:underline",
+    // Underline slides in from left
+    "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px",
+    "after:bg-fg-brand after:origin-left after:scale-x-0",
+    "after:transition-transform after:duration-300 after:ease-out",
+    "hover:after:scale-x-100",
     "p-0 h-auto"
   ),
 };
@@ -83,6 +106,13 @@ export const Button = forwardRef<
     className
   );
 
+  // Wrapper for content to appear above sliding background
+  const contentWrapper = (
+    <span className="relative z-10 flex items-center gap-2">
+      {children}
+    </span>
+  );
+
   // Type guard for link props
   if ("href" in rest && rest.href) {
     const { href, external, ...linkRest } = rest as ButtonAsLink;
@@ -97,7 +127,7 @@ export const Button = forwardRef<
           rel="noopener noreferrer"
           {...linkRest}
         >
-          {children}
+          {contentWrapper}
         </a>
       );
     }
@@ -109,7 +139,7 @@ export const Button = forwardRef<
         className={baseStyles}
         {...linkRest}
       >
-        {children}
+        {contentWrapper}
       </Link>
     );
   }
@@ -122,7 +152,7 @@ export const Button = forwardRef<
       className={baseStyles}
       {...buttonRest}
     >
-      {children}
+      {contentWrapper}
     </button>
   );
 });

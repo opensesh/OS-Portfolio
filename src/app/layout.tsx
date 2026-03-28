@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { SkipLink } from "@/components/shared/skip-link";
+import { PageLoader } from "@/components/shared/page-loader";
 
 export const metadata: Metadata = {
   title: {
@@ -78,6 +79,7 @@ export default function RootLayout({
       </head>
       <body className="font-body min-h-screen flex flex-col antialiased">
         <ThemeProvider>
+          <PageLoader />
           <SkipLink />
           <Header />
           <main id="main-content" className="flex-1 pt-16 md:pt-20">

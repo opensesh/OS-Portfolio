@@ -33,7 +33,8 @@ export function Logo({ className, variant = "full", size = "md" }: LogoProps) {
         alt="Open Session"
         width={variant === "mark" ? dimensions.height : dimensions.width}
         height={dimensions.height}
-        className="h-auto dark:invert"
+        className="dark:invert"
+        style={{ width: "auto", height: "auto" }}
         priority
       />
     </Link>

@@ -1,34 +1,28 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#";
 const LOADING_TEXT = "OPEN SESSION";
 const SCRAMBLE_DURATION = 1200; // ms
-const EXIT_DELAY = 200; // ms after scramble completes
+const EXIT_DELAY = 300; // ms after scramble completes
 
 function getRandomChar() {
   return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
 }
 
-function getInitialScrambledText() {
-  return LOADING_TEXT.split("")
-    .map((char) => (char === " " ? " " : getRandomChar()))
-    .join("");
-}
-
 export function PageLoader() {
   const [isLoading, setIsLoading] = useState(true);
-  const [displayText, setDisplayText] = useState(getInitialScrambledText);
-  const hasRun = useRef(false);
+  const [displayText, setDisplayText] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   const animateText = useCallback(() => {
     const textLength = LOADING_TEXT.length;
-    const startTime = Date.now();
+    const startTime = performance.now();
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / SCRAMBLE_DURATION, 1);
 
       // Calculate how many characters should be revealed
@@ -38,13 +32,10 @@ export function PageLoader() {
       let result = "";
       for (let i = 0; i < textLength; i++) {
         if (i < targetRevealed) {
-          // Already revealed - show original character
           result += LOADING_TEXT[i];
         } else if (LOADING_TEXT[i] === " ") {
-          // Keep spaces as spaces
           result += " ";
         } else {
-          // Not yet revealed - show scrambled character
           result += getRandomChar();
         }
       }
@@ -55,7 +46,6 @@ export function PageLoader() {
         requestAnimationFrame(animate);
       } else {
         setDisplayText(LOADING_TEXT);
-        // Delay before exit
         setTimeout(() => setIsLoading(false), EXIT_DELAY);
       }
     };
@@ -63,14 +53,30 @@ export function PageLoader() {
     requestAnimationFrame(animate);
   }, []);
 
+  // Only run on client after mount
   useEffect(() => {
-    if (hasRun.current) return;
-    hasRun.current = true;
+    setMounted(true);
+    // Generate initial scrambled text only on client
+    const initial = LOADING_TEXT.split("")
+      .map((char) => (char === " " ? " " : getRandomChar()))
+      .join("");
+    setDisplayText(initial);
 
-    // Start animation after a tiny delay for paint
-    const timeout = setTimeout(animateText, 50);
+    // Start animation after a brief delay
+    const timeout = setTimeout(animateText, 100);
     return () => clearTimeout(timeout);
   }, [animateText]);
+
+  // Don't render anything during SSR to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-primary">
+        <span className="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-fg-primary tracking-tight opacity-0">
+          {LOADING_TEXT}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -87,9 +93,8 @@ export function PageLoader() {
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             className="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-fg-primary tracking-tight"
-            style={{ fontFamily: "var(--font-display)" }}
           >
             {displayText}
           </motion.span>

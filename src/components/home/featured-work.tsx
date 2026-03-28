@@ -1,20 +1,20 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useInView } from "@/hooks/use-in-view";
+import { useRef } from "react";
 import { featuredProjects } from "@/data/projects";
-import { staggerContainer, fadeInUp, imageHover } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { Button } from "@/components/shared/button";
+import { ProjectCard } from "@/components/projects/project-card";
+import { SectionLabel } from "@/components/shared/section-label";
 
 export function FeaturedWork() {
-  const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-20 md:py-32 bg-bg-secondary">
+    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-secondary">
       <div className="container-main">
         {/* Section Header */}
         <motion.div
@@ -24,7 +24,7 @@ export function FeaturedWork() {
           className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16"
         >
           <div>
-            <p className="section-label mb-4">Work</p>
+            <SectionLabel className="mb-4">Work</SectionLabel>
             <h2 className="text-display text-3xl md:text-4xl lg:text-5xl">
               Selected Projects
             </h2>
@@ -35,61 +35,20 @@ export function FeaturedWork() {
           </Button>
         </motion.div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid with staggered reveal */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
         >
-          {featuredProjects.map((project) => (
-            <motion.article key={project.id} variants={fadeInUp}>
-              <Link href={`/projects/${project.slug}`} className="group block">
-                {/* Image */}
-                <motion.div
-                  variants={imageHover}
-                  initial="initial"
-                  whileHover="hover"
-                  className={cn(
-                    "relative aspect-[4/3] mb-4 overflow-hidden",
-                    "bg-bg-tertiary"
-                  )}
-                >
-                  {/* Placeholder - replace with actual images */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-fg-tertiary text-sm">
-                      {project.title}
-                    </span>
-                  </div>
-                  {/* Uncomment when images are available
-                  <Image
-                    src={project.thumbnail}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                  />
-                  */}
-                </motion.div>
-
-                {/* Meta */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-fg-tertiary font-mono uppercase">
-                    {project.category}
-                  </span>
-                  <span className="text-fg-tertiary">—</span>
-                  <span className="text-xs text-fg-tertiary font-mono uppercase">
-                    {project.industry}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 className="text-heading text-xl group-hover:text-fg-brand transition-colors duration-200">
-                  {project.title}
-                </h3>
-
-                {/* Year */}
-                <p className="text-sm text-fg-tertiary mt-1">{project.year}</p>
-              </Link>
+          {featuredProjects.map((project, index) => (
+            <motion.article
+              key={project.id}
+              variants={fadeInUp}
+              custom={index}
+            >
+              <ProjectCard project={project} />
             </motion.article>
           ))}
         </motion.div>

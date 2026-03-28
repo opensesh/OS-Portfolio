@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Write(/Users/alexbouhdary/OS-Portfolio/**)",
+      "Edit(/Users/alexbouhdary/OS-Portfolio/**)"
+    ]
+  }
+}

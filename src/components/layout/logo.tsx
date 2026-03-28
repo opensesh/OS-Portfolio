@@ -1,30 +1,41 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  showText?: boolean;
+  variant?: "full" | "mark";
+  size?: "sm" | "md" | "lg";
 }
 
-export function Logo({ className, showText = true }: LogoProps) {
+const sizeMap = {
+  sm: { height: 24, width: 100 },
+  md: { height: 32, width: 133 },
+  lg: { height: 40, width: 166 },
+};
+
+export function Logo({ className, variant = "full", size = "md" }: LogoProps) {
+  const dimensions = sizeMap[size];
+
   return (
     <Link
       href="/"
       className={cn(
-        "inline-flex items-center gap-2 font-display font-bold tracking-tight",
-        "text-fg-primary hover:text-fg-brand transition-colors duration-200",
+        "inline-flex items-center transition-opacity duration-200 hover:opacity-80",
         className
       )}
+      aria-label="Open Session - Home"
     >
-      {/* Logo Mark - Simple "OS" monogram */}
-      <span className="flex items-center justify-center w-10 h-10 bg-bg-brand-solid text-white rounded-lg text-lg font-bold">
-        OS
-      </span>
-      {showText && (
-        <span className="text-xl hidden sm:block">Open Session</span>
-      )}
+      <Image
+        src="/logo.png"
+        alt="Open Session"
+        width={variant === "mark" ? dimensions.height : dimensions.width}
+        height={dimensions.height}
+        className="h-auto dark:invert"
+        priority
+      />
     </Link>
   );
 }

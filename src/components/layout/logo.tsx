@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  variant?: "full" | "mark";
+  logoType?: "horizontal" | "combo";
   size?: "sm" | "md" | "lg";
 }
 
@@ -16,8 +16,17 @@ const sizeMap = {
   lg: { height: 40, width: 166 },
 };
 
-export function Logo({ className, variant = "full", size = "md" }: LogoProps) {
-  const dimensions = sizeMap[size];
+const comboSizeMap = {
+  sm: { height: 32, width: 80 },
+  md: { height: 40, width: 100 },
+  lg: { height: 48, width: 120 },
+};
+
+export function Logo({ className, logoType = "horizontal", size = "md" }: LogoProps) {
+  const dimensions = logoType === "combo" ? comboSizeMap[size] : sizeMap[size];
+
+  const vanillaSrc = `/logos/${logoType}-vanilla.png`;
+  const charcoalSrc = `/logos/${logoType}-charcoal.png`;
 
   return (
     <Link
@@ -28,13 +37,24 @@ export function Logo({ className, variant = "full", size = "md" }: LogoProps) {
       )}
       aria-label="Open Session - Home"
     >
+      {/* Light mode: charcoal variant */}
       <Image
-        src="/logo.png"
+        src={charcoalSrc}
         alt="Open Session"
-        width={variant === "mark" ? dimensions.height : dimensions.width}
+        width={dimensions.width}
         height={dimensions.height}
-        className="dark:invert"
-        style={{ width: "auto", height: "auto" }}
+        className="dark:hidden"
+        style={{ width: "auto", height: `${dimensions.height}px` }}
+        priority
+      />
+      {/* Dark mode: vanilla variant */}
+      <Image
+        src={vanillaSrc}
+        alt="Open Session"
+        width={dimensions.width}
+        height={dimensions.height}
+        className="hidden dark:block"
+        style={{ width: "auto", height: `${dimensions.height}px` }}
         priority
       />
     </Link>

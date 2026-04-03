@@ -66,7 +66,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <Logo className="mb-4" />
+            <Logo logoType="combo" className="mb-4" />
             <p className="text-fg-secondary text-sm max-w-xs mb-6">
               We help the world make the most of design and technology.
             </p>

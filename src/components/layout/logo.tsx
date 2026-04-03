@@ -11,9 +11,9 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { height: 24, width: 100 },
-  md: { height: 32, width: 133 },
-  lg: { height: 40, width: 166 },
+  sm: { height: 14, width: 58 },
+  md: { height: 18, width: 75 },
+  lg: { height: 24, width: 100 },
 };
 
 const comboSizeMap = {
@@ -38,25 +38,27 @@ export function Logo({ className, logoType = "horizontal", size = "md" }: LogoPr
       aria-label="Open Session - Home"
     >
       {/* Light mode: charcoal variant */}
-      <Image
-        src={charcoalSrc}
-        alt="Open Session"
-        width={dimensions.width}
-        height={dimensions.height}
-        className="dark:hidden"
-        style={{ width: "auto", height: `${dimensions.height}px` }}
-        priority
-      />
+      <div className="dark:hidden">
+        <Image
+          src={charcoalSrc}
+          alt="Open Session"
+          width={dimensions.width}
+          height={dimensions.height}
+          style={{ width: "auto", height: `${dimensions.height}px` }}
+          priority
+        />
+      </div>
       {/* Dark mode: vanilla variant */}
-      <Image
-        src={vanillaSrc}
-        alt="Open Session"
-        width={dimensions.width}
-        height={dimensions.height}
-        className="hidden dark:block"
-        style={{ width: "auto", height: `${dimensions.height}px` }}
-        priority
-      />
+      <div className="hidden dark:block">
+        <Image
+          src={vanillaSrc}
+          alt="Open Session"
+          width={dimensions.width}
+          height={dimensions.height}
+          style={{ width: "auto", height: `${dimensions.height}px` }}
+          priority
+        />
+      </div>
     </Link>
   );
 }

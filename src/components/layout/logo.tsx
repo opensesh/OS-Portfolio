@@ -11,9 +11,9 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { height: 14, width: 58 },
-  md: { height: 18, width: 75 },
-  lg: { height: 24, width: 100 },
+  sm: { height: 20, width: 100 },
+  md: { height: 24, width: 120 },
+  lg: { height: 32, width: 160 },
 };
 
 const comboSizeMap = {
@@ -44,7 +44,7 @@ export function Logo({ className, logoType = "horizontal", size = "md" }: LogoPr
           alt="Open Session"
           width={dimensions.width}
           height={dimensions.height}
-          style={{ width: "auto", height: `${dimensions.height}px` }}
+          style={{ width: `${dimensions.width}px`, height: "auto" }}
           priority
         />
       </div>
@@ -55,7 +55,7 @@ export function Logo({ className, logoType = "horizontal", size = "md" }: LogoPr
           alt="Open Session"
           width={dimensions.width}
           height={dimensions.height}
-          style={{ width: "auto", height: `${dimensions.height}px` }}
+          style={{ width: `${dimensions.width}px`, height: "auto" }}
           priority
         />
       </div>

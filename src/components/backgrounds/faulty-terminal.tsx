@@ -206,18 +206,19 @@ void main() {
       col += (rnd - 0.5) * (uDither * 0.003922);
     }
 
-    // Heavy vignette — effect visible only in center, fades to background on all edges
+    // Heavy vignette — controls digit visibility, not color
     vec2 vigUv = vUv * 2.0 - 1.0;
     float vignette = 1.0 - dot(vigUv * 1.2, vigUv * 1.2);
     vignette = clamp(vignette, 0.0, 1.0);
     vignette = smoothstep(0.0, 0.6, vignette);
     vignette = pow(vignette, 1.5);
 
-    // Composite: digits are the tinted color, everything else is background
+    // Digit presence mask
     float mask = smoothstep(0.0, 0.05, length(col));
-    vec3 finalCol = mix(uBackground, uTint * uBrightness * 3.0 * mask, mask);
-    finalCol *= vignette;
-    finalCol += uBackground * (1.0 - vignette);
+
+    // Blend pure tint onto background — vignette only fades digits, never shifts color
+    float digitAlpha = mask * vignette;
+    vec3 finalCol = mix(uBackground, uTint, digitAlpha);
 
     gl_FragColor = vec4(finalCol, 1.0);
 }

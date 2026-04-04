@@ -206,11 +206,12 @@ void main() {
       col += (rnd - 0.5) * (uDither * 0.003922);
     }
 
-    // Vignette — darken edges to blend into background
+    // Heavy vignette — effect visible only in center, fades to background on all edges
     vec2 vigUv = vUv * 2.0 - 1.0;
-    float vignette = 1.0 - dot(vigUv * 0.7, vigUv * 0.7);
+    float vignette = 1.0 - dot(vigUv * 1.2, vigUv * 1.2);
     vignette = clamp(vignette, 0.0, 1.0);
-    vignette = smoothstep(0.0, 0.5, vignette);
+    vignette = smoothstep(0.0, 0.6, vignette);
+    vignette = pow(vignette, 1.5);
 
     // Composite: digits are the tinted color, everything else is background
     float mask = smoothstep(0.0, 0.05, length(col));
@@ -262,9 +263,9 @@ interface FaultyTerminalProps {
 }
 
 export default function FaultyTerminal({
-  scale = 1.7,
-  gridMul = [1.5, 1],
-  digitSize = 1.6,
+  scale = 2.5,
+  gridMul = [2, 1],
+  digitSize = 0.5,
   timeScale = 0.3,
   pause = false,
   scanlineIntensity = 0.1,
@@ -280,7 +281,7 @@ export default function FaultyTerminal({
   mouseStrength = 0.6,
   dpr,
   pageLoadAnimation = true,
-  brightness = 0.5,
+  brightness = 0.9,
   className,
   style,
 }: FaultyTerminalProps) {

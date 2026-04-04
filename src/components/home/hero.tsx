@@ -66,17 +66,19 @@ export function Hero() {
     <section ref={sectionRef} className="relative h-[300vh]" {...devProps('Hero')}>
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Faulty Terminal background — full-bleed behind everything */}
-        <div className="absolute inset-0 z-[-1] opacity-25">
+        <div className="absolute inset-0 z-[-1] opacity-20">
           <FaultyTerminal
             tint="#fe5102"
             backgroundColor={terminalBg}
-            scale={2}
-            digitSize={0.8}
+            scale={2.3}
+            digitSize={2}
             timeScale={0.3}
             noiseAmp={1}
-            brightness={0.3}
+            brightness={1}
             scanlineIntensity={0.3}
-            curvature={0.19}
+            glitchAmount={1}
+            flickerAmount={1}
+            curvature={0.1}
             mouseStrength={0.5}
             mouseReact
             pageLoadAnimation

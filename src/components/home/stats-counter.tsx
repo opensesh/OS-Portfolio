@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
 import { stats } from "@/data/stats";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { devProps } from "@/utils/dev-props";
 
 // Slot machine digit - displays a column of 0-9 that scrolls
 function SlotDigit({
@@ -154,7 +155,7 @@ export function StatsCounter() {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-secondary">
+    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-secondary" {...devProps('StatsCounter')}>
       <motion.div
         variants={staggerContainer}
         initial="hidden"

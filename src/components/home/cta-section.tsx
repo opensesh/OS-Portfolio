@@ -6,13 +6,14 @@ import { Button } from "@/components/shared/button";
 import { ArrowRight, ArrowUpRight, Mail01 } from "@untitledui-pro/icons/line";
 import { SectionLabel } from "@/components/shared/section-label";
 import { ScrambleText } from "@/components/shared/scramble-text";
+import { devProps } from "@/utils/dev-props";
 
 export function CTASection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-32">
+    <section ref={sectionRef} className="py-20 md:py-32" {...devProps('CTASection')}>
       <div className="container-main">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

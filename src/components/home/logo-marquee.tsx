@@ -2,13 +2,14 @@
 
 import { clients } from "@/data/clients";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 export function LogoMarquee() {
   // Duplicate the list for seamless infinite scroll
   const duplicatedClients = [...clients, ...clients];
 
   return (
-    <section className="py-16 md:py-20 border-y border-border-secondary overflow-hidden">
+    <section className="py-16 md:py-20 border-y border-border-secondary overflow-hidden" {...devProps('LogoMarquee')}>
       <div className="container-main mb-8">
         <p className="section-label">Trusted By</p>
       </div>

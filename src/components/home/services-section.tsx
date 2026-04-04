@@ -8,6 +8,7 @@ import { services } from "@/data/services";
 import { staggerContainer, fadeInUp, accordionContent } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/uui/base/badges/badges";
+import { devProps } from "@/utils/dev-props";
 
 export function ServicesSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
@@ -18,7 +19,7 @@ export function ServicesSection() {
   };
 
   return (
-    <section ref={ref} className="py-20 md:py-32">
+    <section ref={ref} className="py-20 md:py-32" {...devProps('ServicesSection')}>
       <div className="container-main">
         {/* Section Header */}
         <motion.div

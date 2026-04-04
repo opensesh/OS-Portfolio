@@ -8,13 +8,14 @@ import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { Button } from "@/components/shared/button";
 import { ProjectCard } from "@/components/projects/project-card";
 import { SectionLabel } from "@/components/shared/section-label";
+import { devProps } from "@/utils/dev-props";
 
 export function FeaturedWork() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-secondary">
+    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-secondary" {...devProps('FeaturedWork')}>
       <div className="container-main">
         {/* Section Header */}
         <motion.div

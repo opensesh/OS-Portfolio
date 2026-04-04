@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/use-in-view";
 import { faqItems } from "@/data/faq";
 import { FAQAccordion } from "@/components/shared/faq-accordion";
+import { devProps } from "@/utils/dev-props";
 
 export function FAQSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 md:py-32 bg-bg-secondary">
+    <section ref={ref} className="py-20 md:py-32 bg-bg-secondary" {...devProps('FAQSection')}>
       <div className="container-main">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left Column - Header */}

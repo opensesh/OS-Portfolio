@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/use-in-view";
 import { processSteps } from "@/data/process";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { devProps } from "@/utils/dev-props";
 
 export function ProcessSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.2 });
 
   return (
-    <section ref={ref} className="py-20 md:py-32">
+    <section ref={ref} className="py-20 md:py-32" {...devProps('ProcessSection')}>
       <div className="container-main">
         {/* Section Header */}
         <motion.div

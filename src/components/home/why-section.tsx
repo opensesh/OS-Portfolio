@@ -6,6 +6,7 @@ import { Check, XClose, Minus } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
 import { SectionLabel } from "@/components/shared/section-label";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { devProps } from "@/utils/dev-props";
 
 interface ComparisonRow {
   aspect: string;
@@ -101,7 +102,7 @@ export function WhySection() {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-primary">
+    <section ref={sectionRef} className="py-20 md:py-32 bg-bg-primary" {...devProps('WhySection')}>
       <div className="container-main">
         {/* Section Header */}
         <motion.div

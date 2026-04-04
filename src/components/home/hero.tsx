@@ -70,15 +70,15 @@ export function Hero() {
           <FaultyTerminal
             tint="#fe5102"
             backgroundColor={terminalBg}
-            scale={2.3}
-            digitSize={1.2}
+            scale={3}
+            digitSize={0.6}
             timeScale={0.3}
-            noiseAmp={1}
+            noiseAmp={0.3}
             brightness={1}
             scanlineIntensity={0.3}
             glitchAmount={1}
             flickerAmount={1}
-            curvature={0.1}
+            curvature={0}
             mouseStrength={0.5}
             mouseReact
             pageLoadAnimation

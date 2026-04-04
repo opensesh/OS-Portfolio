@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { Check, ArrowRight } from "@untitledui-pro/icons/line";
-import { Button } from "@/components/shared/button";
+import { Check } from "@untitledui-pro/icons/line";
+import { ActionButton } from "@/components/shared/action-button";
 import { cn } from "@/lib/utils";
 import { devProps } from "@/utils/dev-props";
 
@@ -124,14 +124,13 @@ export default function WorkshopPage() {
               </ul>
 
               {/* CTA */}
-              <Button
+              <ActionButton
                 href="/contact"
-                variant={workshop.popular ? "primary" : "secondary"}
+                variant={workshop.popular ? "brand" : "dark"}
                 className="w-full"
               >
                 Book a Call
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              </ActionButton>
             </div>
           ))}
         </div>
@@ -146,10 +145,9 @@ export default function WorkshopPage() {
             needs and challenges. Let&apos;s talk about what you&apos;re trying
             to solve.
           </p>
-          <Button href="/contact">
+          <ActionButton href="/contact" variant="brand">
             Get in Touch
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+          </ActionButton>
         </div>
       </div>
     </div>

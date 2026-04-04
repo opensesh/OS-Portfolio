@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { MobileMenu } from "./mobile-menu";
-import { Button } from "@/components/shared/button";
+import { ActionButton } from "@/components/shared/action-button";
 import { mainNavItems } from "@/data/navigation";
 import { devProps } from "@/utils/dev-props";
 
@@ -118,9 +118,9 @@ export function Header() {
               <ThemeToggle className="hidden sm:flex" />
 
               {/* CTA Button - Desktop */}
-              <Button href="/contact" className="hidden lg:inline-flex">
+              <ActionButton href="/contact" variant="brand" className="hidden lg:inline-flex">
                 Get in Touch
-              </Button>
+              </ActionButton>
 
               {/* Mobile Menu Button */}
               <button

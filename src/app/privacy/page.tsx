@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@untitledui-pro/icons/line";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@untitledui-pro/icons/line";
 import { Project } from "@/types/project";
 import { cn } from "@/lib/utils";
 import { ScrambleText } from "@/components/shared/scramble-text";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "@/components/providers/theme-provider";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon01 } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
 
 interface ThemeToggleProps {
@@ -33,7 +33,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
             : "opacity-0 -rotate-90 scale-0"
         )}
       />
-      <Moon
+      <Moon01
         className={cn(
           "w-5 h-5 absolute transition-all duration-300",
           resolvedTheme === "dark"

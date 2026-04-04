@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Download, ArrowRight } from "lucide-react";
+import { Download01, ArrowRight } from "@untitledui-pro/icons/line";
 import { templates } from "@/data/templates";
 import { cn } from "@/lib/utils";
 
@@ -74,7 +74,7 @@ export default function TemplatesPage() {
                       "group-hover:underline"
                     )}
                   >
-                    <Download className="w-4 h-4" />
+                    <Download01 className="w-4 h-4" />
                     Download Free
                   </a>
                 )}

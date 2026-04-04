@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "@untitledui-pro/icons/line";
 import { useInView } from "@/hooks/use-in-view";
 import { services } from "@/data/services";
 import { staggerContainer, fadeInUp, accordionContent } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/uui/base/badges/badges";
 
 export function ServicesSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
@@ -97,16 +98,9 @@ export function ServicesSection() {
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {service.items.map((item) => (
-                            <span
-                              key={item}
-                              className={cn(
-                                "px-3 py-1.5 text-sm",
-                                "bg-bg-primary border border-border-secondary",
-                                "text-fg-secondary"
-                              )}
-                            >
+                            <Badge key={item} type="color" color="gray" size="md">
                               {item}
-                            </span>
+                            </Badge>
                           ))}
                         </div>
                       </div>

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Loader2, Check } from "lucide-react";
+import { Loading01, Check } from "@untitledui-pro/icons/line";
+import { Input } from "@/components/uui/base/input/input";
+import { TextArea } from "@/components/uui/base/textarea/textarea";
 
 const budgetOptions = [
   { value: "5k-10k", label: "$5K - $10K" },
@@ -45,7 +47,7 @@ export function ContactForm() {
   if (status === "success") {
     return (
       <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/10 rounded-full mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/10 mb-6">
           <Check className="w-8 h-8 text-green-500" />
         </div>
         <h3 className="text-heading text-2xl mb-2">Message Sent!</h3>
@@ -60,87 +62,39 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Name & Email */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-fg-primary mb-2"
-          >
-            Name <span className="text-fg-brand">*</span>
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={formData.name}
-            onChange={(e) =>
-              setFormData({ ...formData, name: e.target.value })
-            }
-            className={cn(
-              "w-full h-12 px-4",
-              "bg-bg-primary border border-border-primary",
-              "text-fg-primary placeholder:text-fg-tertiary",
-              "focus:outline-none focus:border-brand-500",
-              "transition-colors duration-200"
-            )}
-            placeholder="Your name"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-fg-primary mb-2"
-          >
-            Email <span className="text-fg-brand">*</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            className={cn(
-              "w-full h-12 px-4",
-              "bg-bg-primary border border-border-primary",
-              "text-fg-primary placeholder:text-fg-tertiary",
-              "focus:outline-none focus:border-brand-500",
-              "transition-colors duration-200"
-            )}
-            placeholder="your@email.com"
-          />
-        </div>
-      </div>
-
-      {/* Company */}
-      <div>
-        <label
-          htmlFor="company"
-          className="block text-sm font-medium text-fg-primary mb-2"
-        >
-          Company
-        </label>
-        <input
-          id="company"
-          type="text"
-          value={formData.company}
-          onChange={(e) =>
-            setFormData({ ...formData, company: e.target.value })
-          }
-          className={cn(
-            "w-full h-12 px-4",
-            "bg-bg-primary border border-border-primary",
-            "text-fg-primary placeholder:text-fg-tertiary",
-            "focus:outline-none focus:border-brand-500",
-            "transition-colors duration-200"
-          )}
-          placeholder="Your company"
+        <Input
+          label="Name"
+          isRequired
+          value={formData.name}
+          onChange={(value) => setFormData({ ...formData, name: value })}
+          placeholder="Your name"
+          size="md"
+        />
+        <Input
+          label="Email"
+          isRequired
+          type="email"
+          value={formData.email}
+          onChange={(value) => setFormData({ ...formData, email: value })}
+          placeholder="your@email.com"
+          size="md"
         />
       </div>
 
+      {/* Company */}
+      <Input
+        label="Company"
+        value={formData.company}
+        onChange={(value) => setFormData({ ...formData, company: value })}
+        placeholder="Your company"
+        size="md"
+      />
+
       {/* Budget */}
       <div>
-        <label className="block text-sm font-medium text-fg-primary mb-2">
+        <p className="text-sm font-medium text-secondary mb-1.5">
           Budget Range
-        </label>
+        </p>
         <div className="flex flex-wrap gap-2">
           {budgetOptions.map((option) => (
             <button
@@ -163,31 +117,16 @@ export function ContactForm() {
       </div>
 
       {/* Message */}
-      <div>
-        <label
-          htmlFor="message"
-          className="block text-sm font-medium text-fg-primary mb-2"
-        >
-          Message <span className="text-fg-brand">*</span>
-        </label>
-        <textarea
-          id="message"
-          value={formData.message}
-          onChange={(e) =>
-            setFormData({ ...formData, message: e.target.value })
-          }
-          rows={5}
-          className={cn(
-            "w-full px-4 py-3",
-            "bg-bg-primary border border-border-primary",
-            "text-fg-primary placeholder:text-fg-tertiary",
-            "focus:outline-none focus:border-brand-500",
-            "transition-colors duration-200",
-            "resize-none"
-          )}
-          placeholder="Tell us about your project..."
-        />
-      </div>
+      <TextArea
+        label="Message"
+        isRequired
+        value={formData.message}
+        onChange={(value) => setFormData({ ...formData, message: value })}
+        placeholder="Tell us about your project..."
+        rows={5}
+        textAreaClassName="resize-none"
+        size="md"
+      />
 
       {/* Error */}
       {status === "error" && (
@@ -208,7 +147,7 @@ export function ContactForm() {
       >
         {status === "loading" ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loading01 className="w-5 h-5 animate-spin" />
             Sending...
           </>
         ) : (

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/shared/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@untitledui-pro/icons/line";
 
 export default function NotFound() {
   return (

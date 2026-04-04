@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@untitledui-pro/icons/line";
 import { BlogPost } from "@/types/blog";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { formatDate } from "@/lib/utils";

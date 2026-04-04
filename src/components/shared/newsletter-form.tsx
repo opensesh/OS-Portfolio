@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Loading01 } from "@untitledui-pro/icons/line";
+import { InputBase } from "@/components/uui/base/input/input";
 
 interface NewsletterFormProps {
   className?: string;
@@ -49,7 +50,7 @@ export function NewsletterForm({
   if (status === "success") {
     return (
       <div className={cn("flex items-center gap-3", className)}>
-        <div className="flex items-center justify-center w-10 h-10 bg-green-500/10 rounded-full">
+        <div className="flex items-center justify-center w-10 h-10 bg-green-500/10">
           <Check className="w-5 h-5 text-green-500" />
         </div>
         <p className="text-fg-primary">Thanks for subscribing!</p>
@@ -60,22 +61,17 @@ export function NewsletterForm({
   if (variant === "inline") {
     return (
       <form onSubmit={handleSubmit} className={cn("relative", className)}>
-        <input
+        <InputBase
           type="email"
           value={email}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setEmail((e.target as HTMLInputElement).value);
             setStatus("idle");
           }}
           placeholder="Enter your email"
-          className={cn(
-            "w-full h-12 pl-4 pr-12",
-            "bg-bg-primary border border-border-primary",
-            "text-fg-primary placeholder:text-fg-tertiary",
-            "focus:outline-none focus:border-brand-500",
-            "transition-colors duration-200",
-            status === "error" && "border-red-500"
-          )}
+          isInvalid={status === "error"}
+          inputClassName="pr-12"
+          size="md"
         />
         <button
           type="submit"
@@ -89,7 +85,7 @@ export function NewsletterForm({
           )}
         >
           {status === "loading" ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loading01 className="w-4 h-4 animate-spin" />
           ) : (
             <ArrowRight className="w-4 h-4" />
           )}
@@ -104,26 +100,17 @@ export function NewsletterForm({
   return (
     <form onSubmit={handleSubmit} className={cn("space-y-4", className)}>
       <div>
-        <label htmlFor="newsletter-email" className="sr-only">
-          Email address
-        </label>
-        <input
-          id="newsletter-email"
+        <InputBase
           type="email"
           value={email}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setEmail((e.target as HTMLInputElement).value);
             setStatus("idle");
           }}
           placeholder="your@email.com"
-          className={cn(
-            "w-full h-12 px-4",
-            "bg-bg-primary border border-border-primary rounded-lg",
-            "text-fg-primary placeholder:text-fg-tertiary",
-            "focus:outline-none focus:border-brand-500",
-            "transition-colors duration-200",
-            status === "error" && "border-red-500"
-          )}
+          isInvalid={status === "error"}
+          size="md"
+          aria-label="Email address"
         />
         {status === "error" && (
           <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
@@ -134,14 +121,14 @@ export function NewsletterForm({
         disabled={status === "loading"}
         className={cn(
           "w-full h-12 flex items-center justify-center gap-2",
-          "bg-bg-brand-solid text-white font-medium rounded-lg",
+          "bg-bg-brand-solid text-white font-medium",
           "hover:opacity-90 disabled:opacity-50",
           "transition-opacity duration-200"
         )}
       >
         {status === "loading" ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loading01 className="w-4 h-4 animate-spin" />
             Subscribing...
           </>
         ) : (

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { Menu } from "lucide-react";
+import { Menu01 } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
@@ -131,7 +131,7 @@ export function Header() {
                 )}
                 aria-label="Open menu"
               >
-                <Menu className="w-5 h-5" />
+                <Menu01 className="w-5 h-5" />
               </button>
             </div>
           </nav>

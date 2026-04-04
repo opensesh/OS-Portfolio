@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "@untitledui-pro/icons/line";
 import { accordionContent } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { ScrambleText } from "@/components/shared/scramble-text";

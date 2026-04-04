@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { XClose } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/shared/button";
 import { ThemeToggle } from "./theme-toggle";
@@ -104,7 +104,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
               )}
               aria-label="Close menu"
             >
-              <X className="w-5 h-5" />
+              <XClose className="w-5 h-5" />
             </button>
           </div>
         </div>

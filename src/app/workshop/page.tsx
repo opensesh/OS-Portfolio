@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "@untitledui-pro/icons/line";
 import { Button } from "@/components/shared/button";
 import { cn } from "@/lib/utils";
 

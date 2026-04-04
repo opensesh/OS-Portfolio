@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Mail, MapPin, Calendar } from "lucide-react";
+import { Mail01, MarkerPin01, Calendar } from "@untitledui-pro/icons/line";
 import { ContactForm } from "@/components/shared/contact-form";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export default function ContactPage() {
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 flex items-center justify-center bg-bg-secondary rounded-lg">
-                  <Mail className="w-5 h-5 text-fg-tertiary" />
+                  <Mail01 className="w-5 h-5 text-fg-tertiary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-fg-primary mb-1">
@@ -46,7 +46,7 @@ export default function ContactPage() {
 
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 flex items-center justify-center bg-bg-secondary rounded-lg">
-                  <MapPin className="w-5 h-5 text-fg-tertiary" />
+                  <MarkerPin01 className="w-5 h-5 text-fg-tertiary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-fg-primary mb-1">

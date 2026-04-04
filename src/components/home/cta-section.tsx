@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/shared/button";
-import { ArrowRight, ArrowUpRight, Mail } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Mail01 } from "@untitledui-pro/icons/line";
 import { SectionLabel } from "@/components/shared/section-label";
 import { ScrambleText } from "@/components/shared/scramble-text";
 
@@ -72,7 +72,7 @@ export function CTASection() {
                   href="mailto:hello@opensession.co"
                   className="inline-flex items-center gap-3 text-2xl md:text-3xl font-display font-bold group"
                 >
-                  <Mail className="w-6 h-6 text-brand-400" />
+                  <Mail01 className="w-6 h-6 text-brand-400" />
                   <ScrambleText className="group-hover:text-brand-400 transition-colors duration-200">
                     hello@opensession.co
                   </ScrambleText>

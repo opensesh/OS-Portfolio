@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { Project } from "@/types/project";
 import { Button } from "@/components/shared/button";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/uui/base/badges/badges";
 
 interface ProjectDetailProps {
   project: Project;
@@ -76,12 +77,9 @@ export function ProjectDetail({
           {/* Tags */}
           <motion.div variants={fadeInUp} className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1.5 text-sm bg-bg-secondary text-fg-secondary"
-              >
+              <Badge key={tag} type="color" color="gray" size="md">
                 {tag}
-              </span>
+              </Badge>
             ))}
           </motion.div>
         </div>

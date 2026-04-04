@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Figma, Youtube } from "@untitledui-pro/icons/line";
 import { Logo } from "./logo";
 import { footerNavItems, socialLinks } from "@/data/navigation";
 import { TriplingText } from "@/components/shared/tripling-text";
 import { SectionLabel } from "@/components/shared/section-label";
+import { InputBase } from "@/components/uui/base/input/input";
 
 // Simple SVG icons for social platforms
 function GithubIcon({ className }: { className?: string }) {
@@ -17,11 +19,7 @@ function GithubIcon({ className }: { className?: string }) {
 }
 
 function FigmaIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.098-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"/>
-    </svg>
-  );
+  return <Figma className={className} />;
 }
 
 function InstagramIcon({ className }: { className?: string }) {
@@ -41,11 +39,7 @@ function LinkedinIcon({ className }: { className?: string }) {
 }
 
 function YoutubeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-    </svg>
-  );
+  return <Youtube className={className} />;
 }
 
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -143,22 +137,17 @@ export function Footer() {
                 // TODO: Implement newsletter signup
               }}
             >
-              <input
+              <InputBase
                 type="email"
                 placeholder="your@email.com"
-                className={cn(
-                  "flex-1 h-10 px-3 text-sm",
-                  "bg-bg-primary border border-border-primary rounded-lg",
-                  "text-fg-primary placeholder:text-fg-tertiary",
-                  "focus:outline-none focus:border-brand-500",
-                  "transition-colors duration-200"
-                )}
+                size="sm"
+                wrapperClassName="flex-1"
               />
               <button
                 type="submit"
                 className={cn(
                   "h-10 px-4 text-sm font-medium",
-                  "bg-bg-brand-solid text-white rounded-lg",
+                  "bg-bg-brand-solid text-white",
                   "hover:opacity-90 transition-opacity duration-200"
                 )}
               >

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, X, Minus } from "lucide-react";
+import { Check, XClose, Minus } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
 import { SectionLabel } from "@/components/shared/section-label";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
@@ -85,7 +85,7 @@ function StatusIcon({ status }: { status: "yes" | "no" | "partial" }) {
   if (status === "no") {
     return (
       <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500/10">
-        <X className="w-4 h-4 text-red-500" />
+        <XClose className="w-4 h-4 text-red-500" />
       </div>
     );
   }

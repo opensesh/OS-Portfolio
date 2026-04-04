@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@untitledui-pro/icons/line";
 import { useRef } from "react";
 import { featuredProjects } from "@/data/projects";
 import { staggerContainer, fadeInUp } from "@/lib/motion";

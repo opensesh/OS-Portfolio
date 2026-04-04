@@ -101,9 +101,15 @@ float digit(vec2 p){
     float intensity = pattern(s * 0.1, q, r) * 1.3 - 0.03;
 
     if(uUseMouse > 0.5){
+        // Compute local vignette so mouse only affects the visible center
+        vec2 localUv = s / uScale * 2.0 - 1.0;
+        float mouseVig = 1.0 - dot(localUv * 1.2, localUv * 1.2);
+        mouseVig = clamp(mouseVig, 0.0, 1.0);
+        mouseVig = smoothstep(0.0, 0.6, mouseVig);
+
         vec2 mouseWorld = uMouse * uScale;
         float distToMouse = distance(s, mouseWorld);
-        float mouseInfluence = exp(-distToMouse * 8.0) * uMouseStrength * 10.0;
+        float mouseInfluence = exp(-distToMouse * 8.0) * uMouseStrength * 10.0 * mouseVig;
         intensity += mouseInfluence;
 
         float ripple = sin(distToMouse * 20.0 - iTime * 5.0) * 0.1 * mouseInfluence;

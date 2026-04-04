@@ -167,7 +167,42 @@ font-family: 'SF Mono', Consolas, Monaco, monospace;
 - System fonts where brand fonts should appear
 - Offbit for body text (accent only)
 
-### 5. Animation Standards
+### 5. React Architecture Compliance
+
+> Full rules: `.claude/reference/react-architecture.md`
+
+#### Component Size
+
+- **Flag** any component file over 200 lines (excluding imports and type definitions)
+- **Warn** on files over 150 lines
+- Exemptions: `page.tsx` thin server wrappers, UUI vendor components in `components/uui/`
+
+#### Single Responsibility Check
+
+When reviewing a component, verify it has ONE primary job:
+- Renders UI OR manages state OR handles data — not all three
+- If a component does layout + data fetching + complex state, flag for extraction
+
+#### DRY Pattern Detection
+
+Flag these known duplication patterns if found in new code:
+- Inline `useInView` + `motion.div` animation — should use `<ScrollReveal>` from `components/shared/scroll-reveal.tsx`
+- Raw `<p className="section-label">` — should use `<SectionLabel>` from `components/shared/section-label.tsx`
+- Duplicated `idle | loading | success | error` state machine — should use a shared `useFormSubmission` hook (once extracted)
+- Hardcoded emails/URLs — should import from `@/lib/constants`
+
+#### devProps Check
+
+- Every feature component (not UUI vendor code) must have `{...devProps('ComponentName')}` on its root element
+- Import: `import { devProps } from '@/utils/dev-props'`
+- Run `/audit-devprops` for a full compliance report
+
+#### Prop Drilling Check
+
+- If a prop is passed through 2+ intermediate components unchanged, flag it
+- Suggest: React Context, component composition, or URL state
+
+### 6. Animation Standards
 
 #### Approved Libraries
 
@@ -237,6 +272,16 @@ Use this checklist for every code review:
 - [ ] Uses approved libraries
 - [ ] Timing follows guidelines
 - [ ] No jarring transitions
+
+### React Architecture
+
+- [ ] Component under 200 lines (soft limit 150)
+- [ ] Single responsibility (one job per component)
+- [ ] No duplicated patterns (uses shared components where they exist)
+- [ ] `devProps` on root element of feature components
+- [ ] No prop drilling past 2 levels
+- [ ] No hardcoded business strings (emails, URLs, pricing)
+- [ ] Heavy components lazy-loaded (`next/dynamic` or `React.lazy`)
 ```
 
 ---
@@ -283,6 +328,7 @@ bos-quality-check:
 - Missing accessibility on interactive elements
 - Pure black (#000) or white (#FFF) usage
 - Brand color misuse (borders, decorative)
+- Prop drilling past 2 levels in new code
 
 ### Important (Should Fix Before Merge)
 
@@ -290,12 +336,17 @@ bos-quality-check:
 - Incorrect button variant
 - Wrong font family
 - Animation timing off
+- Component over 200 lines
+- Missing `devProps` on feature component
+- Duplicated pattern that has a shared component available
 
 ### Minor (Track for Future)
 
 - Suboptimal class ordering
 - Could use more semantic token
 - Animation could be smoother
+- Component between 150–200 lines
+- Hardcoded string that should be in constants
 
 ---
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { devProps } from "@/utils/dev-props";
 
 const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#";
 const LOADING_TEXT = "OPEN SESSION";
@@ -70,7 +71,7 @@ export function PageLoader() {
   // Don't render anything during SSR to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-primary">
+      <div {...devProps('PageLoader')} className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-primary">
         <span className="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-fg-primary tracking-tight opacity-0">
           {LOADING_TEXT}
         </span>
@@ -82,6 +83,7 @@ export function PageLoader() {
     <AnimatePresence>
       {isLoading && (
         <motion.div
+          {...devProps('PageLoader')}
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,

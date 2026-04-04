@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/use-in-view";
 import { values } from "@/data/values";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { devProps } from "@/utils/dev-props";
 
 export function ValuesSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 md:py-32">
+    <section {...devProps('ValuesSection')} ref={ref} className="py-20 md:py-32">
       <div className="container-main">
         {/* Header */}
         <motion.div

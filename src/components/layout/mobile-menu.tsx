@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/shared/button";
 import { ThemeToggle } from "./theme-toggle";
 import { mainNavItems, socialLinks } from "@/data/navigation";
+import { devProps } from "@/utils/dev-props";
 import {
   menuOverlay,
   menuContent,
@@ -60,6 +61,7 @@ export function MobileMenu({ onClose }: MobileMenuProps) {
     <>
       {/* Backdrop */}
       <motion.div
+        {...devProps('MobileMenu')}
         variants={menuOverlay}
         initial="closed"
         animate="open"

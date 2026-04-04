@@ -6,12 +6,13 @@ import { useInView } from "@/hooks/use-in-view";
 import { team } from "@/data/team";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 export function TeamSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 md:py-32 bg-bg-secondary">
+    <section {...devProps('TeamSection')} ref={ref} className="py-20 md:py-32 bg-bg-secondary">
       <div className="container-main">
         {/* Header */}
         <motion.div

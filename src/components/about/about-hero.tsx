@@ -2,13 +2,14 @@
 
 import { motion } from "framer-motion";
 import { wordContainer, wordReveal, fadeInUp } from "@/lib/motion";
+import { devProps } from "@/utils/dev-props";
 
 const headline = "We're a small team with big ideas and a passion for great design.";
 const words = headline.split(" ");
 
 export function AboutHero() {
   return (
-    <section className="py-20 md:py-32">
+    <section {...devProps('AboutHero')} className="py-20 md:py-32">
       <div className="container-main">
         {/* Tagline */}
         <motion.p

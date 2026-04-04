@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Download01, ArrowRight } from "@untitledui-pro/icons/line";
 import { templates } from "@/data/templates";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 export const metadata: Metadata = {
   title: "Templates",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function TemplatesPage() {
   return (
-    <div className="py-20 md:py-32">
+    <div {...devProps('TemplatesPage')} className="py-20 md:py-32">
       <div className="container-main">
         {/* Header */}
         <div className="mb-12 md:mb-16">

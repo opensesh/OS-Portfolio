@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Check, Loading01 } from "@untitledui-pro/icons/line";
 import { InputBase } from "@/components/uui/base/input/input";
+import { devProps } from "@/utils/dev-props";
 
 interface NewsletterFormProps {
   className?: string;
@@ -49,7 +50,7 @@ export function NewsletterForm({
 
   if (status === "success") {
     return (
-      <div className={cn("flex items-center gap-3", className)}>
+      <div {...devProps('NewsletterForm')} className={cn("flex items-center gap-3", className)}>
         <div className="flex items-center justify-center w-10 h-10 bg-green-500/10">
           <Check className="w-5 h-5 text-green-500" />
         </div>
@@ -60,7 +61,7 @@ export function NewsletterForm({
 
   if (variant === "inline") {
     return (
-      <form onSubmit={handleSubmit} className={cn("relative", className)}>
+      <form {...devProps('NewsletterForm')} onSubmit={handleSubmit} className={cn("relative", className)}>
         <InputBase
           type="email"
           value={email}
@@ -98,7 +99,7 @@ export function NewsletterForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={cn("space-y-4", className)}>
+    <form {...devProps('NewsletterForm')} onSubmit={handleSubmit} className={cn("space-y-4", className)}>
       <div>
         <InputBase
           type="email"

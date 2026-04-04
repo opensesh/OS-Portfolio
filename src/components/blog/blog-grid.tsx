@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { BlogPost } from "@/types/blog";
 import { BlogCard } from "./blog-card";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { devProps } from "@/utils/dev-props";
 
 interface BlogGridProps {
   posts: BlogPost[];
@@ -25,7 +26,7 @@ export function BlogGrid({ posts, showFeatured = false }: BlogGridProps) {
     : [undefined, ...posts];
 
   return (
-    <div>
+    <div {...devProps('BlogGrid')}>
       {/* Featured Post */}
       {showFeatured && featuredPost && (
         <motion.div

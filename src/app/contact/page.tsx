@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Mail01, MarkerPin01, Calendar } from "@untitledui-pro/icons/line";
 import { ContactForm } from "@/components/shared/contact-form";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="py-20 md:py-32">
+    <div {...devProps('ContactPage')} className="py-20 md:py-32">
       <div className="container-main">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
           {/* Left Column - Info */}

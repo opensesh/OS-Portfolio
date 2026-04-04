@@ -7,6 +7,7 @@ import { ProjectCategory } from "@/types/project";
 import { ProjectFilters } from "@/components/projects/project-filters";
 import { ProjectGrid } from "@/components/projects/project-grid";
 import { SectionLabel } from "@/components/shared/section-label";
+import { devProps } from "@/utils/dev-props";
 
 export default function ProjectsPage() {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -21,7 +22,7 @@ export default function ProjectsPage() {
   }, [activeFilter]);
 
   return (
-    <div className="py-20 md:py-32">
+    <div {...devProps('ProjectsPage')} className="py-20 md:py-32">
       <div className="container-main">
         {/* Header */}
         <div ref={headerRef} className="mb-12 md:mb-16">

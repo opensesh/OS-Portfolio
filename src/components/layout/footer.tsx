@@ -8,6 +8,7 @@ import { footerNavItems, socialLinks } from "@/data/navigation";
 import { TriplingText } from "@/components/shared/tripling-text";
 import { SectionLabel } from "@/components/shared/section-label";
 import { InputBase } from "@/components/uui/base/input/input";
+import { devProps } from "@/utils/dev-props";
 
 // Simple SVG icons for social platforms
 function GithubIcon({ className }: { className?: string }) {
@@ -54,7 +55,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-bg-secondary border-t border-border-secondary">
+    <footer {...devProps('Footer')} className="bg-bg-secondary border-t border-border-secondary">
       <div className="container-main py-16 md:py-20">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">

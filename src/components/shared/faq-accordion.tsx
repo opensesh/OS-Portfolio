@@ -6,6 +6,7 @@ import { Plus, Minus } from "@untitledui-pro/icons/line";
 import { accordionContent } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { ScrambleText } from "@/components/shared/scramble-text";
+import { devProps } from "@/utils/dev-props";
 
 interface FAQItem {
   question: string;
@@ -41,7 +42,7 @@ export function FAQAccordion({
   };
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div {...devProps('FAQAccordion')} className={cn("space-y-3", className)}>
       {items.map((item, index) => {
         const isExpanded = expandedItems.has(index);
         const number = String(index + 1).padStart(2, "0");

@@ -11,6 +11,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { MobileMenu } from "./mobile-menu";
 import { Button } from "@/components/shared/button";
 import { mainNavItems } from "@/data/navigation";
+import { devProps } from "@/utils/dev-props";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -53,6 +54,7 @@ export function Header() {
   return (
     <>
       <motion.header
+        {...devProps('Header')}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { motion } from "framer-motion";
 import { blogPosts } from "@/data/blog";
 import { BlogGrid } from "@/components/blog/blog-grid";
+import { devProps } from "@/utils/dev-props";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <div className="py-20 md:py-32">
+    <div {...devProps('BlogPage')} className="py-20 md:py-32">
       <div className="container-main">
         {/* Header */}
         <div className="mb-12 md:mb-16">

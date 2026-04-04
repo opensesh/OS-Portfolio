@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#________";
 
@@ -74,6 +75,7 @@ export function ScrambleText({
 
   return (
     <Component
+      {...devProps('ScrambleText')}
       className={cn("inline-block", className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

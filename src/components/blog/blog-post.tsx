@@ -8,6 +8,7 @@ import { BlogPost } from "@/types/blog";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { formatDate } from "@/lib/utils";
 import { BlogCard } from "./blog-card";
+import { devProps } from "@/utils/dev-props";
 
 interface BlogPostViewProps {
   post: BlogPost;
@@ -16,7 +17,7 @@ interface BlogPostViewProps {
 
 export function BlogPostView({ post, relatedPosts }: BlogPostViewProps) {
   return (
-    <article>
+    <article {...devProps('BlogPostView')}>
       {/* Hero */}
       <motion.section
         variants={staggerContainer}

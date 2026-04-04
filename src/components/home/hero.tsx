@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/shared/button";
 import { wordContainer, wordReveal, fadeInUp } from "@/lib/motion";
 import { useMousePosition } from "@/hooks/use-mouse-position";
+import { useTypewriter } from "@/hooks/use-typewriter";
 import { devProps } from "@/utils/dev-props";
 
 const CRTTVScene = dynamic(
@@ -16,14 +17,28 @@ const CRTTVScene = dynamic(
   { ssr: false }
 );
 
-const headline =
-  "We're a design company focused on brand systems, creative AI, and community.";
-const words = headline.split(" ");
+const HEADLINE = "We're a design company focused on";
+const headlineWords = HEADLINE.split(" ");
+
+const ROTATING_PHRASES = [
+  "brand design systems",
+  "user experience",
+  "product design",
+  "creative AI",
+];
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollRef = useRef<number>(0);
   const mouseRef = useMousePosition();
+
+  const displayText = useTypewriter({
+    phrases: ROTATING_PHRASES,
+    typeSpeed: 80,
+    deleteSpeed: 40,
+    pauseDuration: 2000,
+    startDelay: 1200,
+  });
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -42,8 +57,8 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} className="relative h-[300vh]" {...devProps('Hero')}>
-      <div className="sticky top-0 h-screen flex items-start pt-28 md:pt-32 overflow-hidden">
-        {/* 3D Canvas — full viewport, centered, behind text */}
+      <div className="sticky top-0 h-screen overflow-hidden">
+        {/* 3D Canvas — full viewport, behind text */}
         <div className="absolute inset-0 z-0">
           <CRTTVScene
             scrollRef={scrollRef}
@@ -52,66 +67,88 @@ export function Hero() {
           />
         </div>
 
-        {/* Hero text — fades out as you scroll, pointer-events-none so drag passes to canvas */}
+        {/* Hero text — left column, fades on scroll */}
         <motion.div
           style={{ opacity: textOpacity }}
-          className="container-main relative z-10 pointer-events-none"
+          className="container-main relative z-10 h-full flex items-center pointer-events-none"
         >
-          {/* Tagline */}
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="section-label mb-6"
-          >
-            Design & Technology
-          </motion.p>
+          <div className="w-full lg:w-1/2">
+            {/* Tagline */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="section-label mb-6"
+            >
+              Design & Technology
+            </motion.p>
 
-          {/* Headline with word-by-word animation */}
-          <motion.h1
-            variants={wordContainer}
-            initial="hidden"
-            animate="visible"
-            className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl max-w-5xl mb-8"
-          >
-            {words.map((word, index) => (
-              <motion.span
-                key={index}
-                variants={wordReveal}
-                className="inline-block mr-[0.25em]"
-              >
-                {word}
-              </motion.span>
-            ))}
-          </motion.h1>
+            {/* Static headline — widest line in the staircase */}
+            <motion.h1
+              variants={wordContainer}
+              initial="hidden"
+              animate="visible"
+              className="text-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4"
+            >
+              {headlineWords.map((word, index) => (
+                <motion.span
+                  key={index}
+                  variants={wordReveal}
+                  className="inline-block mr-[0.25em]"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.h1>
 
-          {/* Subtitle */}
-          <motion.p
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.5 }}
-            className="text-lg md:text-xl text-fg-secondary max-w-2xl mb-10"
-          >
-            We help the world make the most of design and technology. From brand
-            identity to digital products, we craft experiences that matter.
-          </motion.p>
+            {/* Typewriter line — OffBit 101 Bold, brand color */}
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.8 }}
+              className="flex items-center mb-8"
+              aria-label={ROTATING_PHRASES.join(", ")}
+            >
+              <span className="font-accent uppercase tracking-wider text-fg-brand text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                {displayText}
+              </span>
+              <span
+                className="inline-block w-[3px] h-[0.8em] bg-fg-brand ml-1 align-middle"
+                style={{ animation: "cursor-blink 1.06s step-end infinite" }}
+                aria-hidden="true"
+              />
+            </motion.div>
 
-          {/* CTAs */}
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.6 }}
-            className="flex flex-wrap gap-4 pointer-events-auto"
-          >
-            <Button href="/contact" size="lg">
-              Start a Project
-            </Button>
-            <Button href="/projects" variant="secondary" size="lg">
-              View Our Work
-            </Button>
-          </motion.div>
+            {/* Description — narrower than headline for staircase taper */}
+            <motion.p
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.6 }}
+              className="text-lg md:text-xl text-fg-secondary max-w-md mb-10"
+            >
+              We help the world make the most of design and technology. From
+              brand identity to digital products, we craft experiences that
+              matter.
+            </motion.p>
+
+            {/* CTAs — left-aligned, smallest footprint */}
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.7 }}
+              className="flex gap-4 pointer-events-auto"
+            >
+              <Button href="/contact" size="lg">
+                Start a Project
+              </Button>
+              <Button href="/projects" variant="secondary" size="lg">
+                View Our Work
+              </Button>
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Scroll indicator — fades with text */}

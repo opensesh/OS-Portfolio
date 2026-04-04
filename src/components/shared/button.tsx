@@ -3,6 +3,7 @@
 import { forwardRef } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "link";
 type ButtonSize = "sm" | "md" | "lg";
@@ -120,6 +121,7 @@ export const Button = forwardRef<
     if (external) {
       return (
         <a
+          {...devProps('Button')}
           ref={ref as React.Ref<HTMLAnchorElement>}
           href={href}
           className={baseStyles}
@@ -134,6 +136,7 @@ export const Button = forwardRef<
 
     return (
       <Link
+        {...devProps('Button')}
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
         className={baseStyles}
@@ -148,6 +151,7 @@ export const Button = forwardRef<
 
   return (
     <button
+      {...devProps('Button')}
       ref={ref as React.Ref<HTMLButtonElement>}
       className={baseStyles}
       {...buttonRest}

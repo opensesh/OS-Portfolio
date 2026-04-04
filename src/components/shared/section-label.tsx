@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 interface SectionLabelProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ export function SectionLabel({
 
   return (
     <Component
+      {...devProps('SectionLabel')}
       {...animationProps}
       className={cn(
         "section-label",

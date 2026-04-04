@@ -5,6 +5,7 @@ import { ArrowUpRight } from "@untitledui-pro/icons/line";
 import { Project } from "@/types/project";
 import { cn } from "@/lib/utils";
 import { ScrambleText } from "@/components/shared/scramble-text";
+import { devProps } from "@/utils/dev-props";
 
 interface ProjectCardProps {
   project: Project;
@@ -12,7 +13,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Link href={`/projects/${project.slug}`} className="group block">
+    <Link {...devProps('ProjectCard')} href={`/projects/${project.slug}`} className="group block">
       {/* Image Container with reveal animation */}
       <div className="relative aspect-[4/3] mb-4 overflow-hidden bg-bg-tertiary rounded-lg">
         {/* Image with zoom on hover */}

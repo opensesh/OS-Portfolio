@@ -3,6 +3,7 @@
 import { useTheme } from "@/components/providers/theme-provider";
 import { Sun, Moon01 } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 interface ThemeToggleProps {
   className?: string;
@@ -13,6 +14,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
 
   return (
     <button
+      {...devProps('ThemeToggle')}
       onClick={toggleTheme}
       className={cn(
         "relative inline-flex items-center justify-center",

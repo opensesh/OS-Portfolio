@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 interface LogoProps {
   className?: string;
@@ -30,6 +31,7 @@ export function Logo({ className, logoType = "horizontal", size = "md" }: LogoPr
 
   return (
     <Link
+      {...devProps('Logo')}
       href="/"
       className={cn(
         "inline-flex items-center transition-opacity duration-200 hover:opacity-80",

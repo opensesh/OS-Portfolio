@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Project } from "@/types/project";
 import { ProjectCard } from "./project-card";
+import { devProps } from "@/utils/dev-props";
 
 interface ProjectGridProps {
   projects: Project[];
@@ -28,6 +29,7 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
 
   return (
     <motion.div
+      {...devProps('ProjectGrid')}
       ref={gridRef}
       layout
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"

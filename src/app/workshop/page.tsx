@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Check, ArrowRight } from "@untitledui-pro/icons/line";
 import { Button } from "@/components/shared/button";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 export const metadata: Metadata = {
   title: "Workshop",
@@ -62,7 +63,7 @@ const workshops = [
 
 export default function WorkshopPage() {
   return (
-    <div className="py-20 md:py-32">
+    <div {...devProps('WorkshopPage')} className="py-20 md:py-32">
       <div className="container-main">
         {/* Header */}
         <div className="text-center mb-16 md:mb-20">

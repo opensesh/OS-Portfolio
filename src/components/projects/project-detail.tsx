@@ -9,6 +9,7 @@ import { Button } from "@/components/shared/button";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/uui/base/badges/badges";
+import { devProps } from "@/utils/dev-props";
 
 interface ProjectDetailProps {
   project: Project;
@@ -22,7 +23,7 @@ export function ProjectDetail({
   nextProject,
 }: ProjectDetailProps) {
   return (
-    <article>
+    <article {...devProps('ProjectDetail')}>
       {/* Hero */}
       <motion.section
         variants={staggerContainer}

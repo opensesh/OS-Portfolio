@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "@untitledui-pro/icons/line";
+import { devProps } from "@/utils/dev-props";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="py-20 md:py-32">
+    <div {...devProps('TermsPage')} className="py-20 md:py-32">
       <div className="container-main max-w-3xl mx-auto">
         {/* Back link */}
         <Link

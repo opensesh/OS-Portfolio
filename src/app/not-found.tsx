@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/shared/button";
 import { ArrowLeft } from "@untitledui-pro/icons/line";
+import { devProps } from "@/utils/dev-props";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
+    <div {...devProps('NotFound')} className="min-h-[70vh] flex items-center justify-center">
       <div className="container-main text-center">
         <h1 className="text-display text-8xl md:text-9xl text-fg-tertiary mb-4">
           404

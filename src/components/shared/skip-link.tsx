@@ -1,8 +1,11 @@
 "use client";
 
+import { devProps } from "@/utils/dev-props";
+
 export function SkipLink() {
   return (
     <a
+      {...devProps('SkipLink')}
       href="#main-content"
       className="
         sr-only focus:not-sr-only

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Loading01, Check } from "@untitledui-pro/icons/line";
 import { Input } from "@/components/uui/base/input/input";
 import { TextArea } from "@/components/uui/base/textarea/textarea";
+import { devProps } from "@/utils/dev-props";
 
 const budgetOptions = [
   { value: "5k-10k", label: "$5K - $10K" },
@@ -46,7 +47,7 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="text-center py-12">
+      <div {...devProps('ContactForm')} className="text-center py-12">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/10 mb-6">
           <Check className="w-8 h-8 text-green-500" />
         </div>
@@ -59,7 +60,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form {...devProps('ContactForm')} onSubmit={handleSubmit} className="space-y-6">
       {/* Name & Email */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input

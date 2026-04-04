@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ProjectCategory, projectCategories } from "@/types/project";
+import { devProps } from "@/utils/dev-props";
 
 interface ProjectFiltersProps {
   activeFilter: ProjectCategory | "All";
@@ -38,7 +39,7 @@ export function ProjectFilters({
   }, [activeFilter]);
 
   return (
-    <div ref={containerRef} className="relative flex flex-wrap gap-2">
+    <div {...devProps('ProjectFilters')} ref={containerRef} className="relative flex flex-wrap gap-2">
       {/* Sliding indicator background */}
       <motion.div
         className="absolute top-0 h-full bg-bg-inverse rounded-full -z-10"

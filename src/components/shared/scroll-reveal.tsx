@@ -3,6 +3,7 @@
 import { motion, Variants } from "framer-motion";
 import { useInView } from "@/hooks/use-in-view";
 import { ReactNode } from "react";
+import { devProps } from "@/utils/dev-props";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -62,6 +63,7 @@ export function ScrollReveal({
 
   return (
     <motion.div
+      {...devProps('ScrollReveal')}
       ref={ref}
       className={className}
       initial="hidden"

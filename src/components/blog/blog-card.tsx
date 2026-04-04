@@ -7,6 +7,7 @@ import { BlogPost } from "@/types/blog";
 import { imageHover } from "@/lib/motion";
 import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { devProps } from "@/utils/dev-props";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -15,7 +16,7 @@ interface BlogCardProps {
 
 export function BlogCard({ post, featured = false }: BlogCardProps) {
   return (
-    <Link href={`/blog/${post.slug}`} className="group block">
+    <Link {...devProps('BlogCard')} href={`/blog/${post.slug}`} className="group block">
       <article className={cn(featured && "md:grid md:grid-cols-2 md:gap-8")}>
         {/* Image */}
         <motion.div

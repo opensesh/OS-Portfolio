@@ -2,8 +2,8 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Button } from "@/components/shared/button";
-import { ArrowRight, ArrowUpRight, Mail01 } from "@untitledui-pro/icons/line";
+import { ActionButton } from "@/components/shared/action-button";
+import { ArrowUpRight, Mail01 } from "@untitledui-pro/icons/line";
 import { SectionLabel } from "@/components/shared/section-label";
 import { ScrambleText } from "@/components/shared/scramble-text";
 import { devProps } from "@/utils/dev-props";
@@ -88,22 +88,12 @@ export function CTASection() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="flex flex-wrap gap-4"
               >
-                <Button
-                  href="/contact"
-                  className="bg-white text-bg-inverse hover:bg-white/90"
-                  size="lg"
-                >
+                <ActionButton href="/contact" size="lg" variant="light">
                   Get in Touch
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-                <Button
-                  href="/workshop"
-                  variant="ghost"
-                  size="lg"
-                  className="text-white border-white/30 hover:bg-white/10 hover:text-white"
-                >
+                </ActionButton>
+                <ActionButton href="/workshop" size="lg" variant="light">
                   Book a Workshop
-                </Button>
+                </ActionButton>
               </motion.div>
             </div>
 

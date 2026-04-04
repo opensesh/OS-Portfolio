@@ -3,8 +3,8 @@
 import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from "next/dynamic";
-import { Button } from "@/components/shared/button";
-import { wordContainer, wordReveal, fadeInUp } from "@/lib/motion";
+import { ActionButton } from "@/components/shared/action-button";
+import { fadeInUp } from "@/lib/motion";
 import { useMousePosition } from "@/hooks/use-mouse-position";
 import { useTypewriter } from "@/hooks/use-typewriter";
 import { devProps } from "@/utils/dev-props";
@@ -16,9 +16,6 @@ const CRTTVScene = dynamic(
     })),
   { ssr: false }
 );
-
-const HEADLINE = "We're a design company focused on";
-const headlineWords = HEADLINE.split(" ");
 
 const ROTATING_PHRASES = [
   "brand design systems",
@@ -32,12 +29,14 @@ export function Hero() {
   const scrollRef = useRef<number>(0);
   const mouseRef = useMousePosition();
 
-  const displayText = useTypewriter({
-    phrases: ROTATING_PHRASES,
-    typeSpeed: 80,
-    deleteSpeed: 40,
-    pauseDuration: 2000,
-    startDelay: 1200,
+  const { displayedText } = useTypewriter({
+    text: ROTATING_PHRASES,
+    typingSpeed: 185,
+    deletingSpeed: 50,
+    pauseDuration: 1500,
+    initialDelay: 1000,
+    loop: true,
+    variableSpeed: { min: 60, max: 120 },
   });
 
   const { scrollYProgress } = useScroll({
@@ -47,7 +46,6 @@ export function Hero() {
 
   const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
-  // Sync Framer Motion value to a plain ref for Three.js to read
   useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (v) => {
       scrollRef.current = v;
@@ -67,12 +65,12 @@ export function Hero() {
           />
         </div>
 
-        {/* Hero text — left column, fades on scroll */}
+        {/* Hero text — left half, fades on scroll */}
         <motion.div
           style={{ opacity: textOpacity }}
-          className="container-main relative z-10 h-full flex items-center pointer-events-none"
+          className="relative z-10 h-full flex items-center px-[5%] pointer-events-none"
         >
-          <div className="w-full lg:w-1/2">
+          <div className="w-full lg:w-[45%]">
             {/* Tagline */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -83,75 +81,79 @@ export function Hero() {
               Design & Technology
             </motion.p>
 
-            {/* Static headline — widest line in the staircase */}
+            {/* Headline line 1 — single line across viewports */}
             <motion.h1
-              variants={wordContainer}
-              initial="hidden"
-              animate="visible"
-              className="text-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] xl:text-[5.25rem] whitespace-nowrap"
             >
-              {headlineWords.map((word, index) => (
-                <motion.span
-                  key={index}
-                  variants={wordReveal}
-                  className="inline-block mr-[0.25em]"
-                >
-                  {word}
-                </motion.span>
-              ))}
+              We&apos;re a design company
             </motion.h1>
 
-            {/* Typewriter line — OffBit 101 Bold, brand color */}
+            {/* Headline line 2 */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
+              className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] xl:text-[5.25rem] mb-3"
+            >
+              focused on
+            </motion.p>
+
+            {/* Typewriter — OffBit 101 Bold, zero kerning, brand color */}
             <motion.div
               variants={fadeInUp}
               initial="hidden"
               animate="visible"
-              transition={{ delay: 0.8 }}
-              className="flex items-center mb-8"
+              transition={{ delay: 0.6 }}
+              className="flex items-center mb-8 min-h-[1.2em]"
               aria-label={ROTATING_PHRASES.join(", ")}
             >
-              <span className="font-accent uppercase tracking-wider text-fg-brand text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-                {displayText}
+              <span className="font-accent uppercase tracking-[0] text-fg-brand text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-none">
+                {displayedText}
               </span>
               <span
-                className="inline-block w-[3px] h-[0.8em] bg-fg-brand ml-1 align-middle"
-                style={{ animation: "cursor-blink 1.06s step-end infinite" }}
+                className="inline-block text-fg-brand ml-0.5 text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+                style={{ animation: "cursor-blink 0.5s step-end infinite" }}
                 aria-hidden="true"
-              />
+              >
+                &#x2588;
+              </span>
             </motion.div>
 
-            {/* Description — narrower than headline for staircase taper */}
+            {/* Description — narrower for staircase taper */}
             <motion.p
               variants={fadeInUp}
               initial="hidden"
               animate="visible"
-              transition={{ delay: 0.6 }}
-              className="text-lg md:text-xl text-fg-secondary max-w-md mb-10"
+              transition={{ delay: 0.7 }}
+              className="text-base md:text-lg text-fg-secondary max-w-sm mb-10"
             >
               We help the world make the most of design and technology. From
               brand identity to digital products, we craft experiences that
               matter.
             </motion.p>
 
-            {/* CTAs — left-aligned, smallest footprint */}
+            {/* CTAs */}
             <motion.div
               variants={fadeInUp}
               initial="hidden"
               animate="visible"
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.8 }}
               className="flex gap-4 pointer-events-auto"
             >
-              <Button href="/contact" size="lg">
+              <ActionButton href="/contact" size="lg" variant="brand">
                 Start a Project
-              </Button>
-              <Button href="/projects" variant="secondary" size="lg">
+              </ActionButton>
+              <ActionButton href="/projects" size="lg" variant="dark">
                 View Our Work
-              </Button>
+              </ActionButton>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Scroll indicator — fades with text */}
+        {/* Scroll indicator */}
         <motion.div
           style={{ opacity: textOpacity }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2"

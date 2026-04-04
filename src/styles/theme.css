@@ -195,6 +195,7 @@
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-power4-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 /* =============================================================================

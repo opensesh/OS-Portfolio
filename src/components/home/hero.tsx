@@ -66,7 +66,7 @@ export function Hero() {
     <section ref={sectionRef} className="relative h-[300vh]" {...devProps('Hero')}>
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Faulty Terminal background — full-bleed behind everything */}
-        <div className="absolute inset-0 z-[-1]">
+        <div className="absolute inset-0 z-[-1] opacity-25">
           <FaultyTerminal
             tint="#fe5102"
             backgroundColor={terminalBg}

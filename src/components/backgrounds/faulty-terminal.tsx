@@ -206,9 +206,17 @@ void main() {
       col += (rnd - 0.5) * (uDither * 0.003922);
     }
 
-    // Composite digits onto theme background
-    float mask = smoothstep(0.0, 0.15, length(col));
-    vec3 finalCol = mix(uBackground, col + uBackground * 0.1, mask);
+    // Vignette — darken edges to blend into background
+    vec2 vigUv = vUv * 2.0 - 1.0;
+    float vignette = 1.0 - dot(vigUv * 0.7, vigUv * 0.7);
+    vignette = clamp(vignette, 0.0, 1.0);
+    vignette = smoothstep(0.0, 0.5, vignette);
+
+    // Composite: digits are the tinted color, everything else is background
+    float mask = smoothstep(0.0, 0.05, length(col));
+    vec3 finalCol = mix(uBackground, uTint * uBrightness * 3.0 * mask, mask);
+    finalCol *= vignette;
+    finalCol += uBackground * (1.0 - vignette);
 
     gl_FragColor = vec4(finalCol, 1.0);
 }
@@ -254,25 +262,25 @@ interface FaultyTerminalProps {
 }
 
 export default function FaultyTerminal({
-  scale = 1,
-  gridMul = [2, 1],
-  digitSize = 1.5,
+  scale = 1.7,
+  gridMul = [1.5, 1],
+  digitSize = 1.6,
   timeScale = 0.3,
   pause = false,
-  scanlineIntensity = 0.3,
+  scanlineIntensity = 0.1,
   glitchAmount = 1,
   flickerAmount = 1,
   noiseAmp = 0,
   chromaticAberration = 0,
   dither = 0,
   curvature = 0.2,
-  tint = "#ffffff",
+  tint = "#fe5102",
   backgroundColor = "#191919",
   mouseReact = true,
-  mouseStrength = 0.2,
+  mouseStrength = 0.6,
   dpr,
   pageLoadAnimation = true,
-  brightness = 1,
+  brightness = 0.5,
   className,
   style,
 }: FaultyTerminalProps) {

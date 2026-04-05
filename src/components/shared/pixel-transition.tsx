@@ -10,6 +10,7 @@ interface PixelTransitionProps {
   gridSize?: number;
   pixelColor?: string;
   animationStepDuration?: number;
+  animationStepDurationOut?: number;
   once?: boolean;
   aspectRatio?: string;
   className?: string;
@@ -22,6 +23,7 @@ export function PixelTransition({
   gridSize = 7,
   pixelColor = "currentColor",
   animationStepDuration = 0.3,
+  animationStepDurationOut,
   once = false,
   aspectRatio = "100%",
   className = "",
@@ -80,8 +82,11 @@ export function PixelTransition({
 
       gsap.set(pixels, { display: "none" });
 
+      const duration = activate
+        ? animationStepDuration
+        : (animationStepDurationOut ?? animationStepDuration * 0.6);
       const totalPixels = pixels.length;
-      const staggerDuration = animationStepDuration / totalPixels;
+      const staggerDuration = duration / totalPixels;
 
       gsap.to(pixels, {
         display: "block",
@@ -92,7 +97,7 @@ export function PixelTransition({
         },
       });
 
-      delayedCallRef.current = gsap.delayedCall(animationStepDuration, () => {
+      delayedCallRef.current = gsap.delayedCall(duration, () => {
         activeEl.style.display = activate ? "block" : "none";
         activeEl.style.pointerEvents = activate ? "none" : "";
       });
@@ -100,14 +105,14 @@ export function PixelTransition({
       gsap.to(pixels, {
         display: "none",
         duration: 0,
-        delay: animationStepDuration,
+        delay: duration,
         stagger: {
           each: staggerDuration,
           from: "random",
         },
       });
     },
-    [animationStepDuration]
+    [animationStepDuration, animationStepDurationOut]
   );
 
   const handleEnter = useCallback(() => {

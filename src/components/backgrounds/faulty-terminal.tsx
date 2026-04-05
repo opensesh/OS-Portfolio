@@ -369,7 +369,13 @@ export default function FaultyTerminal({
     // Set random time offset on mount
     timeOffsetRef.current = Math.random() * 100;
 
-    const renderer = new Renderer({ dpr: resolvedDpr });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ dpr: resolvedDpr });
+    } catch {
+      // WebGL context limit reached — degrade gracefully
+      return;
+    }
     rendererRef.current = renderer;
     const gl = renderer.gl;
     gl.clearColor(bgVec[0], bgVec[1], bgVec[2], 1);

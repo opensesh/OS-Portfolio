@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ActionButton } from "@/components/shared/action-button";
 import { UnderlineLink } from "@/components/shared/underline-link";
@@ -13,6 +13,19 @@ import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { useTheme } from "@/components/providers/theme-provider";
 import { devProps } from "@/utils/dev-props";
+import Image from "next/image";
+
+const BIG_CLIENTS = [
+  { name: "Google", src: "/logos/clients/google.svg" },
+  { name: "Fitbit", src: "/logos/clients/fitbit.svg" },
+  { name: "SAP", src: "/logos/clients/sap.svg" },
+  { name: "Salesforce", src: "/logos/clients/salesforce.svg" },
+];
+
+const SMALL_CLIENTS = [
+  { name: "Universal Audio", src: "/logos/clients/universal-audio.svg" },
+  { name: "Jalapa Jar", src: "/logos/clients/jalapajar.svg" },
+];
 
 const CRTTVScene = dynamic(
   () =>
@@ -59,6 +72,8 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
+  const [clientSize, setClientSize] = useState<"big" | "small">("big");
+  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
   // Canvas translateX: starts shifted right 25% on desktop so TV is in right half,
@@ -200,6 +215,79 @@ export function Hero() {
           className="absolute bottom-0 left-0 right-0 h-32 z-20 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, transparent, var(--bg-primary))" }}
         />
+
+        {/* Client credibility bar */}
+        <motion.div
+          style={{ opacity: clientBarOpacity }}
+          className="absolute bottom-10 left-0 z-30 w-full hidden lg:block pointer-events-none"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={pageLoaded ? { opacity: 1 } : undefined}
+            transition={{ delay: 1.6, duration: 0.5 }}
+            className="container-wide"
+          >
+            <div className="flex items-center gap-10 pointer-events-auto">
+              {/* Label with toggle */}
+              <p className="font-accent text-[0.6rem] font-bold uppercase tracking-widest text-fg-tertiary leading-tight whitespace-nowrap">
+                We have worked with brands
+                <br />
+                that are{" "}
+                <button
+                  onClick={() => setClientSize("big")}
+                  className={`transition-all duration-200 ${
+                    clientSize === "big"
+                      ? "text-fg-brand underline underline-offset-2 decoration-fg-brand opacity-100"
+                      : "text-fg-tertiary opacity-50 hover:opacity-100"
+                  }`}
+                >
+                  big
+                </button>
+                {" "}and{" "}
+                <button
+                  onClick={() => setClientSize("small")}
+                  className={`transition-all duration-200 ${
+                    clientSize === "small"
+                      ? "text-fg-brand underline underline-offset-2 decoration-fg-brand opacity-100"
+                      : "text-fg-tertiary opacity-50 hover:opacity-100"
+                  }`}
+                >
+                  small
+                </button>
+              </p>
+
+              {/* Logo row */}
+              <div className="flex items-center gap-8 overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={clientSize}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}
+                    className="flex items-center gap-8"
+                  >
+                    {(clientSize === "big" ? BIG_CLIENTS : SMALL_CLIENTS).map(
+                      (client) => (
+                        <Image
+                          key={client.name}
+                          src={client.src}
+                          alt={client.name}
+                          width={680}
+                          height={336}
+                          className="h-5 w-auto opacity-60"
+                        />
+                      )
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+                <span className="font-accent text-[0.6rem] font-bold uppercase tracking-widest text-fg-tertiary opacity-50 whitespace-nowrap">
+                  + many more
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
 
         {/* Scroll indicator */}
         <motion.div

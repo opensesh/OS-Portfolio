@@ -286,22 +286,19 @@ export function WhatWeDoSection() {
             })}
           </motion.div>
 
-          {/* Right: Desktop image panel */}
+          {/* Right: Desktop image panel — stretches to match left column */}
           <div
             ref={imageWrapperRef}
-            className="hidden lg:block sticky top-24 self-start"
+            className="hidden lg:block"
           >
-            <div className="rounded-xl overflow-hidden bg-bg-secondary">
+            <div className="rounded-xl overflow-hidden bg-bg-secondary h-full relative">
               {whatWeDoItems.map((item, index) => (
                 <div
                   key={item.id}
                   data-image-id={item.id}
+                  className="absolute inset-0"
                   style={{
                     display: index === 0 ? "block" : "none",
-                    position: index === 0 ? "relative" : "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
                   }}
                 >
                   <PixelTransition
@@ -316,7 +313,8 @@ export function WhatWeDoSection() {
                     gridSize={14}
                     pixelColor="#FE5102"
                     animationStepDuration={0.7}
-                    aspectRatio="75%"
+                    aspectRatio="0"
+                    className="h-full"
                   />
                 </div>
               ))}

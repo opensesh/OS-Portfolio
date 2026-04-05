@@ -4,10 +4,8 @@ import { LogoMarquee } from "@/components/home/logo-marquee";
 import { StatsCounter } from "@/components/home/stats-counter";
 import { ProcessSection } from "@/components/home/process-section";
 import { FeaturedWork } from "@/components/home/featured-work";
-import { WhySection } from "@/components/home/why-section";
+import { BeliefsSection } from "@/components/home/beliefs-section";
 import { FAQSection } from "@/components/home/faq-section";
-import { CTASection } from "@/components/home/cta-section";
-
 export default function Home() {
   return (
     <>
@@ -17,9 +15,8 @@ export default function Home() {
       <StatsCounter />
       <ProcessSection />
       <FeaturedWork />
-      <WhySection />
+      <BeliefsSection />
       <FAQSection />
-      <CTASection />
     </>
   );
 }

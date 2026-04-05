@@ -1,30 +1,25 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ActionButton } from "@/components/shared/action-button";
 import { UnderlineLink } from "@/components/shared/underline-link";
 import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { fadeInUp } from "@/lib/motion";
 import { useMousePosition } from "@/hooks/use-mouse-position";
-import { useTypewriter } from "@/hooks/use-typewriter";
+
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { useTheme } from "@/components/providers/theme-provider";
 import { devProps } from "@/utils/dev-props";
 import Image from "next/image";
 
-const BIG_CLIENTS = [
+const CLIENTS = [
   { name: "Google", src: "/logos/clients/google.svg" },
   { name: "Fitbit", src: "/logos/clients/fitbit.svg" },
-  { name: "SAP", src: "/logos/clients/sap.svg" },
   { name: "Salesforce", src: "/logos/clients/salesforce.svg" },
-];
-
-const SMALL_CLIENTS = [
   { name: "Universal Audio", src: "/logos/clients/universal-audio.svg" },
-  { name: "Jalapa Jar", src: "/logos/clients/jalapajar.svg" },
 ];
 
 const CRTTVScene = dynamic(
@@ -40,13 +35,6 @@ const FaultyTerminal = dynamic(
   { ssr: false }
 );
 
-const ROTATING_PHRASES = [
-  "brand identity",
-  "design systems",
-  "user experience",
-  "product design",
-  "creative AI",
-];
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -57,22 +45,12 @@ export function Hero() {
   const pageLoaded = usePageLoaded();
   const terminalBg = resolvedTheme === "dark" ? "#191919" : "#faf8f5";
 
-  const { displayedText } = useTypewriter({
-    text: ROTATING_PHRASES,
-    typingSpeed: 185,
-    deletingSpeed: 50,
-    pauseDuration: 1500,
-    initialDelay: 1000,
-    loop: true,
-    variableSpeed: { min: 60, max: 120 },
-  });
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const [clientSize, setClientSize] = useState<"big" | "small">("big");
   const clientBarOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
@@ -92,7 +70,7 @@ export function Hero() {
   }, [scrollYProgress]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh]" {...devProps('Hero')}>
+    <section ref={sectionRef} className="relative h-[300vh] -mt-16 md:-mt-20" {...devProps('Hero')}>
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Faulty Terminal background — full-bleed behind everything */}
         <div className="absolute inset-0 z-[-1] opacity-15">
@@ -131,7 +109,7 @@ export function Hero() {
           style={{ opacity: textOpacity }}
           className="relative z-10 h-full pointer-events-none"
         >
-          <div className="container-wide h-full flex items-center pb-[20vh]">
+          <div className="container-wide h-full flex items-center pb-[10vh]">
             <div className="w-full lg:w-1/2">
             {/* Tagline */}
             <motion.p
@@ -153,27 +131,6 @@ export function Hero() {
             >
               {"Brand strategy meets\ndesign systems"}
             </TextBlockReveal>
-
-            {/* Typewriter — appears after heading reveal */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={pageLoaded ? { opacity: 1 } : undefined}
-              transition={{ duration: 0.4, delay: 0.95 }}
-              className="mb-6 flex items-baseline gap-x-3"
-              aria-label={`focused on ${ROTATING_PHRASES.join(", ")}`}
-            >
-              <span
-                className="uppercase tracking-[0] leading-none text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-[2.75rem] inline-flex items-baseline"
-                style={{ fontFamily: "var(--font-accent)", fontWeight: 700, color: "#fe5102" }}
-              >
-                {displayedText}
-                <span
-                  className="inline-block ml-0.5 w-[0.45em] h-[0.85em] bg-[#fe5102]"
-                  style={{ animation: "cursor-blink 0.5s step-end infinite" }}
-                  aria-hidden="true"
-                />
-              </span>
-            </motion.p>
 
             {/* Description — narrower for staircase taper */}
             <motion.p
@@ -227,63 +184,21 @@ export function Hero() {
             transition={{ delay: 1.6, duration: 0.5 }}
             className="container-wide"
           >
-            <div className="flex items-center gap-10 pointer-events-auto">
-              {/* Label with toggle */}
-              <p className="font-accent text-[0.6rem] font-bold uppercase tracking-widest text-fg-tertiary leading-tight whitespace-nowrap">
-                We have worked with brands
-                <br />
-                that are{" "}
-                <button
-                  onClick={() => setClientSize("big")}
-                  className={`transition-all duration-200 ${
-                    clientSize === "big"
-                      ? "text-fg-brand underline underline-offset-2 decoration-fg-brand opacity-100"
-                      : "text-fg-tertiary opacity-50 hover:opacity-100"
-                  }`}
-                >
-                  big
-                </button>
-                {" "}and{" "}
-                <button
-                  onClick={() => setClientSize("small")}
-                  className={`transition-all duration-200 ${
-                    clientSize === "small"
-                      ? "text-fg-brand underline underline-offset-2 decoration-fg-brand opacity-100"
-                      : "text-fg-tertiary opacity-50 hover:opacity-100"
-                  }`}
-                >
-                  small
-                </button>
+            <div className="flex items-center gap-6">
+              <p className="font-accent text-sm font-bold uppercase tracking-widest text-fg-tertiary leading-tight whitespace-nowrap">
+                Trusted by brands that think big
               </p>
-
-              {/* Logo row */}
-              <div className="flex items-center gap-8 overflow-hidden">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={clientSize}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}
-                    className="flex items-center gap-8"
-                  >
-                    {(clientSize === "big" ? BIG_CLIENTS : SMALL_CLIENTS).map(
-                      (client) => (
-                        <Image
-                          key={client.name}
-                          src={client.src}
-                          alt={client.name}
-                          width={680}
-                          height={336}
-                          className="h-5 w-auto opacity-60"
-                        />
-                      )
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-                <span className="font-accent text-[0.6rem] font-bold uppercase tracking-widest text-fg-tertiary opacity-50 whitespace-nowrap">
-                  + many more
-                </span>
+              <div className="flex items-center gap-2.5">
+                {CLIENTS.map((client) => (
+                  <Image
+                    key={client.name}
+                    src={client.src}
+                    alt={client.name}
+                    width={680}
+                    height={336}
+                    className="h-14 w-auto opacity-70"
+                  />
+                ))}
               </div>
             </div>
           </motion.div>

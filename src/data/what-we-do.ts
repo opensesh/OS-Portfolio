@@ -4,6 +4,7 @@ export interface WhatWeDoItem {
   description: string;
   items: string[];
   imageBg: string;
+  imageHoverBg: string;
 }
 
 export const whatWeDoItems: WhatWeDoItem[] = [
@@ -21,6 +22,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
       "Iconography",
     ],
     imageBg: "bg-bg-brand-solid",
+    imageHoverBg: "bg-bg-tertiary",
   },
   {
     id: "design-systems",
@@ -36,6 +38,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
       "Interaction Patterns",
     ],
     imageBg: "bg-bg-tertiary",
+    imageHoverBg: "bg-bg-brand-solid",
   },
   {
     id: "content-strategy",
@@ -51,6 +54,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
       "Content Audits",
     ],
     imageBg: "bg-fg-tertiary",
+    imageHoverBg: "bg-bg-brand-solid",
   },
   {
     id: "context-optimization",
@@ -66,6 +70,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
       "Workflow Design",
     ],
     imageBg: "bg-bg-secondary",
+    imageHoverBg: "bg-bg-brand-solid",
   },
   {
     id: "creative-ai",
@@ -81,5 +86,6 @@ export const whatWeDoItems: WhatWeDoItem[] = [
       "Quality Assurance",
     ],
     imageBg: "bg-bg-brand-solid",
+    imageHoverBg: "bg-bg-tertiary",
   },
 ];

@@ -271,7 +271,7 @@ export function WhatWeDoSection() {
                             />
                           }
                           secondContent={
-                            <div className="w-full h-full bg-bg-brand-solid" />
+                            <div className={cn("w-full h-full", item.imageHoverBg)} />
                           }
                           gridSize={10}
                           pixelColor="#FE5102"

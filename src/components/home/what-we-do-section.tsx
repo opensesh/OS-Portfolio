@@ -4,11 +4,12 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
-import { ChevronDown } from "@untitledui-pro/icons/line";
+import { Plus, Minus } from "@untitledui-pro/icons/line";
 import { useInView } from "@/hooks/use-in-view";
 import { whatWeDoItems } from "@/data/what-we-do";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { TextBlockReveal } from "@/components/shared/text-block-reveal";
+import { Badge } from "@/components/uui/base/badges/badges";
 import { cn } from "@/lib/utils";
 import { devProps } from "@/utils/dev-props";
 
@@ -36,8 +37,7 @@ export function WhatWeDoSection() {
 
   // Refs for GSAP animations
   const contentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  const chevronRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  const titleRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const iconRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const imageWrapperRef = useRef<HTMLDivElement>(null);
   const prevExpandedId = useRef<string | null>(null);
 
@@ -49,18 +49,10 @@ export function WhatWeDoSection() {
     []
   );
 
-  const setChevronRef = useCallback(
+  const setIconRef = useCallback(
     (id: string) => (el: HTMLDivElement | null) => {
-      if (el) chevronRefs.current.set(id, el);
-      else chevronRefs.current.delete(id);
-    },
-    []
-  );
-
-  const setTitleRef = useCallback(
-    (id: string) => (el: HTMLElement | null) => {
-      if (el) titleRefs.current.set(id, el);
-      else titleRefs.current.delete(id);
+      if (el) iconRefs.current.set(id, el);
+      else iconRefs.current.delete(id);
     },
     []
   );
@@ -79,109 +71,83 @@ export function WhatWeDoSection() {
     prevExpandedId.current = whatWeDoItems[0].id;
   }, []);
 
-  const animateAccordion = useCallback(
-    (newId: string | null) => {
-      const oldId = prevExpandedId.current;
+  const animateAccordion = useCallback((newId: string | null) => {
+    const oldId = prevExpandedId.current;
 
-      // Collapse previous
-      if (oldId && oldId !== newId) {
-        const contentEl = contentRefs.current.get(oldId);
-        const chevronEl = chevronRefs.current.get(oldId);
-        const titleEl = titleRefs.current.get(oldId);
-
-        if (contentEl) {
-          gsap.to(contentEl, {
-            height: 0,
-            opacity: 0,
-            duration: 0.4,
-            ease: "power2.inOut",
-            overflow: "hidden",
-          });
-        }
-        if (chevronEl) {
-          gsap.to(chevronEl, {
-            rotation: 0,
-            duration: 0.3,
-            ease: "power2.inOut",
-          });
-        }
-        if (titleEl) {
-          gsap.to(titleEl, {
-            color: "var(--fg-secondary)",
-            duration: 0.3,
-          });
-        }
-      }
-
-      // Expand new
-      if (newId) {
-        const contentEl = contentRefs.current.get(newId);
-        const chevronEl = chevronRefs.current.get(newId);
-        const titleEl = titleRefs.current.get(newId);
-        const descEl = contentEl?.querySelector("[data-desc]") as HTMLElement;
-
-        if (contentEl) {
-          gsap.to(contentEl, {
-            height: "auto",
-            opacity: 1,
-            duration: 0.5,
-            ease: "power3.inOut",
-          });
-        }
-        if (descEl) {
-          gsap.fromTo(
-            descEl,
-            { opacity: 0, y: 12 },
-            { opacity: 1, y: 0, duration: 0.4, delay: 0.15, ease: "power2.out" }
-          );
-        }
-        if (chevronEl) {
-          gsap.to(chevronEl, {
-            rotation: 180,
-            duration: 0.4,
-            ease: "back.out(1.4)",
-          });
-        }
-        if (titleEl) {
-          gsap.to(titleEl, {
-            color: "var(--fg-primary)",
-            duration: 0.3,
-          });
-        }
-      }
-
-      // Desktop image crossfade
-      if (newId && newId !== oldId && imageWrapperRef.current) {
-        const images =
-          imageWrapperRef.current.querySelectorAll("[data-image-id]");
-        images.forEach((img) => {
-          const imgId = (img as HTMLElement).dataset.imageId;
-          if (imgId === oldId) {
-            gsap.to(img, {
-              opacity: 0,
-              scale: 1.02,
-              duration: 0.3,
-              ease: "power2.in",
-              onComplete: () => { gsap.set(img, { display: "none", scale: 1 }); },
-            });
-          }
-          if (imgId === newId) {
-            gsap.set(img, { display: "block", opacity: 0, y: 8 });
-            gsap.to(img, {
-              opacity: 1,
-              y: 0,
-              duration: 0.4,
-              delay: 0.15,
-              ease: "power2.out",
-            });
-          }
+    // Collapse previous
+    if (oldId && oldId !== newId) {
+      const contentEl = contentRefs.current.get(oldId);
+      if (contentEl) {
+        gsap.to(contentEl, {
+          height: 0,
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+          overflow: "hidden",
         });
       }
+    }
 
-      prevExpandedId.current = newId;
-    },
-    []
-  );
+    // Expand new
+    if (newId) {
+      const contentEl = contentRefs.current.get(newId);
+      const innerEl = contentEl?.querySelector("[data-desc]") as HTMLElement;
+
+      if (contentEl) {
+        gsap.to(contentEl, {
+          height: "auto",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power3.inOut",
+        });
+      }
+      if (innerEl) {
+        gsap.fromTo(
+          innerEl,
+          { opacity: 0, y: 12 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            delay: 0.15,
+            ease: "power2.out",
+          }
+        );
+      }
+    }
+
+    // Desktop image crossfade
+    if (newId && newId !== oldId && imageWrapperRef.current) {
+      const images =
+        imageWrapperRef.current.querySelectorAll("[data-image-id]");
+      images.forEach((img) => {
+        const imgId = (img as HTMLElement).dataset.imageId;
+        if (imgId === oldId) {
+          gsap.to(img, {
+            opacity: 0,
+            scale: 1.02,
+            duration: 0.3,
+            ease: "power2.in",
+            onComplete: () => {
+              gsap.set(img, { display: "none", scale: 1 });
+            },
+          });
+        }
+        if (imgId === newId) {
+          gsap.set(img, { display: "block", opacity: 0, y: 8 });
+          gsap.to(img, {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            delay: 0.15,
+            ease: "power2.out",
+          });
+        }
+      });
+    }
+
+    prevExpandedId.current = newId;
+  }, []);
 
   const toggleItem = useCallback(
     (id: string) => {
@@ -220,11 +186,12 @@ export function WhatWeDoSection() {
 
         {/* Two-panel layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left: Accordion */}
+          {/* Left: Accordion cards */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
+            className="space-y-4"
           >
             {whatWeDoItems.map((item) => {
               const isExpanded = expandedId === item.id;
@@ -233,43 +200,39 @@ export function WhatWeDoSection() {
                 <motion.div
                   key={item.id}
                   variants={fadeInUp}
-                  className="border-b border-border-secondary"
+                  className={cn(
+                    "border border-border-secondary",
+                    "transition-colors duration-200",
+                    isExpanded && "border-border-primary bg-bg-secondary"
+                  )}
                 >
-                  {/* Trigger */}
+                  {/* Header */}
                   <button
                     onClick={() => toggleItem(item.id)}
                     className={cn(
                       "w-full flex items-center justify-between",
-                      "py-5 md:py-6",
-                      "text-left group cursor-pointer"
+                      "px-6 py-5 md:px-8 md:py-6",
+                      "text-left cursor-pointer"
                     )}
                     aria-expanded={isExpanded}
                   >
-                    <h3
-                      ref={setTitleRef(item.id)}
-                      className={cn(
-                        "text-accent text-lg md:text-xl",
-                        "transition-colors duration-200",
-                        isExpanded ? "text-fg-primary" : "text-fg-secondary"
-                      )}
-                    >
+                    <h3 className="text-heading text-xl md:text-2xl">
                       {item.title}
                     </h3>
                     <div
-                      ref={setChevronRef(item.id)}
+                      ref={setIconRef(item.id)}
                       className={cn(
-                        "flex-shrink-0 w-8 h-8 flex items-center justify-center",
-                        "border border-border-primary rounded-[6px]",
+                        "flex-shrink-0 w-10 h-10 flex items-center justify-center",
+                        "border border-border-primary rounded-full",
                         "transition-colors duration-200",
                         isExpanded && "bg-bg-brand-solid border-transparent"
                       )}
                     >
-                      <ChevronDown
-                        className={cn(
-                          "w-4 h-4",
-                          isExpanded ? "text-white" : "text-fg-primary"
-                        )}
-                      />
+                      {isExpanded ? (
+                        <Minus className="w-4 h-4 text-white" />
+                      ) : (
+                        <Plus className="w-4 h-4 text-fg-primary" />
+                      )}
                     </div>
                   </button>
 
@@ -282,20 +245,29 @@ export function WhatWeDoSection() {
                       opacity: item.id === whatWeDoItems[0].id ? 1 : 0,
                     }}
                   >
-                    <div data-desc className="pb-5 md:pb-6 pr-12">
-                      <p className="text-fg-secondary text-sm md:text-base leading-relaxed">
+                    <div data-desc className="px-6 pb-6 md:px-8 md:pb-8">
+                      <p className="text-fg-secondary mb-6 max-w-2xl">
                         {item.description}
                       </p>
+                      <div className="flex flex-wrap gap-2">
+                        {item.items.map((tag) => (
+                          <Badge
+                            key={tag}
+                            type="color"
+                            color="gray"
+                            size="md"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
 
                       {/* Mobile-only image */}
-                      <div className="mt-4 lg:hidden rounded-xl overflow-hidden">
+                      <div className="mt-6 lg:hidden rounded-xl overflow-hidden">
                         <PixelTransition
                           firstContent={
                             <div
-                              className={cn(
-                                "w-full h-full",
-                                item.imageBg
-                              )}
+                              className={cn("w-full h-full", item.imageBg)}
                             />
                           }
                           secondContent={

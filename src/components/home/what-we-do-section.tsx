@@ -214,7 +214,7 @@ export function WhatWeDoSection() {
             trigger="scroll"
             className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
           >
-            Our Creative Pillars
+            Full Stack Creativity
           </TextBlockReveal>
         </div>
 
@@ -248,7 +248,7 @@ export function WhatWeDoSection() {
                     <h3
                       ref={setTitleRef(item.id)}
                       className={cn(
-                        "text-heading text-lg md:text-xl",
+                        "text-accent text-lg md:text-xl",
                         "transition-colors duration-200",
                         isExpanded ? "text-fg-primary" : "text-fg-secondary"
                       )}
@@ -259,7 +259,7 @@ export function WhatWeDoSection() {
                       ref={setChevronRef(item.id)}
                       className={cn(
                         "flex-shrink-0 w-8 h-8 flex items-center justify-center",
-                        "border border-border-primary rounded-full",
+                        "border border-border-primary rounded-[6px]",
                         "transition-colors duration-200",
                         isExpanded && "bg-bg-brand-solid border-transparent"
                       )}

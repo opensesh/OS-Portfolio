@@ -275,7 +275,7 @@ export function WhatWeDoSection() {
                           }
                           gridSize={10}
                           pixelColor="#FE5102"
-                          animationStepDuration={0.7}
+                          animationStepDuration={0.4}
                           aspectRatio="75%"
                         />
                       </div>
@@ -312,7 +312,7 @@ export function WhatWeDoSection() {
                     }
                     gridSize={14}
                     pixelColor="#FE5102"
-                    animationStepDuration={0.7}
+                    animationStepDuration={0.4}
                     aspectRatio="0"
                     className="h-full"
                   />

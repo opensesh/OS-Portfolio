@@ -81,7 +81,7 @@ export function Header() {
           style={{ opacity: borderOpacity }}
         />
 
-        <div className="container-main relative">
+        <div className="container-wide relative">
           <nav
             className="flex items-center justify-between transition-all duration-100"
             style={{ height: `${navHeight}px` }}

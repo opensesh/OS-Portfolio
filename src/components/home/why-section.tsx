@@ -6,6 +6,7 @@ import { Check, XClose, Minus } from "@untitledui-pro/icons/line";
 import { cn } from "@/lib/utils";
 import { SectionLabel } from "@/components/shared/section-label";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { devProps } from "@/utils/dev-props";
 
 interface ComparisonRow {
@@ -105,21 +106,31 @@ export function WhySection() {
     <section ref={sectionRef} className="py-20 md:py-32 bg-bg-primary" {...devProps('WhySection')}>
       <div className="container-main">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12 md:mb-16"
-        >
-          <SectionLabel className="mb-4">Why Open Session</SectionLabel>
-          <h2 className="text-display text-3xl md:text-4xl lg:text-5xl max-w-3xl mx-auto">
+        <div className="text-center mb-12 md:mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionLabel className="mb-4">Why Open Session</SectionLabel>
+          </motion.div>
+          <TextBlockReveal
+            as="h2"
+            trigger="scroll"
+            className="text-display text-3xl md:text-4xl lg:text-5xl max-w-3xl mx-auto"
+          >
             The best of both worlds
-          </h2>
-          <p className="text-fg-secondary text-lg mt-4 max-w-2xl mx-auto">
+          </TextBlockReveal>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="text-fg-secondary text-lg mt-4 max-w-2xl mx-auto"
+          >
             We combine the strategic depth of an agency with the agility and
             personal attention of a freelancer.
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
 
         {/* Comparison Table */}
         <motion.div

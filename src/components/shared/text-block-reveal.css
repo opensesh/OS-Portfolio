@@ -1,0 +1,91 @@
+/* =============================================================================
+   TextBlockReveal — block-wipe text reveal animation
+   ============================================================================= */
+
+/* ── Hidden state (before animation triggers) ─────────────────────────────── */
+
+.tbr-line-inner {
+  opacity: 0;
+}
+
+.tbr-rect {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ── Animated state ───────────────────────────────────────────────────────── */
+
+.tbr-animate .tbr-line-inner {
+  animation: tbr-text-show 0.01s calc(var(--tbr-delay) + 0.56s) both;
+}
+
+.tbr-animate .tbr-brand {
+  animation: tbr-brand-sweep 1.2s var(--tbr-delay) both;
+}
+
+.tbr-animate .tbr-fg {
+  animation: tbr-fg-sweep 0.96s calc(var(--tbr-delay) + 0.12s) both;
+}
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
+
+/* Brand rect: sweeps in from left, pauses, sweeps out to right */
+@keyframes tbr-brand-sweep {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  40% {
+    transform: scaleX(1);
+    transform-origin: left;
+    animation-timing-function: linear;
+  }
+  47% {
+    transform: scaleX(1);
+    transform-origin: right;
+    animation-timing-function: linear;
+  }
+  53% {
+    transform: scaleX(1);
+    transform-origin: right;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}
+
+/* FG rect: same sweep but slightly offset timing */
+@keyframes tbr-fg-sweep {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  42% {
+    transform: scaleX(1);
+    transform-origin: left;
+    animation-timing-function: linear;
+  }
+  43% {
+    transform: scaleX(1);
+    transform-origin: right;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}
+
+/* Text: instant show */
+@keyframes tbr-text-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

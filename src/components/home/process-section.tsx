@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/use-in-view";
 import { processSteps } from "@/data/process";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { devProps } from "@/utils/dev-props";
 
 export function ProcessSection() {
@@ -13,17 +14,23 @@ export function ProcessSection() {
     <section ref={ref} className="py-20 md:py-32" {...devProps('ProcessSection')}>
       <div className="container-main">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-16 md:mb-20"
-        >
-          <p className="section-label mb-4">Process</p>
-          <h2 className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl">
+        <div className="mb-16 md:mb-20">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+            className="section-label mb-4"
+          >
+            Process
+          </motion.p>
+          <TextBlockReveal
+            as="h2"
+            trigger="scroll"
+            className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
+          >
             How we work
-          </h2>
-        </motion.div>
+          </TextBlockReveal>
+        </div>
 
         {/* Process Steps */}
         <motion.div

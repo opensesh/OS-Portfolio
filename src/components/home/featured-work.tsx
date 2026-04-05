@@ -8,6 +8,7 @@ import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { Button } from "@/components/shared/button";
 import { ProjectCard } from "@/components/projects/project-card";
 import { SectionLabel } from "@/components/shared/section-label";
+import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { devProps } from "@/utils/dev-props";
 
 export function FeaturedWork() {
@@ -18,23 +19,34 @@ export function FeaturedWork() {
     <section ref={sectionRef} className="py-20 md:py-32 bg-bg-secondary" {...devProps('FeaturedWork')}>
       <div className="container-main">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16"
-        >
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div>
-            <SectionLabel className="mb-4">Work</SectionLabel>
-            <h2 className="text-display text-3xl md:text-4xl lg:text-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5 }}
+            >
+              <SectionLabel className="mb-4">Work</SectionLabel>
+            </motion.div>
+            <TextBlockReveal
+              as="h2"
+              trigger="scroll"
+              className="text-display text-3xl md:text-4xl lg:text-5xl"
+            >
               Selected Projects
-            </h2>
+            </TextBlockReveal>
           </div>
-          <Button href="/projects" variant="ghost" className="group">
-            View All Work
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Button href="/projects" variant="ghost" className="group">
+              View All Work
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </motion.div>
+        </div>
 
         {/* Projects Grid with staggered reveal */}
         <motion.div

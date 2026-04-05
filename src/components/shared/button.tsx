@@ -98,7 +98,7 @@ export const Button = forwardRef<
 
   const baseStyles = cn(
     "inline-flex items-center justify-center gap-2",
-    "font-medium",
+    "font-body font-medium tracking-normal",
     "rounded-[--radius-cta]",
     "transition-all duration-200",
     "disabled:opacity-50 disabled:pointer-events-none",

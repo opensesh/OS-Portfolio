@@ -8,6 +8,7 @@ import { services } from "@/data/services";
 import { staggerContainer, fadeInUp, accordionContent } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/uui/base/badges/badges";
+import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { devProps } from "@/utils/dev-props";
 
 export function ServicesSection() {
@@ -22,17 +23,23 @@ export function ServicesSection() {
     <section ref={ref} className="py-20 md:py-32" {...devProps('ServicesSection')}>
       <div className="container-main">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-12 md:mb-16"
-        >
-          <p className="section-label mb-4">Services</p>
-          <h2 className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl">
+        <div className="mb-12 md:mb-16">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+            className="section-label mb-4"
+          >
+            Services
+          </motion.p>
+          <TextBlockReveal
+            as="h2"
+            trigger="scroll"
+            className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
+          >
             What we do
-          </h2>
-        </motion.div>
+          </TextBlockReveal>
+        </div>
 
         {/* Services Accordion */}
         <motion.div

@@ -47,7 +47,10 @@ export function PageLoader() {
         requestAnimationFrame(animate);
       } else {
         setDisplayText(LOADING_TEXT);
-        setTimeout(() => setIsLoading(false), EXIT_DELAY);
+        setTimeout(() => {
+          setIsLoading(false);
+          window.dispatchEvent(new Event("page-loader-exit"));
+        }, EXIT_DELAY);
       }
     };
 

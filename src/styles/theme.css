@@ -54,6 +54,8 @@
   --fg-tertiary: #78716c;      /* Muted text */
   --fg-inverse: #faf8f5;       /* Text on dark */
   --fg-brand: #fe5102;         /* Brand colored text */
+  --fg-on-brand: #1c1a17;      /* Text on bright brand surfaces — always charcoal */
+  --fg-on-brand-glisten: #faf8f5; /* Glisten flash on brand surfaces — always vanilla */
 
   /* Borders */
   --border-primary: #d6d3d1;   /* Interactive borders */
@@ -104,6 +106,8 @@
   --fg-tertiary: #78716c;
   --fg-inverse: #1c1a17;
   --fg-brand: #ff7a38;         /* Lighter brand for readability */
+  --fg-on-brand: #1c1a17;      /* Unchanged — brand surface is always bright */
+  --fg-on-brand-glisten: #faf8f5;
 
   /* Borders */
   --border-primary: #44403a;

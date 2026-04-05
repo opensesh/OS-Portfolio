@@ -39,19 +39,22 @@ type ActionButtonProps = ActionButtonAsButton | ActionButtonAsLink;
 
 const variantStyles: Record<
   ActionButtonVariant,
-  { box: string; text: string }
+  { box: string; text: string; glisten: boolean }
 > = {
   brand: {
-    box: "bg-bg-brand-solid text-white",
-    text: "bg-bg-brand-solid text-white",
+    box: "bg-bg-brand-solid text-fg-on-brand",
+    text: "bg-bg-brand-solid",
+    glisten: true,
   },
   dark: {
     box: "bg-bg-inverse text-fg-inverse",
     text: "bg-bg-inverse text-fg-inverse",
+    glisten: false,
   },
   light: {
     box: "bg-white text-bg-inverse",
     text: "bg-white text-bg-inverse",
+    glisten: false,
   },
 };
 
@@ -115,7 +118,7 @@ export const ActionButton = forwardRef<
 
   const wrapperStyles = cn(
     "group inline-flex min-w-0 shrink-0 cursor-pointer items-center justify-center",
-    "whitespace-nowrap font-medium uppercase tracking-wider",
+    "whitespace-nowrap font-body font-medium uppercase tracking-normal",
     "outline-none rounded-[6px] overflow-hidden",
     "focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary",
     "disabled:pointer-events-none disabled:opacity-50",
@@ -152,7 +155,9 @@ export const ActionButton = forwardRef<
           colors.text
         )}
       >
-        <span>{children}</span>
+        <span className={colors.glisten ? "action-button-glisten" : undefined}>
+          {children}
+        </span>
       </span>
 
       {/* Right icon — visible by default, spins out on hover */}

@@ -5,9 +5,12 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ActionButton } from "@/components/shared/action-button";
 import { UnderlineLink } from "@/components/shared/underline-link";
+import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { fadeInUp } from "@/lib/motion";
 import { useMousePosition } from "@/hooks/use-mouse-position";
 import { useTypewriter } from "@/hooks/use-typewriter";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
+import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { useTheme } from "@/components/providers/theme-provider";
 import { devProps } from "@/utils/dev-props";
 
@@ -25,7 +28,8 @@ const FaultyTerminal = dynamic(
 );
 
 const ROTATING_PHRASES = [
-  "brand design systems",
+  "brand identity",
+  "design systems",
   "user experience",
   "product design",
   "creative AI",
@@ -35,7 +39,9 @@ export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollRef = useRef<number>(0);
   const mouseRef = useMousePosition();
+  const isDesktop = useBreakpoint("lg");
   const { resolvedTheme } = useTheme();
+  const pageLoaded = usePageLoaded();
   const terminalBg = resolvedTheme === "dark" ? "#191919" : "#faf8f5";
 
   const { displayedText } = useTypewriter({
@@ -54,6 +60,14 @@ export function Hero() {
   });
 
   const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+
+  // Canvas translateX: starts shifted right 25% on desktop so TV is in right half,
+  // slides back to 0 on scroll so TV centers. Canvas stays full viewport width.
+  const tvX = useTransform(
+    scrollYProgress,
+    [0, 0.3],
+    [isDesktop ? "25%" : "0%", "0%"]
+  );
 
   useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (v) => {
@@ -85,79 +99,73 @@ export function Hero() {
           />
         </div>
 
-        {/* 3D Canvas — full viewport, positioning handled by Three.js camera */}
-        <div className="absolute inset-0 z-0">
+        {/* 3D Canvas — full viewport, translated right on desktop so TV starts in right half */}
+        <motion.div
+          className="absolute inset-0 z-0"
+          style={{ x: tvX }}
+        >
           <CRTTVScene
             scrollRef={scrollRef}
             mouseRef={mouseRef}
             className="h-full w-full"
           />
-        </div>
+        </motion.div>
 
         {/* Hero text — left half, fades on scroll */}
         <motion.div
           style={{ opacity: textOpacity }}
           className="relative z-10 h-full pointer-events-none"
         >
-          <div className="container-wide h-full flex items-center pt-20">
+          <div className="container-wide h-full flex items-center pb-[20vh]">
             <div className="w-full lg:w-1/2">
             {/* Tagline */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={pageLoaded ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="section-label mb-6"
             >
-              We are the next generation of creativity.
+              A modern design studio.
             </motion.p>
 
-            {/* Headline line 1 — single line across viewports */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-              className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] xl:text-[5.25rem] whitespace-nowrap"
+            {/* Headline — block-wipe reveal */}
+            <TextBlockReveal
+              as="h1"
+              trigger="after-loader"
+              delay={0.1}
+              stagger={0.15}
+              className="text-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.25rem]"
             >
-               Design company
-            </motion.h1>
+              {"Brand strategy meets\ndesign systems"}
+            </TextBlockReveal>
 
-            {/* Headline line 2 */}
+            {/* Typewriter — appears after heading reveal */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
-              className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] xl:text-[5.25rem] mb-3"
+              initial={{ opacity: 0 }}
+              animate={pageLoaded ? { opacity: 1 } : undefined}
+              transition={{ duration: 0.4, delay: 0.95 }}
+              className="mb-6 flex items-baseline gap-x-3"
+              aria-label={`focused on ${ROTATING_PHRASES.join(", ")}`}
             >
-              focused on
-            </motion.p>
-
-            {/* Typewriter — OffBit 101 Bold, zero kerning, brand color */}
-            <motion.div
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.6 }}
-              className="flex items-center mb-8 min-h-[1.2em]"
-              aria-label={ROTATING_PHRASES.join(", ")}
-            >
-              <span className="font-accent font-bold uppercase tracking-[0] text-fg-brand text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-none">
-                {displayedText}
-              </span>
               <span
-                className="inline-block text-fg-brand ml-0.5 text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
-                style={{ animation: "cursor-blink 0.5s step-end infinite" }}
-                aria-hidden="true"
+                className="uppercase tracking-[0] leading-none text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-[2.75rem] inline-flex items-baseline"
+                style={{ fontFamily: "var(--font-accent)", fontWeight: 700, color: "#fe5102" }}
               >
-                &#x2588;
+                {displayedText}
+                <span
+                  className="inline-block ml-0.5 w-[0.45em] h-[0.85em] bg-[#fe5102]"
+                  style={{ animation: "cursor-blink 0.5s step-end infinite" }}
+                  aria-hidden="true"
+                />
               </span>
-            </motion.div>
+            </motion.p>
 
             {/* Description — narrower for staircase taper */}
             <motion.p
               variants={fadeInUp}
               initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.7 }}
+              animate={pageLoaded ? "visible" : undefined}
+              transition={{ delay: 1.2 }}
               className="text-base md:text-lg text-fg-secondary max-w-sm mb-10"
             >
               We help the world make the most of design and technology. From
@@ -169,8 +177,8 @@ export function Hero() {
             <motion.div
               variants={fadeInUp}
               initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.8 }}
+              animate={pageLoaded ? "visible" : undefined}
+              transition={{ delay: 1.35 }}
               className="flex gap-4 pointer-events-auto"
             >
               <ActionButton href="/contact" size="lg" variant="brand">
@@ -200,8 +208,8 @@ export function Hero() {
         >
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.5 }}
+            animate={pageLoaded ? { opacity: 1 } : undefined}
+            transition={{ delay: 1.6, duration: 0.5 }}
           >
             <motion.div
               animate={{ y: [0, 8, 0] }}

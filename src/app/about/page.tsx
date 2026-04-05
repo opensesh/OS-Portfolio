@@ -3,8 +3,6 @@ import { AboutHero } from "@/components/about/about-hero";
 import { TeamSection } from "@/components/about/team-section";
 import { ValuesSection } from "@/components/about/values-section";
 import { StatsCounter } from "@/components/home/stats-counter";
-import { CTASection } from "@/components/home/cta-section";
-
 export const metadata: Metadata = {
   title: "About",
   description:
@@ -18,7 +16,6 @@ export default function AboutPage() {
       <TeamSection />
       <ValuesSection />
       <StatsCounter />
-      <CTASection />
     </>
   );
 }

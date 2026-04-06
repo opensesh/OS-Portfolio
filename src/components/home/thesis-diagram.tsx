@@ -38,52 +38,6 @@ const AFTER_PATH = {
 };
 
 // ---------------------------------------------------------------------------
-// Label positions (percentage-based relative to 700x700 viewBox)
-// ---------------------------------------------------------------------------
-
-interface DiagramLabel {
-  text: string;
-  /** Top position as percentage */
-  top: string;
-  /** Left position as percentage */
-  left: string;
-  bold?: boolean;
-  size?: "sm" | "md" | "lg";
-}
-
-const BEFORE_LABELS: DiagramLabel[] = [
-  { text: "Product", top: "18%", left: "14%", bold: true, size: "md" },
-  { text: "+", top: "24%", left: "20%", bold: true, size: "md" },
-  { text: "Marketing", top: "29%", left: "11%", bold: true, size: "md" },
-  { text: "Design", top: "18%", left: "71%", bold: true, size: "md" },
-  { text: "+", top: "24%", left: "77%", bold: true, size: "md" },
-  { text: "Creative", top: "29%", left: "71%", bold: true, size: "md" },
-  { text: "Brand", top: "46%", left: "43%", bold: true, size: "lg" },
-  { text: "Guidelines", top: "40%", left: "55%", size: "sm" },
-  { text: "Docs", top: "52%", left: "52%", size: "sm" },
-  { text: "System", top: "52%", left: "38%", size: "sm" },
-  { text: "Builders", top: "68%", left: "40%", bold: true, size: "md" },
-  { text: "+", top: "74%", left: "48%", bold: true, size: "md" },
-  { text: "Engineers", top: "79%", left: "38%", bold: true, size: "md" },
-];
-
-const AFTER_LABELS: DiagramLabel[] = [
-  { text: "Product", top: "30%", left: "41%", bold: true, size: "md" },
-  { text: "+", top: "35%", left: "48%", bold: true, size: "md" },
-  { text: "Marketing", top: "40%", left: "38%", bold: true, size: "md" },
-  { text: "Brand", top: "56%", left: "42%", bold: true, size: "lg" },
-  { text: "Guidelines", top: "47%", left: "25%", size: "sm" },
-  { text: "Docs", top: "47%", left: "68%", size: "sm" },
-  { text: "Design", top: "68%", left: "22%", bold: true, size: "md" },
-  { text: "+", top: "73%", left: "28%", bold: true, size: "md" },
-  { text: "Creative", top: "78%", left: "22%", bold: true, size: "md" },
-  { text: "Builders", top: "68%", left: "62%", bold: true, size: "md" },
-  { text: "+", top: "73%", left: "70%", bold: true, size: "md" },
-  { text: "Engineers", top: "78%", left: "60%", bold: true, size: "md" },
-  { text: "System", top: "88%", left: "42%", size: "sm" },
-];
-
-// ---------------------------------------------------------------------------
 // Animation variants
 // ---------------------------------------------------------------------------
 
@@ -91,16 +45,6 @@ const svgVariants = {
   initial: { opacity: 0, scale: 0.96 },
   animate: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
   exit: { opacity: 0, scale: 0.98, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const } },
-};
-
-const labelVariants = {
-  initial: { opacity: 0, y: 8 },
-  animate: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, delay: 0.3 + i * 0.04, ease: [0.16, 1, 0.3, 1] as const },
-  }),
-  exit: { opacity: 0, y: -4, transition: { duration: 0.2 } },
 };
 
 // ---------------------------------------------------------------------------
@@ -114,7 +58,6 @@ interface ThesisDiagramProps {
 
 export function ThesisDiagram({ activeState, className }: ThesisDiagramProps) {
   const isPast = activeState === "past";
-  const labels = isPast ? BEFORE_LABELS : AFTER_LABELS;
 
   return (
     <div className={cn("relative w-full aspect-square max-w-[560px] mx-auto", className)}>
@@ -190,40 +133,6 @@ export function ThesisDiagram({ activeState, className }: ThesisDiagramProps) {
             )}
           </svg>
 
-          {/* Text labels overlay */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`labels-${activeState}`}
-              className="absolute inset-0"
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              {labels.map((label, i) => (
-                <motion.span
-                  key={`${activeState}-${label.text}-${i}`}
-                  custom={i}
-                  variants={labelVariants}
-                  className={cn(
-                    "absolute select-none pointer-events-none whitespace-nowrap",
-                    "font-accent uppercase tracking-wider",
-                    label.bold ? "font-bold" : "font-normal",
-                    label.size === "lg" && "text-sm md:text-base lg:text-lg",
-                    label.size === "md" && "text-[10px] md:text-xs lg:text-sm",
-                    label.size === "sm" && "text-[9px] md:text-[10px] lg:text-xs",
-                    label.text === "Brand"
-                      ? "text-fg-inverse"
-                      : !isPast
-                        ? "text-fg-inverse"
-                        : "text-fg-primary",
-                  )}
-                  style={{ top: label.top, left: label.left }}
-                >
-                  {label.text}
-                </motion.span>
-              ))}
-            </motion.div>
-          </AnimatePresence>
         </motion.div>
       </AnimatePresence>
     </div>

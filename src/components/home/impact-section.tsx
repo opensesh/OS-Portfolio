@@ -63,14 +63,116 @@ function BoundingBox({
   children: React.ReactNode;
   className?: string;
 }) {
+  // Edge line timing — clockwise in, counterclockwise out
+  // In:  top(0) → right(1) → bottom(2) → left(3)
+  // Out: left(0) → bottom(1) → right(2) → top(3)  (reverse order)
+  const LINE_DURATION = 300; // ms per edge
+  const LINE_STAGGER = 60;  // ms between edges starting
+
+  const edgeBase = "absolute bg-fg-inverse pointer-events-none transition-all";
+
+  // Each edge: position, orientation, transform-origin, delays
+  const edges = [
+    // Top — grows left→right
+    {
+      className: `${edgeBase} top-0 left-0 h-px`,
+      style: {
+        transformOrigin: "left",
+        transitionProperty: "transform",
+        transitionDuration: `${LINE_DURATION}ms`,
+        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      hoverDelay: LINE_STAGGER * 0,
+      leaveDelay: LINE_STAGGER * 3,
+    },
+    // Right — grows top→bottom
+    {
+      className: `${edgeBase} top-0 right-0 w-px`,
+      style: {
+        transformOrigin: "top",
+        transitionProperty: "transform",
+        transitionDuration: `${LINE_DURATION}ms`,
+        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      hoverDelay: LINE_STAGGER * 1,
+      leaveDelay: LINE_STAGGER * 2,
+    },
+    // Bottom — grows right→left
+    {
+      className: `${edgeBase} bottom-0 right-0 h-px`,
+      style: {
+        transformOrigin: "right",
+        transitionProperty: "transform",
+        transitionDuration: `${LINE_DURATION}ms`,
+        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      hoverDelay: LINE_STAGGER * 2,
+      leaveDelay: LINE_STAGGER * 1,
+    },
+    // Left — grows bottom→top
+    {
+      className: `${edgeBase} bottom-0 left-0 w-px`,
+      style: {
+        transformOrigin: "bottom",
+        transitionProperty: "transform",
+        transitionDuration: `${LINE_DURATION}ms`,
+        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      hoverDelay: LINE_STAGGER * 3,
+      leaveDelay: LINE_STAGGER * 0,
+    },
+  ];
+
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <div className={cn("relative border border-brand-500 h-full", className)}>
+    <div
+      className={cn("relative border border-brand-500 h-full group", className)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <DotPattern width={5} height={5} />
-      {/* Corner markers */}
-      <div className="absolute -left-1.5 -top-1.5 h-3 w-3 bg-brand-500" />
-      <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 bg-brand-500" />
-      <div className="absolute -right-1.5 -top-1.5 h-3 w-3 bg-brand-500" />
-      <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 bg-brand-500" />
+
+      {/* Corner markers — transition to vanilla on hover */}
+      {[
+        "-left-1.5 -top-1.5",
+        "-bottom-1.5 -left-1.5",
+        "-right-1.5 -top-1.5",
+        "-bottom-1.5 -right-1.5",
+      ].map((pos) => (
+        <div
+          key={pos}
+          className={cn(
+            "absolute h-3 w-3 transition-colors duration-300",
+            pos,
+            hovered ? "bg-fg-inverse" : "bg-brand-500"
+          )}
+        />
+      ))}
+
+      {/* Animated edge lines — clockwise in, counterclockwise out */}
+      {edges.map((edge, i) => {
+        const isHorizontal = i === 0 || i === 2;
+        return (
+          <div
+            key={i}
+            className={edge.className}
+            style={{
+              ...edge.style,
+              // Full width/height of edge
+              ...(isHorizontal ? { width: "100%" } : { height: "100%" }),
+              // Scale from 0 → 1 on hover, 1 → 0 on leave
+              transform: hovered
+                ? `${isHorizontal ? "scaleX" : "scaleY"}(1)`
+                : `${isHorizontal ? "scaleX" : "scaleY"}(0)`,
+              transitionDelay: hovered
+                ? `${edge.hoverDelay}ms`
+                : `${edge.leaveDelay}ms`,
+            }}
+          />
+        );
+      })}
+
       <div className="relative z-10 h-full">{children}</div>
     </div>
   );

@@ -289,35 +289,30 @@ export function TVChannelMenu({
           )}
         </AnimatePresence>
 
-        {/* FAB — ghost style with orange glow during TV hold phase */}
+        {/* FAB — ghost style with orange glow behind during TV hold phase */}
         <div className="relative">
-          {/* Glow ring — pulsing orange aura behind the button */}
+          {/* Glow aura — pulsing orange behind the button, no fill on the button itself */}
           <motion.div
-            className="absolute inset-0 rounded-full"
-            style={{
-              opacity: glowOpacity,
-              boxShadow: "0 0 20px 4px rgba(254,81,2,0.45), 0 0 40px 8px rgba(254,81,2,0.2)",
-            }}
+            className="absolute inset-[-8px] rounded-full pointer-events-none"
+            style={{ opacity: glowOpacity }}
             animate={isGlowing ? {
               boxShadow: [
-                "0 0 20px 4px rgba(254,81,2,0.45), 0 0 40px 8px rgba(254,81,2,0.2)",
-                "0 0 28px 6px rgba(254,81,2,0.55), 0 0 52px 12px rgba(254,81,2,0.25)",
-                "0 0 20px 4px rgba(254,81,2,0.45), 0 0 40px 8px rgba(254,81,2,0.2)",
+                "0 0 24px 8px rgba(254,81,2,0.35), 0 0 48px 16px rgba(254,81,2,0.15)",
+                "0 0 32px 12px rgba(254,81,2,0.5), 0 0 64px 24px rgba(254,81,2,0.2)",
+                "0 0 24px 8px rgba(254,81,2,0.35), 0 0 48px 16px rgba(254,81,2,0.15)",
               ],
-            } : undefined}
+            } : {
+              boxShadow: "0 0 0px 0px rgba(254,81,2,0), 0 0 0px 0px rgba(254,81,2,0)",
+            }}
             transition={isGlowing ? {
               duration: 2.5,
               repeat: Infinity,
               ease: "easeInOut",
-            } : undefined}
+            } : { duration: 0.3 }}
             aria-hidden
           />
           <motion.button
-            className={`relative group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 ${
-              isGlowing
-                ? "border-[#fe5102]/50 bg-[#fe5102]/10 text-[#fe5102]"
-                : "border-fg-primary/20 text-fg-primary/50 hover:border-fg-primary/40 hover:bg-fg-primary/10 hover:text-fg-primary/80"
-            }`}
+            className="relative group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-fg-primary/20 text-fg-primary/50 transition-all duration-300 hover:border-fg-primary/40 hover:bg-fg-primary/10 hover:text-fg-primary/80"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={pageLoaded ? { opacity: 1, scale: 1 } : undefined}
             transition={{ delay: 1.8, type: "spring", stiffness: 300, damping: 25 }}

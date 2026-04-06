@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ActionButton } from "@/components/shared/action-button";
@@ -13,6 +13,8 @@ import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { useTheme } from "@/components/providers/theme-provider";
 import { devProps } from "@/utils/dev-props";
+import { TVChannelMenu } from "@/components/home/tv-channel-menu";
+import { DEFAULT_CHANNEL } from "@/lib/tv-channels";
 import Image from "next/image";
 
 const CLIENTS = [
@@ -44,22 +46,28 @@ export function Hero() {
   const { resolvedTheme } = useTheme();
   const pageLoaded = usePageLoaded();
   const terminalBg = resolvedTheme === "dark" ? "#191919" : "#faf8f5";
-
+  const [activeChannel, setActiveChannel] = useState(DEFAULT_CHANNEL);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  // Phase 1 (0–15%): text fades, TV slides to center
+  // Phase 2 (15–55%): TV holds centered — dwell time
+  // Phase 3 (55–100%): zoom into screen, transition out
+  // Clamp to 0 after fade — these must never reappear
+  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.08, 1], [1, 0, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.10, 1], [1, 0, 0]);
+  // Hide text/client bar from layout once faded so they can't interfere
+  const textVisibility = useTransform(scrollYProgress, (v) => v > 0.12 ? "hidden" as const : "visible" as const);
+  const clientBarVisibility = useTransform(scrollYProgress, (v) => v > 0.10 ? "hidden" as const : "visible" as const);
 
-  // Canvas translateX: starts shifted right 25% on desktop so TV is in right half,
-  // slides back to 0 on scroll so TV centers. Canvas stays full viewport width.
+  // Canvas translateX: slides from right-offset to centered during Phase 1
   const tvX = useTransform(
     scrollYProgress,
-    [0, 0.3],
-    [isDesktop ? "25%" : "0%", "0%"]
+    [0, 0.15],
+    [isDesktop ? "20%" : "0%", "0%"]
   );
 
   useEffect(() => {
@@ -71,7 +79,7 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} className="relative h-[300vh] -mt-16 md:-mt-20" {...devProps('Hero')}>
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-screen" style={{ overflowX: 'clip', overflowY: 'visible' }}>
         {/* Faulty Terminal background — full-bleed behind everything */}
         <div className="absolute inset-0 z-[-1] opacity-15">
           <FaultyTerminal
@@ -94,23 +102,24 @@ export function Hero() {
 
         {/* 3D Canvas — full viewport, translated right on desktop so TV starts in right half */}
         <motion.div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 lg:bottom-[10vh] z-0"
           style={{ x: tvX }}
         >
           <CRTTVScene
             scrollRef={scrollRef}
             mouseRef={mouseRef}
+            activeChannel={activeChannel}
             className="h-full w-full"
           />
         </motion.div>
 
-        {/* Hero text — left half, fades on scroll */}
+        {/* Hero text — left half, fades on scroll and hides once gone */}
         <motion.div
-          style={{ opacity: textOpacity }}
+          style={{ opacity: textOpacity, visibility: textVisibility }}
           className="relative z-10 h-full pointer-events-none"
         >
-          <div className="container-wide h-full flex items-center pb-[10vh]">
-            <div className="w-full lg:w-1/2">
+          <div className="container-wide h-full flex items-start pt-28 md:pt-32 lg:items-center lg:pt-0 pb-[10vh]">
+            <div className="w-full lg:w-[60%] xl:w-1/2">
             {/* Tagline */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -127,7 +136,7 @@ export function Hero() {
               trigger="after-loader"
               delay={0.1}
               stagger={0.15}
-              className="text-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.25rem]"
+              className="text-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] 2xl:text-[4.25rem]"
             >
               {"Brand strategy meets\ndesign systems"}
             </TextBlockReveal>
@@ -167,15 +176,15 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Bottom gradient fade — blends into next section */}
+        {/* Bottom gradient fade — tall, smooth blend into next section */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-32 z-20 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent, var(--bg-primary))" }}
+          className="absolute bottom-0 left-0 right-0 h-48 z-20 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, var(--bg-primary) 100%)" }}
         />
 
         {/* Client credibility bar */}
         <motion.div
-          style={{ opacity: clientBarOpacity }}
+          style={{ opacity: clientBarOpacity, visibility: clientBarVisibility }}
           className="absolute bottom-10 left-0 z-30 w-full hidden lg:block pointer-events-none"
         >
           <motion.div
@@ -184,11 +193,13 @@ export function Hero() {
             transition={{ delay: 1.6, duration: 0.5 }}
             className="container-wide"
           >
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <p className="font-accent text-sm font-bold uppercase tracking-widest text-fg-tertiary leading-tight whitespace-nowrap">
-                Trusted by brands that think big
+                Past Design
+                <br />
+                Work With
               </p>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5">
                 {CLIENTS.map((client) => (
                   <Image
                     key={client.name}
@@ -199,6 +210,9 @@ export function Hero() {
                     className="h-14 w-auto opacity-70"
                   />
                 ))}
+                <span className="font-accent text-xs font-bold uppercase tracking-widest text-fg-tertiary opacity-50 whitespace-nowrap ml-1">
+                  + More
+                </span>
               </div>
             </div>
           </motion.div>
@@ -206,7 +220,7 @@ export function Hero() {
 
         {/* Scroll indicator */}
         <motion.div
-          style={{ opacity: textOpacity }}
+          style={{ opacity: textOpacity, visibility: textVisibility }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
         >
           <motion.div
@@ -227,6 +241,13 @@ export function Hero() {
             </motion.div>
           </motion.div>
         </motion.div>
+
+        {/* TV Channel Menu — floating FAB + dropdown */}
+        <TVChannelMenu
+          scrollYProgress={scrollYProgress}
+          sectionRef={sectionRef}
+          onChannelChange={setActiveChannel}
+        />
 
       </div>
     </section>

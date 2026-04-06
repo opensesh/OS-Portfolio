@@ -24,3 +24,26 @@ export const team: TeamMember[] = [
   },
   // Add more team members as needed
 ];
+
+export const showcase: TeamMember[] = [
+  {
+    id: "karim",
+    name: "Karim",
+    role: "Co-Founder & CEO",
+    bio: "Karim drives the strategic vision behind Open Session, bridging creative ambition with business impact to help brands find their voice.",
+    image: "/images/team/karim.webp",
+    social: {
+      linkedin: "https://linkedin.com/in/karim",
+    },
+  },
+  {
+    id: "morgan",
+    name: "Morgan",
+    role: "Co-Founder & COO",
+    bio: "Morgan brings operational excellence and creative leadership, ensuring every project delivers on its promise from concept to launch.",
+    image: "/images/team/morgan.webp",
+    social: {
+      linkedin: "https://linkedin.com/in/morgan",
+    },
+  },
+];

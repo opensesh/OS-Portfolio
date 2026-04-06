@@ -3,6 +3,7 @@
 import { Suspense, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
+import * as THREE from "three";
 import { CRTTVModel } from "./crt-tv-model";
 import { devProps } from "@/utils/dev-props";
 
@@ -15,15 +16,15 @@ import { devProps } from "@/utils/dev-props";
 //   yEnd    — camera Y at max zoom (screen center for entering the screen)
 function getCameraConfig(width: number) {
   if (width < 640) {
-    // Mobile: tight zoom, TV centered vertically in viewport
-    return { zStart: 1.55, zHold: 0.88, zEnd: 0.25, yStart: 0.0, yHold: -0.06, yEnd: 0.04 };
+    // Mobile: tight zoom, TV centered between buttons and viewport bottom
+    return { zStart: 1.55, zHold: 0.88, zEnd: 0.25, yStart: 0.0, yHold: 0.0, yEnd: 0.04, lookAtYStart: 0.08, lookAtYHold: -0.08, lookAtYEnd: 0.0 };
   }
   if (width < 1024) {
     // Tablet: comfortable zoom, TV centered in viewport
-    return { zStart: 1.3, zHold: 0.72, zEnd: 0.20, yStart: 0.0, yHold: -0.05, yEnd: 0.04 };
+    return { zStart: 1.3, zHold: 0.72, zEnd: 0.20, yStart: 0.0, yHold: 0.0, yEnd: 0.04, lookAtYStart: 0.06, lookAtYHold: -0.08, lookAtYEnd: 0.0 };
   }
-  // Desktop: TV aligned with hero copy on entry, centered in hold
-  return { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: -0.04, yHold: -0.05, yEnd: 0.04 };
+  // Desktop: TV aligned with hero copy on entry, centered below header in hold
+  return { zStart: 1.05, zHold: 0.84, zEnd: 0.18, yStart: 0.0, yHold: 0.0, yEnd: 0.04, lookAtYStart: -0.08, lookAtYHold: -0.05, lookAtYEnd: 0.0 };
 }
 
 interface CameraControllerProps {
@@ -42,6 +43,7 @@ function CameraController({ scrollRef }: CameraControllerProps) {
   const config = useRef(getCameraConfig(size.width));
   const currentZ = useRef(config.current.zStart);
   const currentY = useRef(config.current.yStart);
+  const currentLookAtY = useRef(config.current.lookAtYStart);
   const smoothedScroll = useRef(0);
 
   useEffect(() => {
@@ -54,31 +56,37 @@ function CameraController({ scrollRef }: CameraControllerProps) {
     smoothedScroll.current += (rawProgress - smoothedScroll.current) * scrollFactor;
     const progress = smoothedScroll.current;
 
-    const { zStart, zHold, zEnd, yStart, yHold, yEnd } = config.current;
+    const { zStart, zHold, zEnd, yStart, yHold, yEnd, lookAtYStart, lookAtYHold, lookAtYEnd } = config.current;
 
     let targetZ: number;
     let targetY: number;
+    let targetLookAtY: number;
 
     if (progress <= P1_END) {
       // Phase 1: lerp from start → hold
       const t = progress / P1_END;
       targetZ = zStart + (zHold - zStart) * t;
       targetY = yStart + (yHold - yStart) * t;
+      targetLookAtY = lookAtYStart + (lookAtYHold - lookAtYStart) * t;
     } else if (progress <= P2_END) {
       // Phase 2: hold centered
       targetZ = zHold;
       targetY = yHold;
+      targetLookAtY = lookAtYHold;
     } else {
       // Phase 3: lerp from hold → end (into the screen)
       const t = (progress - P2_END) / (1 - P2_END);
       targetZ = zHold + (zEnd - zHold) * t;
       targetY = yHold + (yEnd - yHold) * t;
+      targetLookAtY = lookAtYHold + (lookAtYEnd - lookAtYHold) * t;
     }
 
     const factor = 1 - Math.exp(-8 * delta);
     currentZ.current += (targetZ - currentZ.current) * factor;
     currentY.current += (targetY - currentY.current) * factor;
+    currentLookAtY.current += (targetLookAtY - currentLookAtY.current) * factor;
     camera.position.set(0, currentY.current, currentZ.current);
+    camera.lookAt(0, currentLookAtY.current, 0);
   });
 
   return null;
@@ -88,14 +96,17 @@ interface CRTTVSceneProps {
   scrollRef: React.RefObject<number | null>;
   mouseRef: React.RefObject<{ x: number; y: number } | null>;
   activeChannel: string;
+  cameraTextureRef?: React.RefObject<THREE.VideoTexture | null>;
+  isLiveRef?: React.RefObject<boolean>;
+  onSnapshotRequest?: React.MutableRefObject<(() => void) | null>;
   className?: string;
 }
 
-export function CRTTVScene({ scrollRef, mouseRef, activeChannel, className }: CRTTVSceneProps) {
+export function CRTTVScene({ scrollRef, mouseRef, activeChannel, cameraTextureRef, isLiveRef, onSnapshotRequest, className }: CRTTVSceneProps) {
   const initialConfig = useRef(
     typeof window !== "undefined"
       ? getCameraConfig(window.innerWidth)
-      : { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: -0.08, yHold: -0.05, yEnd: 0.04 }
+      : { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: 0.0, yHold: 0.0, yEnd: 0.04, lookAtYStart: -0.08, lookAtYHold: -0.08, lookAtYEnd: 0.0 }
   );
 
   return (
@@ -120,7 +131,13 @@ export function CRTTVScene({ scrollRef, mouseRef, activeChannel, className }: CR
           <Environment preset="apartment" />
 
           <CameraController scrollRef={scrollRef} />
-          <CRTTVModel mouseRef={mouseRef} activeChannel={activeChannel} />
+          <CRTTVModel
+            mouseRef={mouseRef}
+            activeChannel={activeChannel}
+            cameraTextureRef={cameraTextureRef}
+            isLiveRef={isLiveRef}
+            onSnapshotRequest={onSnapshotRequest}
+          />
         </Suspense>
       </Canvas>
     </div>

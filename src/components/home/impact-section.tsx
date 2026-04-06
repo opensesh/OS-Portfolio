@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useMotionValue, useSpring, animate } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { useGlitch } from "react-powerglitch";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,26 @@ const CARDS: CardItem[] = [
   { kind: "media", mediaType: "image", src: null, alt: "Client collaboration" },
 ];
 
+// Card size in px per breakpoint (matched via JS)
+const CARD_GAP = 16;
+
+function useCardWidth() {
+  const [width, setWidth] = useState(280);
+  useEffect(() => {
+    const update = () => {
+      const vw = window.innerWidth;
+      if (vw >= 1024) setWidth(400);
+      else if (vw >= 768) setWidth(360);
+      else if (vw >= 640) setWidth(320);
+      else setWidth(280);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return width;
+}
+
 // ---------------------------------------------------------------------------
 // Bounding-box wrapper — matches Beliefs section style
 // ---------------------------------------------------------------------------
@@ -57,7 +77,7 @@ function BoundingBox({
 }
 
 // ---------------------------------------------------------------------------
-// Stat card — number with CRT powerglitch + scramble label
+// Stat card — number with CRT powerglitch (Aperol + warm grays) + scramble label
 // ---------------------------------------------------------------------------
 
 function StatCard({ value, label, index, isInView }: { value: string; label: string; index: number; isInView: boolean }) {
@@ -79,7 +99,7 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
       velocity: 12,
       minHeight: 0.02,
       maxHeight: 0.12,
-      hueRotate: true,
+      hueRotate: false,
     },
   });
 
@@ -102,7 +122,7 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
       <div className="flex flex-col justify-between h-full p-6 sm:p-8 md:p-10">
         <div
           ref={glitch.ref}
-          className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-fg-primary leading-none"
+          className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-fg-brand leading-none"
         >
           {value}
         </div>
@@ -156,52 +176,90 @@ function MediaCard({ mediaType, src, alt }: { mediaType: "video" | "image"; src:
 }
 
 // ---------------------------------------------------------------------------
-// Horizontal scroll carousel
+// Main section — translateX carousel with edge fades
 // ---------------------------------------------------------------------------
 
 export function ImpactSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const cardWidth = useCardWidth();
+  const totalCards = CARDS.length;
+  const cardStep = cardWidth + CARD_GAP;
 
-  const updateScrollState = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 2);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
-  }, []);
+  // Position tracking via motion value (pixel offset of track)
+  const x = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 300, damping: 40 });
 
+  // Compute max offset so last card is visible
+  const [viewportWidth, setViewportWidth] = useState(0);
   useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    updateScrollState();
-    // Also recheck on resize
-    const ro = new ResizeObserver(updateScrollState);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      ro.disconnect();
-    };
-  }, [updateScrollState]);
-
-  const scroll = useCallback((dir: -1 | 1) => {
-    const el = trackRef.current;
-    if (!el) return;
-    // Scroll by ~1 card width
-    const cardWidth = el.querySelector<HTMLElement>("[data-card]")?.offsetWidth ?? 320;
-    el.scrollBy({ left: dir * (cardWidth + 16), behavior: "smooth" });
+    const update = () => setViewportWidth(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
-  // Track stat-only index for glitch stagger
+  const trackWidth = totalCards * cardStep - CARD_GAP;
+  const maxOffset = Math.max(0, trackWidth - viewportWidth + 64); // 64 = side padding safety
+
+  const [offset, setOffset] = useState(0);
+
+  const canScrollLeft = offset > 0;
+  const canScrollRight = offset < maxOffset;
+
+  const scrollBy = useCallback(
+    (dir: -1 | 1) => {
+      setOffset((prev) => {
+        const next = Math.max(0, Math.min(maxOffset, prev + dir * cardStep));
+        animate(x, -next, { type: "spring", stiffness: 300, damping: 40 });
+        return next;
+      });
+    },
+    [maxOffset, cardStep, x]
+  );
+
+  // Touch/drag support
+  const dragStart = useRef<{ startX: number; startOffset: number } | null>(null);
+
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      dragStart.current = { startX: e.clientX, startOffset: offset };
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    },
+    [offset]
+  );
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragStart.current) return;
+      const delta = dragStart.current.startX - e.clientX;
+      const next = Math.max(0, Math.min(maxOffset, dragStart.current.startOffset + delta));
+      x.set(-next);
+    },
+    [maxOffset, x]
+  );
+
+  const onPointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragStart.current) return;
+      const delta = dragStart.current.startX - e.clientX;
+      const finalOffset = Math.max(0, Math.min(maxOffset, dragStart.current.startOffset + delta));
+      // Snap to nearest card
+      const snapped = Math.round(finalOffset / cardStep) * cardStep;
+      const clamped = Math.max(0, Math.min(maxOffset, snapped));
+      setOffset(clamped);
+      animate(x, -clamped, { type: "spring", stiffness: 300, damping: 40 });
+      dragStart.current = null;
+    },
+    [maxOffset, cardStep, x]
+  );
+
   let statIndex = 0;
 
   return (
     <section
       ref={sectionRef}
-      className="py-20 md:py-32 bg-bg-primary overflow-hidden"
+      className="py-20 md:py-32 bg-bg-primary"
       {...devProps("ImpactSection")}
     >
       {/* Header */}
@@ -222,7 +280,7 @@ export function ImpactSection() {
             className="flex items-center gap-3"
           >
             <button
-              onClick={() => scroll(-1)}
+              onClick={() => scrollBy(-1)}
               disabled={!canScrollLeft}
               className={cn(
                 "flex items-center justify-center",
@@ -238,7 +296,7 @@ export function ImpactSection() {
               <ArrowLeft className="w-4 h-4" />
             </button>
             <button
-              onClick={() => scroll(1)}
+              onClick={() => scrollBy(1)}
               disabled={!canScrollRight}
               className={cn(
                 "flex items-center justify-center",
@@ -257,44 +315,61 @@ export function ImpactSection() {
         </div>
       </div>
 
-      {/* Horizontal scroll track */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-      >
+      {/* Carousel viewport with edge fades */}
+      <div className="relative overflow-hidden">
+        {/* Left fade */}
         <div
-          ref={trackRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-[max(1rem,calc((100vw-var(--container-xl))/2+1rem))] md:px-[max(2rem,calc((100vw-var(--container-xl))/2+2rem))] lg:px-[max(4rem,calc((100vw-var(--container-xl))/2+4rem))]"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          className="absolute left-0 top-0 bottom-0 w-16 md:w-24 lg:w-32 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to right, var(--bg-primary), transparent)" }}
+        />
+        {/* Right fade */}
+        <div
+          className="absolute right-0 top-0 bottom-0 w-16 md:w-24 lg:w-32 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to left, var(--bg-primary), transparent)" }}
+        />
+
+        {/* Track */}
+        <motion.div
+          variants={fadeInUp}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
         >
-          {CARDS.map((card, i) => {
-            const currentStatIndex = card.kind === "stat" ? statIndex++ : 0;
-            return (
-              <div
-                key={i}
-                data-card
-                className="flex-shrink-0 snap-start w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] aspect-square"
-              >
-                {card.kind === "stat" ? (
-                  <StatCard
-                    value={card.value}
-                    label={card.label}
-                    index={currentStatIndex}
-                    isInView={isInView}
-                  />
-                ) : (
-                  <MediaCard
-                    mediaType={card.mediaType}
-                    src={card.src}
-                    alt={card.alt}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </motion.div>
+          <motion.div
+            className="flex gap-4 px-8 md:px-16 lg:px-24 touch-pan-y select-none"
+            style={{ x: springX, width: trackWidth + 192 }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+          >
+            {CARDS.map((card, i) => {
+              const currentStatIndex = card.kind === "stat" ? statIndex++ : 0;
+              return (
+                <div
+                  key={i}
+                  className="flex-shrink-0"
+                  style={{ width: cardWidth, height: cardWidth }}
+                >
+                  {card.kind === "stat" ? (
+                    <StatCard
+                      value={card.value}
+                      label={card.label}
+                      index={currentStatIndex}
+                      isInView={isInView}
+                    />
+                  ) : (
+                    <MediaCard
+                      mediaType={card.mediaType}
+                      src={card.src}
+                      alt={card.alt}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
+      </div>
     </section>
   );
 }

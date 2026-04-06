@@ -1,0 +1,414 @@
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { Monitor03 } from "@untitledui-pro/icons/line";
+import { Expand06 } from "@untitledui-pro/icons/line";
+import { Camera01 } from "@untitledui-pro/icons/line";
+import { XClose } from "@untitledui-pro/icons/line";
+import { usePageLoaded } from "@/hooks/use-page-loaded";
+import { devProps } from "@/utils/dev-props";
+import { TV_CHANNELS, DEFAULT_CHANNEL } from "@/lib/tv-channels";
+
+const OFFBIT = "'OffBit', 'SF Mono', monospace";
+const IDLE_CLOSE_MS = 2000;
+
+const menuCardVariants = {
+  hidden: { opacity: 0, scale: 0.85, y: 10 },
+  visible: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.85, y: 10 },
+};
+
+const channelListVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.04, delayChildren: 0.08 },
+  },
+};
+
+const channelItemVariants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const modalOverlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
+const modalContentVariants = {
+  hidden: { opacity: 0, scale: 0.92, y: 12 },
+  visible: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.92, y: 12 },
+};
+
+interface TVChannelMenuProps {
+  scrollYProgress: MotionValue<number>;
+  sectionRef: React.RefObject<HTMLElement | null>;
+  onChannelChange?: (channelSlug: string) => void;
+}
+
+export function TVChannelMenu({
+  scrollYProgress,
+  sectionRef,
+  onChannelChange,
+}: TVChannelMenuProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeChannel, setActiveChannel] = useState(DEFAULT_CHANNEL);
+  const [isVisible, setIsVisible] = useState(true);
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const pageLoaded = usePageLoaded();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Stay fully visible while TV is on screen (0-75%), fade out as section exits (75-85%)
+  const menuOpacity = useTransform(scrollYProgress, [0.75, 0.85], [1, 0]);
+
+  // Orange glow intensity: ramps up as TV centers (10-18%), holds during dwell, fades as zoom starts (50-58%)
+  const glowOpacity = useTransform(scrollYProgress, [0.10, 0.18, 0.50, 0.58], [0, 1, 1, 0]);
+  const [isGlowing, setIsGlowing] = useState(false);
+
+  // Track opacity to disable pointer events when faded out
+  useEffect(() => {
+    const unsubscribe = menuOpacity.on("change", (v) => {
+      setIsVisible(v > 0.1);
+    });
+    return unsubscribe;
+  }, [menuOpacity]);
+
+  // Track glow state for CSS animation toggle
+  useEffect(() => {
+    const unsubscribe = glowOpacity.on("change", (v) => {
+      setIsGlowing(v > 0.1);
+    });
+    return unsubscribe;
+  }, [glowOpacity]);
+
+  // Auto-close menu after idle (2s with no hover)
+  useEffect(() => {
+    if (!isOpen) return;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const container = menuRef.current;
+    if (!container) return;
+
+    const startTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setIsOpen(false), IDLE_CLOSE_MS);
+    };
+    const clearTimerFn = () => clearTimeout(timer);
+
+    startTimer();
+    container.addEventListener("mouseenter", clearTimerFn);
+    container.addEventListener("mouseleave", startTimer);
+
+    return () => {
+      clearTimeout(timer);
+      container.removeEventListener("mouseenter", clearTimerFn);
+      container.removeEventListener("mouseleave", startTimer);
+    };
+  }, [isOpen]);
+
+  // Close on click outside or Escape
+  useEffect(() => {
+    if (!isOpen && !showCameraModal) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (showCameraModal) setShowCameraModal(false);
+        else setIsOpen(false);
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!isOpen) return;
+      const container = menuRef.current;
+      if (container && !container.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, showCameraModal]);
+
+  const scrollToFullScreen = useCallback(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.scrollHeight;
+    const viewportHeight = window.innerHeight;
+    const scrollableDistance = sectionHeight - viewportHeight;
+    const target = sectionTop + scrollableDistance * 0.2;
+    window.scrollTo({ top: target, behavior: "smooth" });
+    setIsOpen(false);
+  }, [sectionRef]);
+
+  const handleChannelSelect = useCallback(
+    (slug: string) => {
+      setActiveChannel(slug);
+      onChannelChange?.(slug);
+    },
+    [onChannelChange]
+  );
+
+  return (
+    <>
+      <motion.div
+        ref={menuRef}
+        className="fixed bottom-8 right-8 z-40 flex flex-col items-end max-sm:bottom-6 max-sm:right-6"
+        style={{
+          opacity: menuOpacity,
+          pointerEvents: isVisible ? "auto" : "none",
+        }}
+        {...devProps("TVChannelMenu")}
+      >
+        {/* Channel menu card — uses primary/secondary tokens for proper theming */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              className="mb-3 w-80 origin-bottom-right overflow-hidden rounded-[6px] border border-fg-primary/10 bg-bg-secondary/95 backdrop-blur-xl max-sm:w-72"
+              variants={menuCardVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              role="menu"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 pt-5 pb-4">
+                <span
+                  className="text-base font-bold uppercase text-fg-primary"
+                  style={{ letterSpacing: "0.15em", fontFamily: OFFBIT }}
+                >
+                  TV Menu
+                </span>
+                <div className="flex items-center gap-2">
+                  {/* Channel count chip */}
+                  <span
+                    className="inline-flex items-center rounded-full border border-[#fe5102]/20 bg-[#fe5102]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#fe5102]"
+                    style={{ fontFamily: OFFBIT }}
+                  >
+                    {TV_CHANNELS.length} total
+                  </span>
+                  {/* Camera / Go Live button */}
+                  <button
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-fg-primary/10 bg-fg-primary/5 text-fg-primary/40 transition-all duration-200 hover:border-[#fe5102]/25 hover:bg-[#fe5102]/10 hover:text-[#fe5102]"
+                    onClick={() => setShowCameraModal(true)}
+                    aria-label="Go live on TV"
+                  >
+                    <Camera01 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Channel list — scrollable, shows ~3.5 rows */}
+              <motion.div
+                className="max-h-[200px] overflow-y-auto px-2 pt-1 pb-2"
+                variants={channelListVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <div className="flex flex-col gap-1">
+                  {TV_CHANNELS.map((channel) => {
+                    const isActive = activeChannel === channel.slug;
+                    return (
+                      <motion.button
+                        key={channel.slug}
+                        variants={channelItemVariants}
+                        className={`group/row flex w-full cursor-pointer items-center justify-between rounded-[6px] px-3 py-3 transition-all duration-200 ${
+                          isActive
+                            ? "bg-fg-primary/8"
+                            : "hover:bg-fg-primary/5"
+                        }`}
+                        role="menuitem"
+                        onClick={() => handleChannelSelect(channel.slug)}
+                        whileHover={{ x: isActive ? 0 : 3 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 30,
+                        }}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          {/* Active indicator bar */}
+                          <div
+                            className={`h-4 w-0.5 rounded-full transition-colors duration-200 ${
+                              isActive ? "bg-[#fe5102]" : "bg-transparent group-hover/row:bg-fg-primary/15"
+                            }`}
+                          />
+                          <span
+                            className={`text-sm transition-colors duration-200 ${
+                              isActive
+                                ? "font-semibold text-fg-primary"
+                                : "font-medium text-fg-primary/55 group-hover/row:text-fg-primary/80"
+                            }`}
+                          >
+                            {channel.label}
+                          </span>
+                        </div>
+                        <span
+                          className={`text-xs tracking-widest transition-colors duration-200 ${
+                            isActive
+                              ? "text-[#fe5102]"
+                              : "text-fg-primary/30 group-hover/row:text-fg-primary/45"
+                          }`}
+                          style={{ fontFamily: OFFBIT }}
+                        >
+                          {channel.number}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+
+              {/* Footer — View Full Screen, centered */}
+              <div className="border-t border-fg-primary/8 px-4 py-4">
+                <button
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 text-fg-primary/35 transition-colors duration-200 hover:text-fg-primary/60"
+                  onClick={scrollToFullScreen}
+                >
+                  <Expand06 className="h-3.5 w-3.5" />
+                  <span className="text-xs font-medium tracking-wide">
+                    View Full Screen
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* FAB — ghost style with orange glow during TV hold phase */}
+        <div className="relative">
+          {/* Glow ring — pulsing orange aura behind the button */}
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            style={{
+              opacity: glowOpacity,
+              boxShadow: "0 0 20px 4px rgba(254,81,2,0.45), 0 0 40px 8px rgba(254,81,2,0.2)",
+            }}
+            animate={isGlowing ? {
+              boxShadow: [
+                "0 0 20px 4px rgba(254,81,2,0.45), 0 0 40px 8px rgba(254,81,2,0.2)",
+                "0 0 28px 6px rgba(254,81,2,0.55), 0 0 52px 12px rgba(254,81,2,0.25)",
+                "0 0 20px 4px rgba(254,81,2,0.45), 0 0 40px 8px rgba(254,81,2,0.2)",
+              ],
+            } : undefined}
+            transition={isGlowing ? {
+              duration: 2.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            } : undefined}
+            aria-hidden
+          />
+          <motion.button
+            className={`relative group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 ${
+              isGlowing
+                ? "border-[#fe5102]/50 bg-[#fe5102]/10 text-[#fe5102]"
+                : "border-fg-primary/20 text-fg-primary/50 hover:border-fg-primary/40 hover:bg-fg-primary/10 hover:text-fg-primary/80"
+            }`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={pageLoaded ? { opacity: 1, scale: 1 } : undefined}
+            transition={{ delay: 1.8, type: "spring", stiffness: 300, damping: 25 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label="Toggle TV channel menu"
+            aria-expanded={isOpen}
+          >
+            <Monitor03 className="h-4.5 w-4.5" />
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Camera / Go Live modal */}
+      <AnimatePresence>
+        {showCameraModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            variants={modalOverlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={{ duration: 0.2 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setShowCameraModal(false)}
+            />
+
+            {/* Modal content */}
+            <motion.div
+              className="relative w-full max-w-sm overflow-hidden rounded-[6px] border border-fg-primary/10 bg-bg-secondary p-6"
+              variants={modalContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              {/* Close button */}
+              <button
+                className="absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-fg-primary/40 transition-colors duration-200 hover:text-fg-primary/80"
+                onClick={() => setShowCameraModal(false)}
+                aria-label="Close"
+              >
+                <XClose className="h-4 w-4" />
+              </button>
+
+              {/* Icon */}
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-[#fe5102]/20 bg-[#fe5102]/10">
+                <Camera01 className="h-5 w-5 text-[#fe5102]" />
+              </div>
+
+              {/* Heading */}
+              <h3
+                className="mb-2 text-lg font-bold uppercase text-fg-primary"
+                style={{ letterSpacing: "0.12em", fontFamily: OFFBIT }}
+              >
+                Join the Session
+              </h3>
+
+              {/* Description */}
+              <p className="mb-6 text-sm leading-relaxed text-fg-primary/55">
+                Put yourself on the screen. Your camera feed plays live on the
+                CRT — no recording, no tracking, just a creative experiment
+                between you and the TV.
+              </p>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  className="flex-1 cursor-pointer rounded-[6px] bg-[#fe5102] px-4 py-2.5 text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-90"
+                  onClick={() => {
+                    // Future: request camera access and pipe to TV texture
+                    setShowCameraModal(false);
+                  }}
+                >
+                  Go Live
+                </button>
+                <button
+                  className="flex-1 cursor-pointer rounded-[6px] border border-fg-primary/10 bg-fg-primary/5 px-4 py-2.5 text-sm font-medium text-fg-primary/60 transition-all duration-200 hover:border-fg-primary/20 hover:text-fg-primary/80"
+                  onClick={() => setShowCameraModal(false)}
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

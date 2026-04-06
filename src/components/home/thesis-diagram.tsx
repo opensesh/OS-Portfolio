@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, type PanInfo } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -39,14 +39,21 @@ const AFTER_PATH = {
 };
 
 // ---------------------------------------------------------------------------
-// Animation variants
+// Animation config
 // ---------------------------------------------------------------------------
 
-const svgVariants = {
-  initial: { opacity: 0, scale: 0.96 },
-  animate: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
-  exit: { opacity: 0, scale: 0.98, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const } },
-};
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+// Center of viewBox for collapse animation
+const CENTER_X = 350;
+const CENTER_Y = 350;
+
+// Approximate centers of the 3 cream circles (for collapse toward center)
+const CREAM_CENTERS = [
+  { cx: 556, cy: 171 }, // Top-right
+  { cx: 350, cy: 529 }, // Bottom
+  { cx: 144, cy: 171 }, // Top-left
+];
 
 // ---------------------------------------------------------------------------
 // Component
@@ -86,78 +93,107 @@ export function ThesisDiagram({ activeState, onSwipe, className }: ThesisDiagram
     >
       {/* Ambient glow behind SVG */}
       <motion.div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: isPast
-            ? "radial-gradient(circle at 50% 50%, rgba(254,81,2,0.12) 0%, rgba(254,81,2,0.04) 40%, transparent 70%)"
-            : "radial-gradient(circle at 50% 55%, rgba(254,81,2,0.2) 0%, rgba(254,81,2,0.08) 45%, transparent 75%)",
-        }}
+        className="absolute inset-[-20%] rounded-full pointer-events-none"
+        style={{ mixBlendMode: "screen" }}
         animate={{
-          opacity: [0.7, 1, 0.7],
-          scale: [0.98, 1.02, 0.98],
+          background: isPast
+            ? "radial-gradient(ellipse at 50% 50%, rgba(254,81,2,0.06) 0%, transparent 60%)"
+            : "radial-gradient(ellipse at 50% 55%, rgba(254,81,2,0.18) 0%, rgba(254,81,2,0.06) 35%, transparent 65%)",
+          opacity: isPast ? [0.5, 0.7, 0.5] : [0.7, 1, 0.7],
+          scale: isPast ? [0.97, 1.01, 0.97] : [0.95, 1.05, 0.95],
         }}
         transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
+          background: { duration: 0.6, ease: EASE },
+          opacity: { duration: isPast ? 8 : 5, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: isPast ? 8 : 5, repeat: Infinity, ease: "easeInOut" },
         }}
       />
 
-      {/* SVG diagram */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeState}
-          variants={svgVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="relative w-full h-full"
+      {/* Persistent SVG with animated paths */}
+      <svg
+        viewBox="0 0 700 700"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="relative w-full h-full"
+        role="img"
+        aria-label={
+          isPast
+            ? "Diagram showing disconnected departments sharing brand materials"
+            : "Diagram showing brand as the unified container for all content"
+        }
+      >
+        {/* Glow filters */}
+        <defs>
+          <filter id="glow-static" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+          <filter id="glow-organic" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="24" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+
+        {/* Glow layer — before connector (fades out in future) */}
+        <motion.g
+          animate={{ opacity: isPast ? 0.2 : 0 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          filter="url(#glow-static)"
         >
-          <svg
-            viewBox="0 0 700 700"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full"
-            role="img"
-            aria-label={
-              isPast
-                ? "Diagram showing disconnected departments sharing brand materials"
-                : "Diagram showing brand as the unified container for all content"
-            }
-          >
-            {/* Glow filter */}
-            <defs>
-              <filter id={`glow-${activeState}`} x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
+          <path d={BEFORE_PATHS[3].d} fill="#FE5102" />
+        </motion.g>
 
-            {/* Blurred glow layer */}
-            {isPast ? (
-              <g opacity="0.25" filter={`url(#glow-${activeState})`}>
-                {BEFORE_PATHS.filter((p) => p.fill === "#FE5102").map((path, i) => (
-                  <path key={i} d={path.d} fill={path.fill} />
-                ))}
-              </g>
-            ) : (
-              <g opacity="0.3" filter={`url(#glow-${activeState})`}>
-                <path d={AFTER_PATH.d} fill={AFTER_PATH.fill} />
-              </g>
-            )}
+        {/* Glow layer — after blob (fades in for future) */}
+        <motion.g
+          animate={{ opacity: isPast ? 0 : 0.3 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          filter="url(#glow-organic)"
+        >
+          <path d={AFTER_PATH.d} fill="#FE5102" />
+        </motion.g>
 
-            {/* Main paths */}
-            {isPast ? (
-              BEFORE_PATHS.map((path, i) => (
-                <path key={i} d={path.d} fill={path.fill} />
-              ))
-            ) : (
-              <path d={AFTER_PATH.d} fill={AFTER_PATH.fill} />
-            )}
-          </svg>
+        {/* Cream circles — collapse toward center in future */}
+        {BEFORE_PATHS.filter((p) => p.fill === "#FFFAEE").map((path, i) => {
+          const cc = CREAM_CENTERS[i];
+          const dx = (CENTER_X - cc.cx) * 0.6;
+          const dy = (CENTER_Y - cc.cy) * 0.6;
+          return (
+            <motion.path
+              key={`cream-${i}`}
+              d={path.d}
+              fill={path.fill}
+              animate={{
+                opacity: isPast ? 1 : 0,
+                x: isPast ? 0 : dx,
+                y: isPast ? 0 : dy,
+                scale: isPast ? 1 : 0.3,
+              }}
+              transition={{
+                duration: 0.6,
+                delay: isPast ? (2 - i) * 0.06 : i * 0.08,
+                ease: EASE,
+              }}
+              style={{ transformOrigin: `${cc.cx}px ${cc.cy}px` }}
+            />
+          );
+        })}
 
-        </motion.div>
-      </AnimatePresence>
+        {/* Orange blob — before connector (visible in past) */}
+        <motion.path
+          d={BEFORE_PATHS[3].d}
+          fill="#FE5102"
+          animate={{ opacity: isPast ? 1 : 0 }}
+          transition={{ duration: 0.5, ease: EASE }}
+        />
+
+        {/* Orange blob — after full blob (visible in future) */}
+        <motion.path
+          d={AFTER_PATH.d}
+          fill="#FE5102"
+          animate={{ opacity: isPast ? 0 : 1 }}
+          transition={{ duration: 0.6, delay: isPast ? 0 : 0.15, ease: EASE }}
+        />
+      </svg>
     </motion.div>
   );
 }

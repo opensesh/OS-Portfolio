@@ -91,9 +91,6 @@ export function CTASection() {
                 <ActionButton href="/contact" size="lg" variant="light">
                   Get in Touch
                 </ActionButton>
-                <ActionButton href="/workshop" size="lg" variant="light">
-                  Book a Workshop
-                </ActionButton>
               </motion.div>
             </div>
 

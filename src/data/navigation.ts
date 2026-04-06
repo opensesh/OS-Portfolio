@@ -14,8 +14,7 @@ export const mainNavItems: NavItem[] = [
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
-  { label: "Templates", href: "/templates" },
-  { label: "Workshop", href: "/workshop" },
+  { label: "The Lab", href: "/templates" },
 ];
 
 export const footerNavItems: Record<string, NavItem[]> = {
@@ -26,9 +25,7 @@ export const footerNavItems: Record<string, NavItem[]> = {
     { label: "Contact", href: "/contact" },
   ],
   resources: [
-    { label: "Templates", href: "/templates" },
-    { label: "Workshop", href: "/workshop" },
-    { label: "Newsletter", href: "#newsletter" },
+    { label: "The Lab", href: "/templates" },
   ],
   legal: [
     { label: "Terms of Service", href: "/terms" },

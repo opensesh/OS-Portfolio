@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback } from "react";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -53,14 +54,36 @@ const svgVariants = {
 
 interface ThesisDiagramProps {
   activeState: "past" | "future";
+  onSwipe?: (dir: "past" | "future") => void;
   className?: string;
 }
 
-export function ThesisDiagram({ activeState, className }: ThesisDiagramProps) {
+export function ThesisDiagram({ activeState, onSwipe, className }: ThesisDiagramProps) {
   const isPast = activeState === "past";
 
+  const handleDragEnd = useCallback(
+    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      if (!onSwipe) return;
+      const threshold = 50;
+      const velocityThreshold = 200;
+      if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
+        onSwipe("future");
+      } else if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
+        onSwipe("past");
+      }
+    },
+    [onSwipe]
+  );
+
   return (
-    <div className={cn("relative w-full aspect-square max-w-[560px] mx-auto", className)}>
+    <motion.div
+      className={cn("relative w-full aspect-square max-w-[560px] mx-auto cursor-grab active:cursor-grabbing", className)}
+      drag={onSwipe ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.1}
+      onDragEnd={handleDragEnd}
+      style={{ touchAction: "pan-y" }}
+    >
       {/* Ambient glow behind SVG */}
       <motion.div
         className="absolute inset-0 rounded-full"
@@ -135,6 +158,6 @@ export function ThesisDiagram({ activeState, className }: ThesisDiagramProps) {
 
         </motion.div>
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

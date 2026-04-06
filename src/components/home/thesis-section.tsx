@@ -8,6 +8,7 @@ import { ThesisDiagram } from "@/components/home/thesis-diagram";
 import { fadeInUp } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { devProps } from "@/utils/dev-props";
+import { DotPattern } from "@/components/ui/dot-pattern";
 
 // ---------------------------------------------------------------------------
 // Content data
@@ -105,37 +106,24 @@ function ThesisToggle({
 export function ThesisSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.15 });
   const [activeState, setActiveState] = useState<ThesisState>("past");
+  const isPast = activeState === "past";
 
   const content = THESIS_CONTENT[activeState];
 
-  // Swipe handling for mobile
-  const handleDragEnd = useCallback(
-    (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-      const threshold = 50;
-      const velocityThreshold = 200;
-
-      if (
-        info.offset.x < -threshold ||
-        info.velocity.x < -velocityThreshold
-      ) {
-        setActiveState("future");
-      } else if (
-        info.offset.x > threshold ||
-        info.velocity.x > velocityThreshold
-      ) {
-        setActiveState("past");
-      }
-    },
+  const handleSwipe = useCallback(
+    (dir: "past" | "future") => setActiveState(dir),
     []
   );
 
   return (
     <section
       ref={ref}
-      className="py-20 md:py-32 bg-bg-primary overflow-hidden"
+      className="relative py-24 md:py-36 bg-bg-secondary overflow-hidden"
       {...devProps("ThesisSection")}
     >
-      <div className="container-wide">
+      <DotPattern width={32} height={32} className="fill-fg-tertiary/15" />
+
+      <div className="container-wide relative">
         {/* Header row */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12 md:mb-16">
           <div>
@@ -156,26 +144,37 @@ export function ThesisSection() {
             </TextBlockReveal>
           </div>
 
+          {/* Toggle — desktop position (hidden on mobile) */}
           <motion.div
             variants={fadeInUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
+            className="hidden sm:flex flex-col items-end gap-2"
           >
+            <span className="text-[10px] text-fg-tertiary uppercase tracking-widest font-accent">
+              How branding works
+            </span>
             <ThesisToggle value={activeState} onChange={setActiveState} />
           </motion.div>
         </div>
 
-        {/* Content grid */}
+        {/* Toggle — mobile position (between heading and content) */}
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.15}
-          onDragEnd={handleDragEnd}
-          style={{ touchAction: "pan-y" }}
+          variants={fadeInUp}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="sm:hidden flex flex-col items-start gap-2 mb-8"
         >
-          {/* Left column — text */}
-          <div className="order-2 lg:order-1">
+          <span className="text-[10px] text-fg-tertiary uppercase tracking-widest font-accent">
+            How branding works
+          </span>
+          <ThesisToggle value={activeState} onChange={setActiveState} />
+        </motion.div>
+
+        {/* Content grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* Left column — text (always first) */}
+          <div className="order-1">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeState}
@@ -184,6 +183,24 @@ export function ThesisSection() {
                 animate="animate"
                 exit="exit"
               >
+                {/* State badge */}
+                <motion.span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-accent uppercase tracking-wider mb-4",
+                    isPast
+                      ? "bg-bg-tertiary text-fg-tertiary"
+                      : "bg-brand-500/10 text-brand-500"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full",
+                      isPast ? "bg-fg-tertiary" : "bg-brand-500"
+                    )}
+                  />
+                  {isPast ? "Current model" : "Our approach"}
+                </motion.span>
+
                 <h3 className="text-display text-xl md:text-2xl lg:text-3xl mb-3 md:mb-4">
                   {content.title}
                 </h3>
@@ -203,7 +220,7 @@ export function ThesisSection() {
                       }}
                       className={cn(
                         "pl-4 text-sm md:text-base text-fg-secondary leading-relaxed border-l-2",
-                        activeState === "past"
+                        isPast
                           ? "border-border-secondary"
                           : "border-brand-500"
                       )}
@@ -216,16 +233,16 @@ export function ThesisSection() {
             </AnimatePresence>
           </div>
 
-          {/* Right column — diagram */}
+          {/* Right column — diagram (always second) */}
           <motion.div
-            className="order-1 lg:order-2"
+            className="order-2"
             variants={fadeInUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
           >
-            <ThesisDiagram activeState={activeState} />
+            <ThesisDiagram activeState={activeState} onSwipe={handleSwipe} />
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

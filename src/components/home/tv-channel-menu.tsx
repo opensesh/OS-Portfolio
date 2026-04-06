@@ -166,7 +166,7 @@ export function TVChannelMenu({
     <>
       <motion.div
         ref={menuRef}
-        className="fixed bottom-8 right-8 z-40 flex flex-col items-end max-sm:bottom-6 max-sm:right-6"
+        className="absolute bottom-8 right-8 z-40 flex flex-col items-end max-sm:bottom-6 max-sm:right-6"
         style={{
           opacity: menuOpacity,
           pointerEvents: isVisible ? "auto" : "none",

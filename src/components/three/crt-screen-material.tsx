@@ -16,6 +16,8 @@ import * as THREE from "three";
 const CRTScreenMaterial = shaderMaterial(
   {
     uTexture: new THREE.Texture(),
+    uGlitchTexture: new THREE.Texture(),
+    uGlitchOpacity: 0,
     uTime: 0,
     uScanlineIntensity: 0.08,
     uVignetteStrength: 0.3,
@@ -34,6 +36,8 @@ const CRTScreenMaterial = shaderMaterial(
   // Fragment shader
   /* glsl */ `
     uniform sampler2D uTexture;
+    uniform sampler2D uGlitchTexture;
+    uniform float uGlitchOpacity;
     uniform float uTime;
     uniform float uScanlineIntensity;
     uniform float uVignetteStrength;
@@ -79,6 +83,13 @@ const CRTScreenMaterial = shaderMaterial(
       vig = pow(vig, uVignetteStrength);
       color *= vig;
 
+      // Glitch overlay (screen blend mode)
+      if (uGlitchOpacity > 0.0) {
+        vec3 glitch = texture2D(uGlitchTexture, uv).rgb;
+        vec3 blended = 1.0 - (1.0 - color) * (1.0 - glitch);
+        color = mix(color, blended, uGlitchOpacity);
+      }
+
       // Brightness boost (screens glow)
       color *= uBrightness;
 
@@ -97,6 +108,8 @@ declare module "@react-three/fiber" {
       HTMLElement
     > & {
       uTexture?: THREE.Texture;
+      uGlitchTexture?: THREE.Texture;
+      uGlitchOpacity?: number;
       uTime?: number;
       uScanlineIntensity?: number;
       uVignetteStrength?: number;

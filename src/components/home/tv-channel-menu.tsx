@@ -13,7 +13,7 @@ import { Camera01 } from "@untitledui-pro/icons/line";
 import { XClose } from "@untitledui-pro/icons/line";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { devProps } from "@/utils/dev-props";
-import { TV_CHANNELS, DEFAULT_CHANNEL } from "@/lib/tv-channels";
+import { TV_CHANNELS, DEFAULT_CHANNEL, LIVE_CHANNEL_SLUG } from "@/lib/tv-channels";
 
 const OFFBIT = "'OffBit', 'SF Mono', monospace";
 const IDLE_CLOSE_DESKTOP_MS = 2500;
@@ -54,12 +54,22 @@ interface TVChannelMenuProps {
   scrollYProgress: MotionValue<number>;
   sectionRef: React.RefObject<HTMLElement | null>;
   onChannelChange?: (channelSlug: string) => void;
+  isLive?: boolean;
+  onGoLive?: () => void;
+  onStopLive?: () => void;
+  onSnapshot?: () => void;
+  cameraError?: string | null;
 }
 
 export function TVChannelMenu({
   scrollYProgress,
   sectionRef,
   onChannelChange,
+  isLive = false,
+  onGoLive,
+  onStopLive,
+  onSnapshot,
+  cameraError,
 }: TVChannelMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeChannel, setActiveChannel] = useState(DEFAULT_CHANNEL);
@@ -90,6 +100,13 @@ export function TVChannelMenu({
     });
     return unsubscribe;
   }, [glowOpacity]);
+
+  // Sync activeChannel when live mode changes
+  useEffect(() => {
+    if (isLive) {
+      setActiveChannel(LIVE_CHANNEL_SLUG);
+    }
+  }, [isLive]);
 
   // Auto-close menu after idle — stays open while hovering inside
   useEffect(() => {
@@ -165,11 +182,20 @@ export function TVChannelMenu({
 
   const handleChannelSelect = useCallback(
     (slug: string) => {
+      // If selecting a normal channel while live, stop live first
+      if (isLive && slug !== LIVE_CHANNEL_SLUG) {
+        onStopLive?.();
+      }
       setActiveChannel(slug);
       onChannelChange?.(slug);
     },
-    [onChannelChange]
+    [onChannelChange, isLive, onStopLive]
   );
+
+  const handleGoLive = useCallback(() => {
+    onGoLive?.();
+    setShowCameraModal(false);
+  }, [onGoLive]);
 
   return (
     <>
@@ -182,7 +208,7 @@ export function TVChannelMenu({
         }}
         {...devProps("TVChannelMenu")}
       >
-        {/* Channel menu card — uses primary/secondary tokens for proper theming */}
+        {/* Channel menu card */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -203,13 +229,26 @@ export function TVChannelMenu({
                   TV Menu
                 </span>
                 <div className="flex items-center gap-2">
-                  {/* Channel count chip */}
-                  <span
-                    className="inline-flex items-center rounded-full border border-[#fe5102]/20 bg-[#fe5102]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#fe5102]"
-                    style={{ fontFamily: OFFBIT }}
-                  >
-                    {TV_CHANNELS.length} total
-                  </span>
+                  {/* Live indicator or channel count */}
+                  {isLive ? (
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-red-500"
+                      style={{ fontFamily: OFFBIT }}
+                    >
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
+                      </span>
+                      Live
+                    </span>
+                  ) : (
+                    <span
+                      className="inline-flex items-center rounded-full border border-[#fe5102]/20 bg-[#fe5102]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#fe5102]"
+                      style={{ fontFamily: OFFBIT }}
+                    >
+                      {TV_CHANNELS.length} total
+                    </span>
+                  )}
                   {/* Camera / Go Live button */}
                   <button
                     className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-fg-primary/10 bg-fg-primary/5 text-fg-primary/40 transition-all duration-200 hover:border-[#fe5102]/25 hover:bg-[#fe5102]/10 hover:text-[#fe5102]"
@@ -221,7 +260,7 @@ export function TVChannelMenu({
                 </div>
               </div>
 
-              {/* Channel list — scrollable, shows ~3.5 rows */}
+              {/* Channel list */}
               <motion.div
                 className="max-h-[200px] overflow-y-auto px-2 pt-1 pb-2"
                 variants={channelListVariants}
@@ -229,8 +268,35 @@ export function TVChannelMenu({
                 animate="visible"
               >
                 <div className="flex flex-col gap-1">
+                  {/* Live "You" channel — shown when live */}
+                  {isLive && (
+                    <motion.button
+                      variants={channelItemVariants}
+                      className="group/row flex w-full cursor-pointer items-center justify-between rounded-[6px] bg-fg-primary/8 px-3 py-3 transition-all duration-200"
+                      role="menuitem"
+                      onClick={() => handleChannelSelect(LIVE_CHANNEL_SLUG)}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-4 w-0.5 rounded-full bg-red-500" />
+                        <span className="text-sm font-semibold text-fg-primary">
+                          You
+                        </span>
+                      </div>
+                      <span
+                        className="flex items-center gap-1.5 text-xs tracking-widest text-red-500"
+                        style={{ fontFamily: OFFBIT }}
+                      >
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
+                        </span>
+                        LIVE
+                      </span>
+                    </motion.button>
+                  )}
+
                   {TV_CHANNELS.map((channel) => {
-                    const isActive = activeChannel === channel.slug;
+                    const isActive = !isLive && activeChannel === channel.slug;
                     return (
                       <motion.button
                         key={channel.slug}
@@ -282,17 +348,32 @@ export function TVChannelMenu({
                 </div>
               </motion.div>
 
-              {/* Footer — View Full Screen, centered */}
+              {/* Footer */}
               <div className="border-t border-fg-primary/8 px-4 py-4">
-                <button
-                  className="flex w-full cursor-pointer items-center justify-center gap-2 text-fg-primary/35 transition-colors duration-200 hover:text-fg-primary/60"
-                  onClick={scrollToFullScreen}
-                >
-                  <Expand06 className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium tracking-wide">
-                    View Full Screen
-                  </span>
-                </button>
+                <div className="flex flex-col gap-3">
+                  <button
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 text-fg-primary/35 transition-colors duration-200 hover:text-fg-primary/60"
+                    onClick={scrollToFullScreen}
+                  >
+                    <Expand06 className="h-3.5 w-3.5" />
+                    <span className="text-xs font-medium tracking-wide">
+                      View Full Screen
+                    </span>
+                  </button>
+
+                  {/* Take a Snapshot — only visible when live */}
+                  {isLive && onSnapshot && (
+                    <button
+                      className="flex w-full cursor-pointer items-center justify-center gap-2 text-fg-primary/35 transition-colors duration-200 hover:text-[#fe5102]"
+                      onClick={onSnapshot}
+                    >
+                      <Camera01 className="h-3.5 w-3.5" />
+                      <span className="text-xs font-medium tracking-wide">
+                        Take a Snapshot
+                      </span>
+                    </button>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -385,22 +466,36 @@ export function TVChannelMenu({
               </h3>
 
               {/* Description */}
-              <p className="mb-6 text-sm leading-relaxed text-fg-primary/55">
+              <p className="mb-4 text-sm leading-relaxed text-fg-primary/55">
                 Put yourself on the screen. Your camera feed plays live on the
-                CRT — no recording, no tracking, just a creative experiment
-                between you and the TV.
+                CRT — just a creative experiment between you and the TV.
               </p>
+
+              {/* Privacy notice */}
+              <div className="mb-5 rounded-[6px] border border-fg-primary/8 bg-fg-primary/[0.03] px-4 py-3">
+                <p className="text-xs leading-relaxed text-fg-primary/45">
+                  <span className="font-semibold text-fg-primary/60">Privacy first.</span>{" "}
+                  Your camera stays on your device — nothing is recorded, stored, or sent anywhere.
+                </p>
+              </div>
+
+              {/* Error message */}
+              {cameraError && (
+                <div className="mb-4 rounded-[6px] border border-red-500/15 bg-red-500/5 px-4 py-3">
+                  <p className="text-xs leading-relaxed text-red-400">
+                    {cameraError}
+                  </p>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex gap-3">
                 <button
-                  className="flex-1 cursor-pointer rounded-[6px] bg-[#fe5102] px-4 py-2.5 text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-90"
-                  onClick={() => {
-                    // Future: request camera access and pipe to TV texture
-                    setShowCameraModal(false);
-                  }}
+                  className="flex-1 cursor-pointer rounded-[6px] bg-[#fe5102] px-4 py-2.5 text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={handleGoLive}
+                  disabled={!!cameraError}
                 >
-                  Go Live
+                  {cameraError ? "Try Again" : "Go Live"}
                 </button>
                 <button
                   className="flex-1 cursor-pointer rounded-[6px] border border-fg-primary/10 bg-fg-primary/5 px-4 py-2.5 text-sm font-medium text-fg-primary/60 transition-all duration-200 hover:border-fg-primary/20 hover:text-fg-primary/80"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ActionButton } from "@/components/shared/action-button";
@@ -8,20 +8,21 @@ import { UnderlineLink } from "@/components/shared/underline-link";
 import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { fadeInUp } from "@/lib/motion";
 import { useMousePosition } from "@/hooks/use-mouse-position";
+import { useCameraStream } from "@/hooks/use-camera-stream";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { useTheme } from "@/components/providers/theme-provider";
 import { devProps } from "@/utils/dev-props";
 import { TVChannelMenu } from "@/components/home/tv-channel-menu";
-import { DEFAULT_CHANNEL } from "@/lib/tv-channels";
+import { DEFAULT_CHANNEL, LIVE_CHANNEL_SLUG } from "@/lib/tv-channels";
 import Image from "next/image";
 
 const CLIENTS = [
-  { name: "Google", src: "/logos/clients/google.svg" },
-  { name: "Fitbit", src: "/logos/clients/fitbit.svg" },
-  { name: "Salesforce", src: "/logos/clients/salesforce.svg" },
-  { name: "Universal Audio", src: "/logos/clients/universal-audio.svg" },
+  { name: "Google", src: "/logos/clients/google.svg", url: "https://google.com" },
+  { name: "Fitbit", src: "/logos/clients/fitbit.svg", url: "https://www.fitbit.com" },
+  { name: "Salesforce", src: "/logos/clients/salesforce.svg", url: "https://www.salesforce.com" },
+  { name: "Universal Audio", src: "/logos/clients/universal-audio.svg", url: "https://www.uaudio.com" },
 ];
 
 const CRTTVScene = dynamic(
@@ -47,6 +48,40 @@ export function Hero() {
   const pageLoaded = usePageLoaded();
   const terminalBg = resolvedTheme === "dark" ? "#191919" : "#faf8f5";
   const [activeChannel, setActiveChannel] = useState(DEFAULT_CHANNEL);
+  const [isLive, setIsLive] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const cameraStream = useCameraStream();
+  const snapshotRequestRef = useRef<(() => void) | null>(null);
+
+  const handleGoLive = useCallback(async () => {
+    setCameraError(null);
+    const result = await cameraStream.start();
+    if (result.success) {
+      setIsLive(true);
+      setActiveChannel(LIVE_CHANNEL_SLUG);
+    } else {
+      setCameraError(result.error ?? "Camera access failed.");
+    }
+  }, [cameraStream]);
+
+  const handleStopLive = useCallback(() => {
+    cameraStream.stop();
+    setIsLive(false);
+  }, [cameraStream]);
+
+  const handleSnapshot = useCallback(() => {
+    snapshotRequestRef.current?.();
+  }, []);
+
+  const handleChannelChange = useCallback(
+    (slug: string) => {
+      if (isLive && slug !== LIVE_CHANNEL_SLUG) {
+        handleStopLive();
+      }
+      setActiveChannel(slug);
+    },
+    [isLive, handleStopLive]
+  );
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -54,11 +89,16 @@ export function Hero() {
   });
 
   // All hero content fades together — unified, smooth, delightful.
-  // Fades over 0–12% scroll (~24vh of actual scrolling).
-  // TV slides 0–15%, so content is gone just before TV finishes centering.
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.03, 0.12, 1], [1, 0.85, 0, 0]);
+  // Ease-out fade over 0–14% scroll so content is fully gone before
+  // Phase 1 end (15%) and well before fullscreen mode (35%).
+  // The curve decelerates naturally: fast initial drop, gentle tail.
+  const contentOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.02, 0.05, 0.08, 0.11, 0.14],
+    [1, 0.8,  0.5,  0.25, 0.08, 0]
+  );
   // Hide from layout once fully faded so elements can't interfere
-  const contentVisibility = useTransform(scrollYProgress, (v) => v > 0.13 ? "hidden" as const : "visible" as const);
+  const contentVisibility = useTransform(scrollYProgress, (v) => v > 0.15 ? "hidden" as const : "visible" as const);
 
   // Canvas translateX: slides from right-offset to centered during Phase 1
   const tvX = useTransform(
@@ -106,6 +146,9 @@ export function Hero() {
             scrollRef={scrollRef}
             mouseRef={mouseRef}
             activeChannel={activeChannel}
+            cameraTextureRef={cameraStream.textureRef}
+            isLiveRef={cameraStream.isActiveRef}
+            onSnapshotRequest={snapshotRequestRef}
             className="h-full w-full pointer-events-auto"
           />
         </motion.div>
@@ -146,9 +189,9 @@ export function Hero() {
               transition={{ delay: 1.2 }}
               className="text-base md:text-lg text-fg-secondary max-w-sm mb-10"
             >
-              We help the world make the most of design and technology. From
-              brand identity to digital products, we craft experiences that
-              matter.
+              We focus on brand identity, content production, and digital
+              products. Our edge is human-centered design and creative context
+              engineering.
             </motion.p>
 
             {/* CTAs */}
@@ -185,7 +228,7 @@ export function Hero() {
         {/* Client credibility bar */}
         <motion.div
           style={{ opacity: contentOpacity, visibility: contentVisibility }}
-          className="absolute bottom-10 left-0 z-30 w-full hidden lg:block pointer-events-none"
+          className="absolute bottom-6 left-0 z-30 w-full hidden lg:block pointer-events-none"
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -199,16 +242,27 @@ export function Hero() {
                 <br />
                 Work With
               </p>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-6 pointer-events-auto">
                 {CLIENTS.map((client) => (
-                  <Image
+                  <a
                     key={client.name}
-                    src={client.src}
-                    alt={client.name}
-                    width={680}
-                    height={336}
-                    className="h-14 w-auto opacity-70"
-                  />
+                    href={client.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={client.name}
+                    className="group relative"
+                  >
+                    <Image
+                      src={client.src}
+                      alt={client.name}
+                      width={200}
+                      height={40}
+                      className="h-6 w-auto opacity-70 hover:opacity-100 transition-opacity invert dark:invert-0"
+                    />
+                    <span className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-bg-secondary px-2 py-1 text-xs text-fg-secondary opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border-secondary">
+                      {client.name}
+                    </span>
+                  </a>
                 ))}
                 <span className="font-accent text-xs font-bold uppercase tracking-widest text-fg-tertiary opacity-50 whitespace-nowrap ml-1">
                   + More
@@ -246,7 +300,12 @@ export function Hero() {
         <TVChannelMenu
           scrollYProgress={scrollYProgress}
           sectionRef={sectionRef}
-          onChannelChange={setActiveChannel}
+          onChannelChange={handleChannelChange}
+          isLive={isLive}
+          onGoLive={handleGoLive}
+          onStopLive={handleStopLive}
+          onSnapshot={handleSnapshot}
+          cameraError={cameraError}
         />
 
       </div>

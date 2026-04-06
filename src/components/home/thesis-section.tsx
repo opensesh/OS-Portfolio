@@ -17,17 +17,25 @@ type ThesisState = "past" | "future";
 
 const THESIS_CONTENT: Record<
   ThesisState,
-  { title: string; description: string }
+  { title: string; lead: string; points: string[] }
 > = {
   past: {
     title: "Disconnect & Departments",
-    description:
-      "In the past, company roles were strict and separate. People worked in one area like product marketing, design, or engineering. Product marketing handled the brand and content. Design created what was needed, like websites. Engineers built the products. These teams shared brand materials to stay consistent. Now, AI and content engineering are changing how this works.",
+    lead: "Brand lived in silos. Teams worked apart.",
+    points: [
+      "Product marketing owned the brand narrative",
+      "Design executed deliverables on request",
+      "Engineering built without brand context",
+    ],
   },
   future: {
-    title: "Brand is the container for all content",
-    description:
-      "We believe the future of branding is the design system. A clear brand optimized for both people and agents lets you keep guidelines and docs in one place. This helps teams work creatively across departments. Many open-source design systems and tools like Untitled UI and Shad CN mean you don\u2019t need to build your own. Figma templates and DAM tools simplify managing guidelines, while tools like Mintly automate documentation. It\u2019s all about embedding your brand creatively and technically.",
+    title: "Brand as the Container",
+    lead: "One system. Every team. Every touchpoint.",
+    points: [
+      "Design system becomes the single source of truth",
+      "Open-source tools eliminate redundant infrastructure",
+      "Brand is embedded technically, not just visually",
+    ],
   },
 };
 
@@ -176,15 +184,34 @@ export function ThesisSection() {
                 animate="animate"
                 exit="exit"
               >
-                <h3
-                  className="text-display text-xl md:text-2xl lg:text-3xl mb-4 md:mb-6"
-                  style={{ fontFamily: "var(--font-accent)" }}
-                >
+                <h3 className="text-display text-xl md:text-2xl lg:text-3xl mb-3 md:mb-4">
                   {content.title}
                 </h3>
-                <p className="text-fg-secondary text-sm md:text-base leading-relaxed max-w-lg">
-                  {content.description}
+                <p className="text-fg-secondary text-sm md:text-base leading-relaxed max-w-lg mb-6">
+                  {content.lead}
                 </p>
+                <ul className="space-y-3 max-w-lg">
+                  {content.points.map((point, i) => (
+                    <motion.li
+                      key={point}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay: 0.15 + i * 0.08,
+                        duration: 0.4,
+                        ease: [0.16, 1, 0.3, 1] as const,
+                      }}
+                      className={cn(
+                        "pl-4 text-sm md:text-base text-fg-secondary leading-relaxed border-l-2",
+                        activeState === "past"
+                          ? "border-border-secondary"
+                          : "border-brand-500"
+                      )}
+                    >
+                      {point}
+                    </motion.li>
+                  ))}
+                </ul>
               </motion.div>
             </AnimatePresence>
           </div>

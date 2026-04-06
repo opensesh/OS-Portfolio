@@ -56,12 +56,12 @@ export function Hero() {
   // Phase 1 (0–15%): text fades, TV slides to center
   // Phase 2 (15–55%): TV holds centered — dwell time
   // Phase 3 (55–100%): zoom into screen, transition out
-  // Clamp to 0 after fade — these must never reappear
-  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.08, 1], [1, 0, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.10, 1], [1, 0, 0]);
-  // Hide text/client bar from layout once faded so they can't interfere
-  const textVisibility = useTransform(scrollYProgress, (v) => v > 0.12 ? "hidden" as const : "visible" as const);
-  const clientBarVisibility = useTransform(scrollYProgress, (v) => v > 0.10 ? "hidden" as const : "visible" as const);
+  // Progressive fade — ease out gently rather than snapping to 0
+  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.04, 0.12, 1], [1, 0.7, 0, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.05, 0.15, 1], [1, 0.8, 0, 0]);
+  // Hide from layout once fully faded so they can't interfere
+  const textVisibility = useTransform(scrollYProgress, (v) => v > 0.16 ? "hidden" as const : "visible" as const);
+  const clientBarVisibility = useTransform(scrollYProgress, (v) => v > 0.13 ? "hidden" as const : "visible" as const);
 
   // Canvas translateX: slides from right-offset to centered during Phase 1
   const tvX = useTransform(
@@ -102,7 +102,7 @@ export function Hero() {
 
         {/* 3D Canvas — full viewport, pointer-events-none so FAB stays clickable */}
         <motion.div
-          className="absolute inset-0 lg:bottom-[10vh] z-0 pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none"
           style={{ x: tvX }}
         >
           <CRTTVScene

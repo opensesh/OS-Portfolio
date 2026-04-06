@@ -81,24 +81,25 @@ function BoundingBox({
 // ---------------------------------------------------------------------------
 
 function StatCard({ value, label, index, isInView }: { value: string; label: string; index: number; isInView: boolean }) {
+  // playMode "hover" — glitch fires on hover; we also trigger once on scroll-in
   const glitch = useGlitch({
-    playMode: "always",
+    playMode: "hover",
     timing: {
-      duration: 4000 + index * 800,
-      iterations: Infinity,
+      duration: 600,
+      iterations: 1,
       easing: "ease-in-out",
     },
-    glitchTimeSpan: { start: 0.4, end: 0.6 },
+    glitchTimeSpan: { start: 0, end: 1 },
     shake: {
       velocity: 10,
-      amplitudeX: 0.1,
-      amplitudeY: 0.15,
+      amplitudeX: 0.15,
+      amplitudeY: 0.2,
     },
     slice: {
-      count: 3,
-      velocity: 12,
+      count: 4,
+      velocity: 14,
       minHeight: 0.02,
-      maxHeight: 0.12,
+      maxHeight: 0.15,
       hueRotate: false,
     },
   });
@@ -109,13 +110,18 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
 
   const hasTriggered = useRef(false);
 
+  // Fire glitch + scramble once when section scrolls into view
   useEffect(() => {
     if (isInView && !hasTriggered.current) {
       hasTriggered.current = true;
-      const timeout = setTimeout(() => triggerLabel(), 300 + index * 150);
+      const delay = 300 + index * 150;
+      const timeout = setTimeout(() => {
+        triggerLabel();
+        glitch.startGlitch();
+      }, delay);
       return () => clearTimeout(timeout);
     }
-  }, [isInView, triggerLabel, index]);
+  }, [isInView, triggerLabel, glitch, index]);
 
   return (
     <BoundingBox>
@@ -123,12 +129,12 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
         <div
           ref={glitch.ref}
           data-impact-glitch
-          className="font-accent font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none uppercase"
-          style={{ color: "#fe5102" }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none uppercase font-bold"
+          style={{ color: "#fe5102", fontFamily: "var(--font-accent)" }}
         >
           {value}
         </div>
-        <p className="font-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest text-fg-tertiary mt-auto pt-6">
+        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-fg-tertiary mt-auto pt-6" style={{ fontFamily: "var(--font-accent)" }}>
           {isInView ? labelText : label}
         </p>
       </div>

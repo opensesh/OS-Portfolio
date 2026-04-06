@@ -354,11 +354,12 @@ export function CRTTVModel({
 
     onSnapshotRequest.current = () => {
       const crtMat = crtMatRef.current;
+      const camVideo = cameraTextureRef?.current?.image as HTMLVideoElement | undefined;
       if (!crtMat || !isLiveModeRef.current) return;
 
-      // Render a fullscreen quad with the CRT material to capture the screen content
-      const width = 1920;
-      const height = 1080;
+      // Use the camera's native resolution to avoid stretching
+      const width = camVideo?.videoWidth || 1280;
+      const height = camVideo?.videoHeight || 720;
       const renderTarget = new THREE.WebGLRenderTarget(width, height);
 
       // Create a simple scene with a fullscreen quad

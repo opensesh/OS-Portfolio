@@ -349,10 +349,10 @@ export function TVChannelMenu({
               </motion.div>
 
               {/* Footer */}
-              <div className="border-t border-fg-primary/8 px-4 py-4">
-                <div className="flex flex-col gap-3">
+              <div className="border-t border-fg-primary/8 px-2 py-2">
+                <div className="flex flex-col gap-1">
                   <button
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 text-fg-primary/35 transition-colors duration-200 hover:text-fg-primary/60"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[6px] px-3 py-3 text-fg-primary/35 transition-all duration-200 hover:bg-fg-primary/5 hover:text-fg-primary/60"
                     onClick={scrollToFullScreen}
                   >
                     <Expand06 className="h-3.5 w-3.5" />
@@ -364,7 +364,7 @@ export function TVChannelMenu({
                   {/* Take a Snapshot — only visible when live */}
                   {isLive && onSnapshot && (
                     <button
-                      className="flex w-full cursor-pointer items-center justify-center gap-2 text-fg-primary/35 transition-colors duration-200 hover:text-[#fe5102]"
+                      className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[6px] px-3 py-3 text-fg-primary/35 transition-all duration-200 hover:bg-[#fe5102]/8 hover:text-[#fe5102]"
                       onClick={onSnapshot}
                     >
                       <Camera01 className="h-3.5 w-3.5" />

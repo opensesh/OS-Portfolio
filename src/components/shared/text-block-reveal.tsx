@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useInView } from "framer-motion";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
+import { useMultiLineTextScramble } from "@/hooks/use-text-scramble";
 import "./text-block-reveal.css";
 
 interface TextBlockRevealProps {
@@ -41,6 +42,17 @@ export function TextBlockReveal({
   const animate =
     trigger === "after-loader" ? pageLoaded : isInView;
 
+  const { displayLines, resolvedCounts, trigger: triggerScramble } =
+    useMultiLineTextScramble(lines, {
+      duration: 1100,
+      stagger,
+      baseDelay: delay,
+    });
+
+  useEffect(() => {
+    if (animate) triggerScramble();
+  }, [animate, triggerScramble]);
+
   return (
     <div ref={containerRef} className={animate ? "tbr-animate" : undefined}>
       <Tag className={className}>
@@ -52,9 +64,15 @@ export function TextBlockReveal({
               <span
                 className="tbr-line relative inline-block"
                 style={{ "--tbr-delay": `${lineDelay}s` } as React.CSSProperties}
+                aria-label={line}
               >
                 <span className="tbr-line-inner block whitespace-nowrap">
-                  {line}
+                  <span className="text-fg-primary">
+                    {displayLines[i].slice(0, resolvedCounts[i])}
+                  </span>
+                  <span className="text-bg-brand-solid">
+                    {displayLines[i].slice(resolvedCounts[i])}
+                  </span>
                 </span>
                 <span
                   className="tbr-rect tbr-brand absolute inset-x-[-0.1em] inset-y-[-0.05em] bg-bg-brand-solid"

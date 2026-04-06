@@ -6,17 +6,21 @@
 
 .tbr-line-inner {
   opacity: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .tbr-rect {
   transform: scaleX(0);
   transform-origin: left;
+  z-index: 1;
 }
 
 /* ── Animated state ───────────────────────────────────────────────────────── */
 
+/* Text becomes visible immediately — scramble hook handles the reveal effect */
 .tbr-animate .tbr-line-inner {
-  animation: tbr-text-show 0.01s calc(var(--tbr-delay) + 0.56s) both;
+  opacity: 1;
 }
 
 .tbr-animate .tbr-brand {
@@ -27,7 +31,7 @@
   animation: tbr-fg-sweep 0.96s calc(var(--tbr-delay) + 0.12s) both;
 }
 
-/* ── Keyframes ────────────────────────────────────────────────────────────── */
+/* ── Keyframes ───────────────��───────────────────────────────────��────────── */
 
 /* Brand rect: sweeps in from left, pauses, sweeps out to right */
 @keyframes tbr-brand-sweep {
@@ -77,15 +81,5 @@
   100% {
     transform: scaleX(0);
     transform-origin: right;
-  }
-}
-
-/* Text: instant show */
-@keyframes tbr-text-show {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }

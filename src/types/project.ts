@@ -24,3 +24,5 @@ export const projectCategories: ProjectCategory[] = [
   "Art Direction",
   "Strategy",
 ];
+
+export type ViewMode = "carousel" | "two-column" | "grid";

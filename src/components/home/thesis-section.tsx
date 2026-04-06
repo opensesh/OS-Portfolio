@@ -65,37 +65,37 @@ const textVariants = {
 function ThesisToggle({
   value,
   onChange,
+  id,
 }: {
   value: ThesisState;
   onChange: (v: ThesisState) => void;
+  id: string;
 }) {
   return (
-    <LayoutGroup id="thesis-toggle">
-      <div className="inline-flex items-center rounded-full border border-border-secondary bg-bg-secondary p-1 gap-0.5">
-        {(["past", "future"] as const).map((state) => (
-          <button
-            key={state}
-            onClick={() => onChange(state)}
-            className={cn(
-              "relative z-10 px-4 py-1.5 md:px-5 md:py-2",
-              "text-xs md:text-sm font-accent uppercase tracking-wider",
-              "rounded-full transition-colors duration-200",
-              value === state ? "text-white" : "text-fg-secondary hover:text-fg-primary"
-            )}
-            aria-pressed={value === state}
-          >
-            {value === state && (
-              <motion.div
-                layoutId="thesis-pill"
-                className="absolute inset-0 rounded-full bg-brand-500"
-                transition={{ type: "spring", stiffness: 400, damping: 35 }}
-              />
-            )}
-            <span className="relative z-10">{state === "past" ? "Past" : "Future"}</span>
-          </button>
-        ))}
-      </div>
-    </LayoutGroup>
+    <div className="inline-flex items-center rounded-full border border-border-secondary bg-bg-secondary p-1 gap-0.5">
+      {(["past", "future"] as const).map((state) => (
+        <button
+          key={state}
+          onClick={() => onChange(state)}
+          className={cn(
+            "relative z-10 px-4 py-1.5 md:px-5 md:py-2",
+            "text-xs md:text-sm font-accent uppercase tracking-wider",
+            "rounded-full transition-colors duration-200",
+            value === state ? "text-white" : "text-fg-secondary hover:text-fg-primary"
+          )}
+          aria-pressed={value === state}
+        >
+          {value === state && (
+            <motion.div
+              layoutId={`thesis-pill-${id}`}
+              className="absolute inset-0 rounded-full bg-brand-500"
+              transition={{ type: "spring", stiffness: 400, damping: 35 }}
+            />
+          )}
+          <span className="relative z-10">{state === "past" ? "Past" : "Future"}</span>
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -118,12 +118,13 @@ export function ThesisSection() {
   return (
     <section
       ref={ref}
-      className="relative py-24 md:py-36 bg-bg-secondary overflow-hidden"
+      className="relative py-24 md:py-36 bg-bg-primary overflow-hidden"
       {...devProps("ThesisSection")}
     >
       <DotPattern width={32} height={32} className="fill-fg-tertiary/15" />
 
-      <div className="container-wide relative">
+      <LayoutGroup>
+      <div className="container-main relative">
         {/* Header row */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12 md:mb-16">
           <div>
@@ -154,7 +155,7 @@ export function ThesisSection() {
             <span className="text-[10px] text-fg-tertiary uppercase tracking-widest font-accent">
               How branding works
             </span>
-            <ThesisToggle value={activeState} onChange={setActiveState} />
+            <ThesisToggle value={activeState} onChange={setActiveState} id="desktop" />
           </motion.div>
         </div>
 
@@ -168,7 +169,7 @@ export function ThesisSection() {
           <span className="text-[10px] text-fg-tertiary uppercase tracking-widest font-accent">
             How branding works
           </span>
-          <ThesisToggle value={activeState} onChange={setActiveState} />
+          <ThesisToggle value={activeState} onChange={setActiveState} id="mobile" />
         </motion.div>
 
         {/* Content grid */}
@@ -244,6 +245,7 @@ export function ThesisSection() {
           </motion.div>
         </div>
       </div>
+      </LayoutGroup>
     </section>
   );
 }

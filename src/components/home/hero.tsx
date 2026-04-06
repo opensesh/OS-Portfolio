@@ -53,15 +53,13 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  // Phase 1 (0–15%): text fades, TV slides to center
-  // Phase 2 (15–55%): TV holds centered — dwell time
-  // Phase 3 (55–100%): zoom into screen, transition out
-  // Progressive fade — ease out gently rather than snapping to 0
-  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.04, 0.12, 1], [1, 0.7, 0, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.05, 0.15, 1], [1, 0.8, 0, 0]);
+  // Text fades smoothly as TV slides to center (0–15% scroll).
+  // Starts immediately, gone by halfway through TV movement.
+  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.05, 1], [1, 0, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.07, 1], [1, 0, 0]);
   // Hide from layout once fully faded so they can't interfere
-  const textVisibility = useTransform(scrollYProgress, (v) => v > 0.16 ? "hidden" as const : "visible" as const);
-  const clientBarVisibility = useTransform(scrollYProgress, (v) => v > 0.13 ? "hidden" as const : "visible" as const);
+  const textVisibility = useTransform(scrollYProgress, (v) => v > 0.08 ? "hidden" as const : "visible" as const);
+  const clientBarVisibility = useTransform(scrollYProgress, (v) => v > 0.06 ? "hidden" as const : "visible" as const);
 
   // Canvas translateX: slides from right-offset to centered during Phase 1
   const tvX = useTransform(

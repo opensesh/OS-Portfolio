@@ -15,15 +15,15 @@ import { devProps } from "@/utils/dev-props";
 //   yEnd    — camera Y at max zoom (screen center for entering the screen)
 function getCameraConfig(width: number) {
   if (width < 640) {
-    // Mobile: tight zoom, center TV visually (nav pushes content down, so yHold offsets up)
-    return { zStart: 1.55, zHold: 0.88, zEnd: 0.25, yStart: -0.03, yHold: -0.10, yEnd: 0.04 };
+    // Mobile: tight zoom, TV centered vertically in viewport
+    return { zStart: 1.55, zHold: 0.88, zEnd: 0.25, yStart: 0.0, yHold: -0.06, yEnd: 0.04 };
   }
   if (width < 1024) {
-    // Tablet: comfortable zoom with TV centered in viewport
-    return { zStart: 1.3, zHold: 0.72, zEnd: 0.20, yStart: -0.03, yHold: -0.09, yEnd: 0.04 };
+    // Tablet: comfortable zoom, TV centered in viewport
+    return { zStart: 1.3, zHold: 0.72, zEnd: 0.20, yStart: 0.0, yHold: -0.05, yEnd: 0.04 };
   }
-  // Desktop: yStart slightly above TV center so TV appears centered accounting for nav
-  return { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: -0.08, yHold: -0.05, yEnd: 0.04 };
+  // Desktop: TV horizontally aligned with hero copy, centered in hold
+  return { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: -0.04, yHold: -0.02, yEnd: 0.04 };
 }
 
 interface CameraControllerProps {

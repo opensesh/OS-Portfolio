@@ -63,71 +63,60 @@ function BoundingBox({
   children: React.ReactNode;
   className?: string;
 }) {
-  // Edge line timing — clockwise in, counterclockwise out
-  // In:  top(0) → right(1) → bottom(2) → left(3)
-  // Out: left(0) → bottom(1) → right(2) → top(3)  (reverse order)
-  const LINE_DURATION = 300; // ms per edge
-  const LINE_STAGGER = 60;  // ms between edges starting
+  const [hovered, setHovered] = useState(false);
 
-  const edgeBase = "absolute bg-fg-inverse pointer-events-none transition-all";
+  // Timing
+  const DUR = 350;    // ms per edge grow
+  const STAG = 80;    // ms stagger between edges
+  const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+  const THICKNESS = 3; // px — triple the 1px border
 
-  // Each edge: position, orientation, transform-origin, delays
-  const edges = [
-    // Top — grows left→right
+  // Clockwise: top(L→R) → right(T→B) → bottom(R→L) → left(B→T)
+  // Reverse on leave: top last, left first
+  const edges: {
+    pos: React.CSSProperties;
+    origin: string;
+    axis: "scaleX" | "scaleY";
+    enterDelay: number;
+    leaveDelay: number;
+  }[] = [
     {
-      className: `${edgeBase} top-0 left-0 h-px`,
-      style: {
-        transformOrigin: "left",
-        transitionProperty: "transform",
-        transitionDuration: `${LINE_DURATION}ms`,
-        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-      },
-      hoverDelay: LINE_STAGGER * 0,
-      leaveDelay: LINE_STAGGER * 3,
+      // Top edge — centered on top border
+      pos: { top: -THICKNESS / 2, left: 0, right: 0, height: THICKNESS },
+      origin: "left",
+      axis: "scaleX",
+      enterDelay: STAG * 0,
+      leaveDelay: STAG * 3,
     },
-    // Right — grows top→bottom
     {
-      className: `${edgeBase} top-0 right-0 w-px`,
-      style: {
-        transformOrigin: "top",
-        transitionProperty: "transform",
-        transitionDuration: `${LINE_DURATION}ms`,
-        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-      },
-      hoverDelay: LINE_STAGGER * 1,
-      leaveDelay: LINE_STAGGER * 2,
+      // Right edge — centered on right border
+      pos: { top: 0, right: -THICKNESS / 2, bottom: 0, width: THICKNESS },
+      origin: "top",
+      axis: "scaleY",
+      enterDelay: STAG * 1,
+      leaveDelay: STAG * 2,
     },
-    // Bottom — grows right→left
     {
-      className: `${edgeBase} bottom-0 right-0 h-px`,
-      style: {
-        transformOrigin: "right",
-        transitionProperty: "transform",
-        transitionDuration: `${LINE_DURATION}ms`,
-        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-      },
-      hoverDelay: LINE_STAGGER * 2,
-      leaveDelay: LINE_STAGGER * 1,
+      // Bottom edge — centered on bottom border
+      pos: { bottom: -THICKNESS / 2, left: 0, right: 0, height: THICKNESS },
+      origin: "right",
+      axis: "scaleX",
+      enterDelay: STAG * 2,
+      leaveDelay: STAG * 1,
     },
-    // Left — grows bottom→top
     {
-      className: `${edgeBase} bottom-0 left-0 w-px`,
-      style: {
-        transformOrigin: "bottom",
-        transitionProperty: "transform",
-        transitionDuration: `${LINE_DURATION}ms`,
-        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-      },
-      hoverDelay: LINE_STAGGER * 3,
-      leaveDelay: LINE_STAGGER * 0,
+      // Left edge — centered on left border
+      pos: { top: 0, left: -THICKNESS / 2, bottom: 0, width: THICKNESS },
+      origin: "bottom",
+      axis: "scaleY",
+      enterDelay: STAG * 3,
+      leaveDelay: STAG * 0,
     },
   ];
 
-  const [hovered, setHovered] = useState(false);
-
   return (
     <div
-      className={cn("relative border border-brand-500 h-full group", className)}
+      className={cn("relative border border-brand-500 h-full", className)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -135,43 +124,39 @@ function BoundingBox({
 
       {/* Corner markers — transition to vanilla on hover */}
       {[
-        "-left-1.5 -top-1.5",
-        "-bottom-1.5 -left-1.5",
-        "-right-1.5 -top-1.5",
-        "-bottom-1.5 -right-1.5",
-      ].map((pos) => (
+        { pos: "-left-1.5 -top-1.5" },
+        { pos: "-right-1.5 -top-1.5" },
+        { pos: "-bottom-1.5 -right-1.5" },
+        { pos: "-bottom-1.5 -left-1.5" },
+      ].map(({ pos }) => (
         <div
           key={pos}
-          className={cn(
-            "absolute h-3 w-3 transition-colors duration-300",
-            pos,
-            hovered ? "bg-fg-inverse" : "bg-brand-500"
-          )}
+          className={cn("absolute h-3 w-3 z-20 transition-colors", pos)}
+          style={{
+            backgroundColor: hovered ? "var(--fg-inverse)" : "#fe5102",
+            transitionDuration: "200ms",
+            transitionDelay: hovered ? "0ms" : `${STAG * 4}ms`,
+          }}
         />
       ))}
 
-      {/* Animated edge lines — clockwise in, counterclockwise out */}
-      {edges.map((edge, i) => {
-        const isHorizontal = i === 0 || i === 2;
-        return (
-          <div
-            key={i}
-            className={edge.className}
-            style={{
-              ...edge.style,
-              // Full width/height of edge
-              ...(isHorizontal ? { width: "100%" } : { height: "100%" }),
-              // Scale from 0 → 1 on hover, 1 → 0 on leave
-              transform: hovered
-                ? `${isHorizontal ? "scaleX" : "scaleY"}(1)`
-                : `${isHorizontal ? "scaleX" : "scaleY"}(0)`,
-              transitionDelay: hovered
-                ? `${edge.hoverDelay}ms`
-                : `${edge.leaveDelay}ms`,
-            }}
-          />
-        );
-      })}
+      {/* Animated edge lines — vanilla, 3px thick, clockwise in / reverse out */}
+      {edges.map((edge, i) => (
+        <div
+          key={i}
+          className="absolute z-10 pointer-events-none"
+          style={{
+            ...edge.pos,
+            backgroundColor: "var(--fg-inverse)",
+            transformOrigin: edge.origin,
+            transform: hovered ? `${edge.axis}(1)` : `${edge.axis}(0)`,
+            transition: `transform ${DUR}ms ${EASE}`,
+            transitionDelay: hovered
+              ? `${edge.enterDelay}ms`
+              : `${edge.leaveDelay}ms`,
+          }}
+        />
+      ))}
 
       <div className="relative z-10 h-full">{children}</div>
     </div>

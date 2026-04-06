@@ -16,7 +16,8 @@ import { devProps } from "@/utils/dev-props";
 import { TV_CHANNELS, DEFAULT_CHANNEL } from "@/lib/tv-channels";
 
 const OFFBIT = "'OffBit', 'SF Mono', monospace";
-const IDLE_CLOSE_MS = 2000;
+const IDLE_CLOSE_DESKTOP_MS = 2500;
+const IDLE_CLOSE_MOBILE_MS = 4500;
 
 const menuCardVariants = {
   hidden: { opacity: 0, scale: 0.85, y: 10 },
@@ -90,7 +91,7 @@ export function TVChannelMenu({
     return unsubscribe;
   }, [glowOpacity]);
 
-  // Auto-close menu after idle (2s with no hover)
+  // Auto-close menu after idle — stays open while hovering inside
   useEffect(() => {
     if (!isOpen) return;
     let timer: ReturnType<typeof setTimeout>;
@@ -98,13 +99,21 @@ export function TVChannelMenu({
     const container = menuRef.current;
     if (!container) return;
 
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    const idleMs = isTouchDevice ? IDLE_CLOSE_MOBILE_MS : IDLE_CLOSE_DESKTOP_MS;
+
     const startTimer = () => {
       clearTimeout(timer);
-      timer = setTimeout(() => setIsOpen(false), IDLE_CLOSE_MS);
+      timer = setTimeout(() => setIsOpen(false), idleMs);
     };
     const clearTimerFn = () => clearTimeout(timer);
 
-    startTimer();
+    // Only start the idle timer if the mouse isn't already inside
+    // (e.g. user just clicked the FAB — mouse is still over the container)
+    if (!container.matches(":hover")) {
+      startTimer();
+    }
+
     container.addEventListener("mouseenter", clearTimerFn);
     container.addEventListener("mouseleave", startTimer);
 
@@ -149,7 +158,7 @@ export function TVChannelMenu({
     const sectionHeight = section.scrollHeight;
     const viewportHeight = window.innerHeight;
     const scrollableDistance = sectionHeight - viewportHeight;
-    const target = sectionTop + scrollableDistance * 0.2;
+    const target = sectionTop + scrollableDistance * 0.35;
     window.scrollTo({ top: target, behavior: "smooth" });
     setIsOpen(false);
   }, [sectionRef]);

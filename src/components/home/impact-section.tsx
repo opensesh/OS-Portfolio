@@ -1,48 +1,66 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { motion, useInView } from "framer-motion";
+import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { useGlitch } from "react-powerglitch";
+import { cn } from "@/lib/utils";
 import { useTextScramble } from "@/hooks/use-text-scramble";
-import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { SectionLabel } from "@/components/shared/section-label";
+import { DotPattern } from "@/components/ui/dot-pattern";
+import { fadeInUp } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
 
 // ---------------------------------------------------------------------------
-// Data
+// Carousel item types
 // ---------------------------------------------------------------------------
 
-interface ImpactStat {
-  value: string;
-  label: string;
-}
+type CardItem =
+  | { kind: "stat"; value: string; label: string }
+  | { kind: "media"; mediaType: "video" | "image"; src: string | null; alt: string };
 
-const STATS: ImpactStat[] = [
-  { value: "$1B+", label: "TOUCHED IN PIPELINE" },
-  { value: "$300M+", label: "DRIVEN IN SALES" },
-  { value: "5M+", label: "AUDIENCE REACHED" },
-  { value: "2M+", label: "APP USERS TOUCHED" },
-  { value: "15+", label: "BRANDS PARTNERED" },
-];
-
-interface CarouselSlide {
-  type: "video" | "image";
-  src: string | null; // null = placeholder
-  alt: string;
-}
-
-const SLIDES: CarouselSlide[] = [
-  { type: "video", src: null, alt: "Project highlight reel" },
-  { type: "image", src: null, alt: "Brand campaign" },
-  { type: "video", src: null, alt: "Product launch" },
-  { type: "image", src: null, alt: "Design system showcase" },
-  { type: "image", src: null, alt: "Client collaboration" },
+const CARDS: CardItem[] = [
+  { kind: "stat", value: "$1B+", label: "TOUCHED IN PIPELINE" },
+  { kind: "media", mediaType: "image", src: null, alt: "Brand campaign" },
+  { kind: "stat", value: "$300M+", label: "DRIVEN IN SALES" },
+  { kind: "media", mediaType: "video", src: null, alt: "Product launch" },
+  { kind: "stat", value: "5M+", label: "AUDIENCE REACHED" },
+  { kind: "media", mediaType: "image", src: null, alt: "Design system showcase" },
+  { kind: "stat", value: "2M+", label: "APP USERS TOUCHED" },
+  { kind: "media", mediaType: "video", src: null, alt: "Project highlight reel" },
+  { kind: "stat", value: "15+", label: "BRANDS PARTNERED" },
+  { kind: "media", mediaType: "image", src: null, alt: "Client collaboration" },
 ];
 
 // ---------------------------------------------------------------------------
-// Glitch Stat – each stat number gets the CRT powerglitch
+// Bounding-box wrapper — matches Beliefs section style
 // ---------------------------------------------------------------------------
 
-function GlitchStat({ stat, index, isInView }: { stat: ImpactStat; index: number; isInView: boolean }) {
+function BoundingBox({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("relative border border-brand-500 h-full", className)}>
+      <DotPattern width={5} height={5} />
+      {/* Corner markers */}
+      <div className="absolute -left-1.5 -top-1.5 h-3 w-3 bg-brand-500" />
+      <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 bg-brand-500" />
+      <div className="absolute -right-1.5 -top-1.5 h-3 w-3 bg-brand-500" />
+      <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 bg-brand-500" />
+      <div className="relative z-10 h-full">{children}</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Stat card — number with CRT powerglitch + scramble label
+// ---------------------------------------------------------------------------
+
+function StatCard({ value, label, index, isInView }: { value: string; label: string; index: number; isInView: boolean }) {
   const glitch = useGlitch({
     playMode: "always",
     timing: {
@@ -65,7 +83,7 @@ function GlitchStat({ stat, index, isInView }: { stat: ImpactStat; index: number
     },
   });
 
-  const { displayText: labelText, trigger: triggerLabel } = useTextScramble(stat.label, {
+  const { displayText: labelText, trigger: triggerLabel } = useTextScramble(label, {
     duration: 600,
   });
 
@@ -74,172 +92,207 @@ function GlitchStat({ stat, index, isInView }: { stat: ImpactStat; index: number
   useEffect(() => {
     if (isInView && !hasTriggered.current) {
       hasTriggered.current = true;
-      const timeout = setTimeout(() => triggerLabel(), 200 + index * 120);
+      const timeout = setTimeout(() => triggerLabel(), 300 + index * 150);
       return () => clearTimeout(timeout);
     }
   }, [isInView, triggerLabel, index]);
 
   return (
-    <motion.div
-      variants={fadeInUp}
-      className="flex flex-col gap-2"
-    >
-      {/* Number with powerglitch */}
-      <div ref={glitch.ref} className="text-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-fg-primary">
-        {stat.value}
-      </div>
-      {/* Label with scramble effect */}
-      <p className="font-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest text-fg-tertiary">
-        {isInView ? labelText : stat.label}
-      </p>
-    </motion.div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Carousel
-// ---------------------------------------------------------------------------
-
-function MediaCarousel() {
-  const [current, setCurrent] = useState(0);
-  const total = SLIDES.length;
-
-  const next = useCallback(() => setCurrent((i) => (i + 1) % total), [total]);
-  const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
-
-  // Auto-advance
-  useEffect(() => {
-    const interval = setInterval(next, 5000);
-    return () => clearInterval(interval);
-  }, [next]);
-
-  return (
-    <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden bg-bg-secondary border border-border-secondary">
-      {/* Slides */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="absolute inset-0 flex items-center justify-center"
+    <BoundingBox>
+      <div className="flex flex-col justify-between h-full p-6 sm:p-8 md:p-10">
+        <div
+          ref={glitch.ref}
+          className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-fg-primary leading-none"
         >
-          {SLIDES[current].src ? (
-            SLIDES[current].type === "video" ? (
-              <video
-                src={SLIDES[current].src!}
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={SLIDES[current].src!}
-                alt={SLIDES[current].alt}
-                className="w-full h-full object-cover"
-              />
-            )
-          ) : (
-            /* Placeholder */
-            <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-bg-secondary">
-              <div className="w-12 h-12 rounded-full border border-border-secondary flex items-center justify-center">
-                {SLIDES[current].type === "video" ? (
-                  <div className="w-0 h-0 border-l-[10px] border-l-fg-tertiary border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent ml-1" />
-                ) : (
-                  <div className="w-5 h-5 rounded-sm border border-fg-tertiary opacity-40" />
-                )}
-              </div>
-              <span className="font-accent text-[10px] uppercase tracking-widest text-fg-tertiary">
-                {SLIDES[current].type === "video" ? "Video" : "Image"} — {SLIDES[current].alt}
-              </span>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Navigation arrows */}
-      <button
-        onClick={prev}
-        className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-bg-primary/80 backdrop-blur-sm border border-border-secondary flex items-center justify-center hover:bg-bg-primary transition-colors"
-        aria-label="Previous slide"
-      >
-        <svg className="w-4 h-4 text-fg-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-      </button>
-      <button
-        onClick={next}
-        className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-bg-primary/80 backdrop-blur-sm border border-border-secondary flex items-center justify-center hover:bg-bg-primary transition-colors"
-        aria-label="Next slide"
-      >
-        <svg className="w-4 h-4 text-fg-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-      </button>
-
-      {/* Dots */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-              i === current ? "bg-fg-brand w-4" : "bg-fg-tertiary/40"
-            }`}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
+          {value}
+        </div>
+        <p className="font-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest text-fg-tertiary mt-auto pt-6">
+          {isInView ? labelText : label}
+        </p>
       </div>
-    </div>
+    </BoundingBox>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Main Section
+// Media card — placeholder or actual content
+// ---------------------------------------------------------------------------
+
+function MediaCard({ mediaType, src, alt }: { mediaType: "video" | "image"; src: string | null; alt: string }) {
+  return (
+    <BoundingBox>
+      <div className="h-full overflow-hidden">
+        {src ? (
+          mediaType === "video" ? (
+            <video
+              src={src}
+              className="w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} alt={alt} className="w-full h-full object-cover" />
+          )
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+            <div className="w-12 h-12 rounded-full border border-border-secondary flex items-center justify-center">
+              {mediaType === "video" ? (
+                <div className="w-0 h-0 border-l-[10px] border-l-fg-tertiary border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent ml-1" />
+              ) : (
+                <div className="w-5 h-5 rounded-sm border border-fg-tertiary opacity-40" />
+              )}
+            </div>
+            <span className="font-accent text-[10px] uppercase tracking-widest text-fg-tertiary text-center px-4">
+              {mediaType === "video" ? "Video" : "Image"} — {alt}
+            </span>
+          </div>
+        )}
+      </div>
+    </BoundingBox>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Horizontal scroll carousel
 // ---------------------------------------------------------------------------
 
 export function ImpactSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const trackRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollState = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+  }, []);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateScrollState, { passive: true });
+    updateScrollState();
+    // Also recheck on resize
+    const ro = new ResizeObserver(updateScrollState);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateScrollState);
+      ro.disconnect();
+    };
+  }, [updateScrollState]);
+
+  const scroll = useCallback((dir: -1 | 1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    // Scroll by ~1 card width
+    const cardWidth = el.querySelector<HTMLElement>("[data-card]")?.offsetWidth ?? 320;
+    el.scrollBy({ left: dir * (cardWidth + 16), behavior: "smooth" });
+  }, []);
+
+  // Track stat-only index for glitch stagger
+  let statIndex = 0;
 
   return (
     <section
       ref={sectionRef}
-      className="py-20 md:py-32 bg-bg-primary"
+      className="py-20 md:py-32 bg-bg-primary overflow-hidden"
       {...devProps("ImpactSection")}
     >
+      {/* Header */}
+      <div className="container-main">
+        <div className="flex items-center justify-between mb-10 md:mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionLabel>Our Impact</SectionLabel>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex items-center gap-3"
+          >
+            <button
+              onClick={() => scroll(-1)}
+              disabled={!canScrollLeft}
+              className={cn(
+                "flex items-center justify-center",
+                "w-10 h-10 rounded-full",
+                "border border-border-secondary",
+                "text-fg-secondary hover:text-fg-primary",
+                "hover:border-border-primary hover:bg-bg-secondary",
+                "transition-all duration-200",
+                !canScrollLeft && "opacity-30 pointer-events-none"
+              )}
+              aria-label="Scroll left"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => scroll(1)}
+              disabled={!canScrollRight}
+              className={cn(
+                "flex items-center justify-center",
+                "w-10 h-10 rounded-full",
+                "border border-border-secondary",
+                "text-fg-secondary hover:text-fg-primary",
+                "hover:border-border-primary hover:bg-bg-secondary",
+                "transition-all duration-200",
+                !canScrollRight && "opacity-30 pointer-events-none"
+              )}
+              aria-label="Scroll right"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Horizontal scroll track */}
       <motion.div
-        variants={staggerContainer}
+        variants={fadeInUp}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
-        className="container-main"
       >
-        {/* Section header */}
-        <motion.div variants={fadeInUp} className="mb-12 md:mb-16">
-          <p className="section-label mb-4">Our Impact</p>
-          <h2 className="text-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl max-w-2xl">
-            Numbers that tell our story
-          </h2>
-        </motion.div>
-
-        {/* Two-column layout: stats + carousel */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Stats tiles */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-8 md:gap-x-8 md:gap-y-10 content-start"
-          >
-            {STATS.map((stat, i) => (
-              <GlitchStat key={stat.label} stat={stat} index={i} isInView={isInView} />
-            ))}
-          </motion.div>
-
-          {/* Media carousel */}
-          <motion.div variants={fadeInUp}>
-            <MediaCarousel />
-          </motion.div>
+        <div
+          ref={trackRef}
+          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-[max(1rem,calc((100vw-var(--container-xl))/2+1rem))] md:px-[max(2rem,calc((100vw-var(--container-xl))/2+2rem))] lg:px-[max(4rem,calc((100vw-var(--container-xl))/2+4rem))]"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {CARDS.map((card, i) => {
+            const currentStatIndex = card.kind === "stat" ? statIndex++ : 0;
+            return (
+              <div
+                key={i}
+                data-card
+                className="flex-shrink-0 snap-start w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] aspect-square"
+              >
+                {card.kind === "stat" ? (
+                  <StatCard
+                    value={card.value}
+                    label={card.label}
+                    index={currentStatIndex}
+                    isInView={isInView}
+                  />
+                ) : (
+                  <MediaCard
+                    mediaType={card.mediaType}
+                    src={card.src}
+                    alt={card.alt}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       </motion.div>
     </section>

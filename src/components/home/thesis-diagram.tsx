@@ -122,15 +122,43 @@ export function ThesisDiagram({ activeState, onSwipe, className }: ThesisDiagram
             : "Diagram showing brand as the unified container for all content"
         }
       >
-        {/* Glow filters */}
         <defs>
+          {/* Past: clean static glow */}
           <filter id="glow-static" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
+
+          {/* Future: organic glow with animated turbulence on edges */}
           <filter id="glow-organic" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="24" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.015"
+              numOctaves={3}
+              seed={42}
+              result="noise"
+            >
+              <animate
+                attributeName="baseFrequency"
+                values="0.015;0.02;0.015"
+                dur="8s"
+                repeatCount="indefinite"
+              />
+            </feTurbulence>
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale={8}
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="displaced"
+            />
+            <feGaussianBlur in="displaced" stdDeviation="2" result="softened" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="24" result="glow" />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="softened" />
+            </feMerge>
           </filter>
         </defs>
 

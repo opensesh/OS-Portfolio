@@ -228,7 +228,7 @@ export function Hero() {
         {/* Client credibility bar */}
         <motion.div
           style={{ opacity: contentOpacity, visibility: contentVisibility }}
-          className="absolute bottom-6 left-0 z-30 w-full hidden lg:block pointer-events-none"
+          className="absolute bottom-10 left-0 z-30 w-full hidden lg:block pointer-events-none"
         >
           <motion.div
             initial={{ opacity: 0 }}

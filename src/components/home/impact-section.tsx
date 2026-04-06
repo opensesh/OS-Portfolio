@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { useGlitch } from "react-powerglitch";
 import { cn } from "@/lib/utils";
 import { useTextScramble } from "@/hooks/use-text-scramble";
-import { SectionLabel } from "@/components/shared/section-label";
+import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { fadeInUp } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
@@ -122,7 +122,9 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
       <div className="flex flex-col justify-between h-full p-6 sm:p-8 md:p-10">
         <div
           ref={glitch.ref}
-          className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-fg-brand leading-none"
+          data-impact-glitch
+          className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none"
+          style={{ color: "#fe5102" }}
         >
           {value}
         </div>
@@ -273,19 +275,33 @@ export function ImpactSection() {
       className="py-20 md:py-32 bg-bg-primary"
       {...devProps("ImpactSection")}
     >
+      {/* Vanilla-colored glitch artifacts — powerglitch uses ::before/::after pseudo-elements */}
+      <style>{`
+        [data-impact-glitch]::before,
+        [data-impact-glitch]::after {
+          color: #faf8f5 !important;
+        }
+      `}</style>
       {/* Header */}
-      <div ref={headerRef} className="container-main">
-        <div className="flex items-center justify-between mb-10 md:mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <SectionLabel>Our Impact</SectionLabel>
-            <h2 className="text-display text-2xl sm:text-3xl md:text-4xl mt-3">
+      <div ref={headerRef} className="container-wide">
+        <div className="flex items-center justify-between mb-12 md:mb-16">
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5 }}
+              className="section-label mb-4"
+            >
+              Our Impact
+            </motion.p>
+            <TextBlockReveal
+              as="h2"
+              trigger="scroll"
+              className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
+            >
               Creative Results
-            </h2>
-          </motion.div>
+            </TextBlockReveal>
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -329,8 +345,8 @@ export function ImpactSection() {
         </div>
       </div>
 
-      {/* Carousel viewport with edge fades */}
-      <div className="relative overflow-hidden">
+      {/* Carousel viewport with edge fades — py-2 prevents corner marker clipping */}
+      <div className="relative overflow-hidden py-2">
         {/* Left fade — aligned to container edge */}
         <div
           className="absolute top-0 bottom-0 z-10 pointer-events-none"

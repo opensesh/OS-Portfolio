@@ -181,6 +181,7 @@ function MediaCard({ mediaType, src, alt }: { mediaType: "video" | "image"; src:
 
 export function ImpactSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
   const cardWidth = useCardWidth();
   const totalCards = CARDS.length;
@@ -190,17 +191,27 @@ export function ImpactSection() {
   const x = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 300, damping: 40 });
 
-  // Compute max offset so last card is visible
+  // Measure the container-main left padding so carousel aligns with it
+  const [containerPadding, setContainerPadding] = useState(16);
   const [viewportWidth, setViewportWidth] = useState(0);
+
   useEffect(() => {
-    const update = () => setViewportWidth(window.innerWidth);
+    const update = () => {
+      setViewportWidth(window.innerWidth);
+      if (headerRef.current) {
+        const rect = headerRef.current.getBoundingClientRect();
+        setContainerPadding(rect.left);
+      }
+    };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
 
   const trackWidth = totalCards * cardStep - CARD_GAP;
-  const maxOffset = Math.max(0, trackWidth - viewportWidth + 64); // 64 = side padding safety
+  // Max offset: track should stop when last card aligns with container right edge
+  const containerRight = viewportWidth - containerPadding;
+  const maxOffset = Math.max(0, trackWidth - containerRight + containerPadding);
 
   const [offset, setOffset] = useState(0);
 
@@ -263,7 +274,7 @@ export function ImpactSection() {
       {...devProps("ImpactSection")}
     >
       {/* Header */}
-      <div className="container-main">
+      <div ref={headerRef} className="container-main">
         <div className="flex items-center justify-between mb-10 md:mb-14">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -271,6 +282,9 @@ export function ImpactSection() {
             transition={{ duration: 0.5 }}
           >
             <SectionLabel>Our Impact</SectionLabel>
+            <h2 className="text-display text-2xl sm:text-3xl md:text-4xl mt-3">
+              Creative Results
+            </h2>
           </motion.div>
 
           <motion.div
@@ -317,15 +331,23 @@ export function ImpactSection() {
 
       {/* Carousel viewport with edge fades */}
       <div className="relative overflow-hidden">
-        {/* Left fade */}
+        {/* Left fade — aligned to container edge */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-16 md:w-24 lg:w-32 z-10 pointer-events-none"
-          style={{ background: "linear-gradient(to right, var(--bg-primary), transparent)" }}
+          className="absolute top-0 bottom-0 z-10 pointer-events-none"
+          style={{
+            left: 0,
+            width: Math.max(containerPadding, 32),
+            background: "linear-gradient(to right, var(--bg-primary), transparent)",
+          }}
         />
-        {/* Right fade */}
+        {/* Right fade — aligned to container edge */}
         <div
-          className="absolute right-0 top-0 bottom-0 w-16 md:w-24 lg:w-32 z-10 pointer-events-none"
-          style={{ background: "linear-gradient(to left, var(--bg-primary), transparent)" }}
+          className="absolute top-0 bottom-0 z-10 pointer-events-none"
+          style={{
+            right: 0,
+            width: Math.max(containerPadding, 32),
+            background: "linear-gradient(to left, var(--bg-primary), transparent)",
+          }}
         />
 
         {/* Track */}
@@ -335,8 +357,8 @@ export function ImpactSection() {
           animate={isInView ? "visible" : "hidden"}
         >
           <motion.div
-            className="flex gap-4 px-8 md:px-16 lg:px-24 touch-pan-y select-none"
-            style={{ x: springX, width: trackWidth + 192 }}
+            className="flex gap-4 touch-pan-y select-none"
+            style={{ x: springX, paddingLeft: containerPadding, paddingRight: containerPadding, width: trackWidth + containerPadding * 2 }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}

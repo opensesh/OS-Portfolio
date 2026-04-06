@@ -32,8 +32,8 @@ const CARDS: CardItem[] = [
   { kind: "media", mediaType: "image", src: null, alt: "Client collaboration" },
 ];
 
-// Card size in px per breakpoint (matched via JS)
-const CARD_GAP = 16;
+// Card gap — 32px gives comfortable breathing room between large square cards
+const CARD_GAP = 32;
 
 function useCardWidth() {
   const [width, setWidth] = useState(280);
@@ -120,13 +120,25 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
   return (
     <BoundingBox>
       <div className="flex flex-col justify-between h-full p-6 sm:p-8 md:p-10">
-        <div
-          ref={glitch.ref}
-          data-impact-glitch
-          className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none"
-          style={{ color: "#fe5102" }}
-        >
-          {value}
+        {/* Layered glitch: main Aperol text + ghost layer with blend mode */}
+        <div className="relative">
+          {/* Ghost layer — charcoal in light, vanilla in dark — blended for depth */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none mix-blend-difference opacity-40 translate-x-[1px] translate-y-[1px]"
+            style={{ color: "var(--fg-primary)" }}
+          >
+            {value}
+          </div>
+          {/* Primary glitched text — always Aperol */}
+          <div
+            ref={glitch.ref}
+            data-impact-glitch
+            className="relative text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none"
+            style={{ color: "#fe5102" }}
+          >
+            {value}
+          </div>
         </div>
         <p className="font-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest text-fg-tertiary mt-auto pt-6">
           {isInView ? labelText : label}
@@ -275,10 +287,14 @@ export function ImpactSection() {
       className="py-20 md:py-32 bg-bg-primary"
       {...devProps("ImpactSection")}
     >
-      {/* Vanilla-colored glitch artifacts — powerglitch uses ::before/::after pseudo-elements */}
+      {/* Theme-aware glitch artifacts — powerglitch ::before/::after pseudo-elements */}
       <style>{`
         [data-impact-glitch]::before,
         [data-impact-glitch]::after {
+          color: #1c1a17 !important;
+        }
+        .dark [data-impact-glitch]::before,
+        .dark [data-impact-glitch]::after {
           color: #faf8f5 !important;
         }
       `}</style>
@@ -373,7 +389,7 @@ export function ImpactSection() {
           animate={isInView ? "visible" : "hidden"}
         >
           <motion.div
-            className="flex gap-4 touch-pan-y select-none"
+            className="flex gap-8 touch-pan-y select-none"
             style={{ x: springX, paddingLeft: containerPadding, paddingRight: containerPadding, width: trackWidth + containerPadding * 2 }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}

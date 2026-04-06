@@ -29,7 +29,7 @@ const PixelTransition = dynamic(
   }
 );
 
-export function WhatWeDoSection() {
+export function OurExpertiseSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
   const [expandedId, setExpandedId] = useState<string | null>(
     whatWeDoItems[0].id
@@ -162,9 +162,9 @@ export function WhatWeDoSection() {
     <section
       ref={ref}
       className="py-20 md:py-32"
-      {...devProps("WhatWeDoSection")}
+      {...devProps("OurExpertiseSection")}
     >
-      <div className="container-main">
+      <div className="container-wide">
         {/* Section Header */}
         <div className="mb-12 md:mb-16">
           <motion.p
@@ -173,7 +173,7 @@ export function WhatWeDoSection() {
             transition={{ duration: 0.5 }}
             className="section-label mb-4"
           >
-            How We Deliver
+            Our Expertise
           </motion.p>
           <TextBlockReveal
             as="h2"

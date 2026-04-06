@@ -100,16 +100,16 @@ export function Hero() {
           />
         </div>
 
-        {/* 3D Canvas — full viewport, translated right on desktop so TV starts in right half */}
+        {/* 3D Canvas — full viewport, pointer-events-none so FAB stays clickable */}
         <motion.div
-          className="absolute inset-0 lg:bottom-[10vh] z-0"
+          className="absolute inset-0 lg:bottom-[10vh] z-0 pointer-events-none"
           style={{ x: tvX }}
         >
           <CRTTVScene
             scrollRef={scrollRef}
             mouseRef={mouseRef}
             activeChannel={activeChannel}
-            className="h-full w-full"
+            className="h-full w-full pointer-events-auto"
           />
         </motion.div>
 

@@ -120,25 +120,13 @@ function StatCard({ value, label, index, isInView }: { value: string; label: str
   return (
     <BoundingBox>
       <div className="flex flex-col justify-between h-full p-6 sm:p-8 md:p-10">
-        {/* Layered glitch: main Aperol text + ghost layer with blend mode */}
-        <div className="relative">
-          {/* Ghost layer — charcoal in light, vanilla in dark — blended for depth */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none mix-blend-difference opacity-40 translate-x-[1px] translate-y-[1px]"
-            style={{ color: "var(--fg-primary)" }}
-          >
-            {value}
-          </div>
-          {/* Primary glitched text — always Aperol */}
-          <div
-            ref={glitch.ref}
-            data-impact-glitch
-            className="relative text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none"
-            style={{ color: "#fe5102" }}
-          >
-            {value}
-          </div>
+        <div
+          ref={glitch.ref}
+          data-impact-glitch
+          className="font-accent font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none uppercase"
+          style={{ color: "#fe5102" }}
+        >
+          {value}
         </div>
         <p className="font-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest text-fg-tertiary mt-auto pt-6">
           {isInView ? labelText : label}

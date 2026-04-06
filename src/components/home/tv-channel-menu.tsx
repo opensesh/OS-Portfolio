@@ -67,8 +67,8 @@ export function TVChannelMenu({
   const pageLoaded = usePageLoaded();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Stay fully visible while TV is on screen (0-75%), fade out as section exits (75-85%)
-  const menuOpacity = useTransform(scrollYProgress, [0.75, 0.85], [1, 0]);
+  // Visible while TV is in frame, fades as zoom-into-screen begins (55-65%)
+  const menuOpacity = useTransform(scrollYProgress, [0.55, 0.65], [1, 0]);
 
   // Orange glow intensity: ramps up as TV centers (10-18%), holds during dwell, fades as zoom starts (50-58%)
   const glowOpacity = useTransform(scrollYProgress, [0.10, 0.18, 0.50, 0.58], [0, 1, 1, 0]);

@@ -176,10 +176,13 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Bottom gradient fade — tall, smooth blend into next section */}
+        {/* Bottom gradient fade — generous height for a delightful blend into next section */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-48 z-20 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, var(--bg-primary) 100%)" }}
+          className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none"
+          style={{
+            height: "40vh",
+            background: "linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--bg-primary) 40%, transparent) 40%, color-mix(in srgb, var(--bg-primary) 75%, transparent) 65%, var(--bg-primary) 100%)",
+          }}
         />
 
         {/* Client credibility bar */}

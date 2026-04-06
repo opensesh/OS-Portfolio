@@ -53,13 +53,12 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  // Text fades smoothly as TV slides to center (0–15% scroll).
-  // Starts immediately, gone by halfway through TV movement.
-  const clientBarOpacity = useTransform(scrollYProgress, [0, 0.05, 1], [1, 0, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.07, 1], [1, 0, 0]);
-  // Hide from layout once fully faded so they can't interfere
-  const textVisibility = useTransform(scrollYProgress, (v) => v > 0.08 ? "hidden" as const : "visible" as const);
-  const clientBarVisibility = useTransform(scrollYProgress, (v) => v > 0.06 ? "hidden" as const : "visible" as const);
+  // All hero content fades together — unified, smooth, delightful.
+  // Fades over 0–12% scroll (~24vh of actual scrolling).
+  // TV slides 0–15%, so content is gone just before TV finishes centering.
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.03, 0.12, 1], [1, 0.85, 0, 0]);
+  // Hide from layout once fully faded so elements can't interfere
+  const contentVisibility = useTransform(scrollYProgress, (v) => v > 0.13 ? "hidden" as const : "visible" as const);
 
   // Canvas translateX: slides from right-offset to centered during Phase 1
   const tvX = useTransform(
@@ -113,7 +112,7 @@ export function Hero() {
 
         {/* Hero text — left half, fades on scroll and hides once gone */}
         <motion.div
-          style={{ opacity: textOpacity, visibility: textVisibility }}
+          style={{ opacity: contentOpacity, visibility: contentVisibility }}
           className="relative z-10 h-full pointer-events-none"
         >
           <div className="container-wide h-full flex items-start pt-28 md:pt-32 lg:items-center lg:pt-0 pb-[10vh]">
@@ -185,7 +184,7 @@ export function Hero() {
 
         {/* Client credibility bar */}
         <motion.div
-          style={{ opacity: clientBarOpacity, visibility: clientBarVisibility }}
+          style={{ opacity: contentOpacity, visibility: contentVisibility }}
           className="absolute bottom-10 left-0 z-30 w-full hidden lg:block pointer-events-none"
         >
           <motion.div
@@ -221,7 +220,7 @@ export function Hero() {
 
         {/* Scroll indicator */}
         <motion.div
-          style={{ opacity: textOpacity, visibility: textVisibility }}
+          style={{ opacity: contentOpacity, visibility: contentVisibility }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
         >
           <motion.div

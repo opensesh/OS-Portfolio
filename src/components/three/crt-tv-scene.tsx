@@ -22,8 +22,8 @@ function getCameraConfig(width: number) {
     // Tablet: comfortable zoom, TV centered in viewport
     return { zStart: 1.3, zHold: 0.72, zEnd: 0.20, yStart: 0.0, yHold: -0.05, yEnd: 0.04 };
   }
-  // Desktop: TV horizontally aligned with hero copy, centered in hold
-  return { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: -0.04, yHold: -0.02, yEnd: 0.04 };
+  // Desktop: TV aligned with hero copy on entry, centered in hold
+  return { zStart: 1.05, zHold: 0.9, zEnd: 0.18, yStart: -0.04, yHold: -0.05, yEnd: 0.04 };
 }
 
 interface CameraControllerProps {

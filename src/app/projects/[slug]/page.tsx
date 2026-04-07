@@ -62,17 +62,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  // Get adjacent projects for navigation
-  const currentIndex = projects.findIndex((p) => p.slug === slug);
-  const prevProject = currentIndex > 0 ? projects[currentIndex - 1] : null;
-  const nextProject =
-    currentIndex < projects.length - 1 ? projects[currentIndex + 1] : null;
+  // Get other projects for the "Latest Projects" section
+  const latestProjects = projects.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <ProjectDetail
       project={project}
-      prevProject={prevProject}
-      nextProject={nextProject}
+      latestProjects={latestProjects}
     />
   );
 }

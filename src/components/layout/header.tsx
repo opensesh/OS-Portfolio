@@ -46,12 +46,15 @@ export function Header() {
     };
   }, [isMenuOpen]);
 
-  // Interpolate values based on scroll progress
+  // Scroll-driven interpolations
   const bgOpacity = scrollProgress * 0.95;
   const blurAmount = scrollProgress * 20;
   const borderRadius = scrollProgress * 12;
   const logoScale = 1 - scrollProgress * 0.1;
   const navHeight = 80 - scrollProgress * 16; // 80px -> 64px
+  // Pinch: at scroll=0, full viewport width (padding only).
+  // At scroll=1, constrained to container-main width with visible bg.
+  const topPadding = scrollProgress * 8; // 0 -> 8px top gap
 
   return (
     <>
@@ -60,18 +63,26 @@ export function Header() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 p-2 md:p-3"
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ paddingTop: `${topPadding}px` }}
       >
-        {/* Pinch container — gains bg, blur, and rounding on scroll */}
+        {/*
+          Pinch container:
+          - At scroll=0: full width, no max-width, edge-to-edge
+          - At scroll=1: max-width 1280px, centered, with bg/blur/radius
+        */}
         <div
-          className="relative transition-[border-radius] duration-100"
+          className="relative mx-auto transition-all duration-300 ease-out"
           style={{
+            maxWidth: scrollProgress > 0
+              ? `${1280 + (1 - scrollProgress) * 2000}px`
+              : "none",
             borderRadius: `${borderRadius}px`,
           }}
         >
-          {/* Background fill */}
+          {/* Background fill — fades in on scroll */}
           <div
-            className="absolute inset-0 bg-bg-primary transition-opacity duration-100"
+            className="absolute inset-0 bg-bg-primary"
             style={{
               opacity: bgOpacity,
               borderRadius: `${borderRadius}px`,
@@ -88,20 +99,17 @@ export function Header() {
             }}
           />
 
-          {/* Bottom border */}
+          {/* Bottom border — fades in on scroll */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-px bg-border-secondary transition-opacity duration-100"
-            style={{
-              opacity: scrollProgress,
-              borderRadius: `${borderRadius}px`,
-            }}
+            className="absolute bottom-0 left-0 right-0 h-px bg-border-secondary"
+            style={{ opacity: scrollProgress }}
           />
 
           <nav
-            className="relative flex items-center justify-between px-4 md:px-6 lg:px-8 transition-all duration-100"
+            className="relative flex items-center justify-between px-6 md:px-8 lg:px-10 transition-all duration-100"
             style={{ height: `${navHeight}px` }}
           >
-            {/* Logo with scale transform */}
+            {/* Logo */}
             <div
               className="transition-transform duration-100 origin-left"
               style={{ transform: `scale(${logoScale})` }}
@@ -168,7 +176,7 @@ export function Header() {
         </div>
       </motion.header>
 
-      {/* Full-screen overlay menu */}
+      {/* Overlay menu — blurred backdrop + content panel below header */}
       <OverlayMenu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}

@@ -34,7 +34,7 @@ interface OverlayMenuProps {
 export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Focus trap
+  // Focus trap & escape
   useEffect(() => {
     if (!isOpen) return;
 
@@ -67,34 +67,57 @@ export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          {...devProps("OverlayMenu")}
-          ref={menuRef}
-          variants={overlayFullscreen}
-          initial="closed"
-          animate="open"
-          exit="closed"
-          className="fixed inset-0 z-40 bg-bg-primary overflow-y-auto"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Navigation menu"
-        >
-          {/* Content area — clears header */}
-          <div className="pt-24 md:pt-28 pb-12 md:pb-16">
-            <div className="px-6 md:px-10 lg:px-16 xl:px-20">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
-                {/* Column 1: Navigation */}
-                <NavColumn onClose={onClose} />
+        <>
+          {/* Blurred backdrop — covers entire viewport */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 bg-bg-inverse/40 backdrop-blur-md"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-                {/* Column 2: Contact & Status */}
-                <ContactColumn />
+          {/* Content panel — positioned below header, container-width */}
+          <motion.div
+            {...devProps("OverlayMenu")}
+            ref={menuRef}
+            variants={overlayFullscreen}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            className={cn(
+              "fixed left-0 right-0 z-40",
+              "top-[88px] md:top-[92px]",
+              "max-h-[calc(100vh-96px)] overflow-y-auto"
+            )}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+          >
+            <div className="mx-auto max-w-[1280px] px-4 md:px-6 pb-4">
+              <div
+                className={cn(
+                  "bg-bg-secondary rounded-xl",
+                  "border border-border-secondary",
+                  "px-8 py-10 md:px-10 md:py-12 lg:px-14 lg:py-14"
+                )}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14">
+                  {/* Column 1: Navigation */}
+                  <NavColumn onClose={onClose} />
 
-                {/* Column 3: Featured (desktop only) */}
-                <FeaturedColumn onClose={onClose} />
+                  {/* Column 2: Contact & Status */}
+                  <ContactColumn />
+
+                  {/* Column 3: Featured (desktop only) */}
+                  <FeaturedColumn onClose={onClose} />
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
@@ -114,7 +137,6 @@ function NavColumn({ onClose }: { onClose: () => void }) {
     (item) => pathname === item.href || pathname.startsWith(item.href + "/")
   );
 
-  // The indicator shows on the hovered item, or falls back to active
   const indicatorIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
 
   return (
@@ -130,13 +152,11 @@ function NavColumn({ onClose }: { onClose: () => void }) {
                 className="flex items-center gap-3 md:gap-4"
                 onMouseEnter={() => {
                   setHoveredIndex(index);
-                  // Auto-expand children on desktop hover
                   if (isDesktop && item.children) {
                     setExpandedItem(item.label);
                   }
                 }}
                 onMouseLeave={() => {
-                  // Collapse on desktop mouse leave (unless clicked open)
                   if (isDesktop && item.children && expandedItem === item.label) {
                     setExpandedItem(null);
                   }
@@ -153,14 +173,14 @@ function NavColumn({ onClose }: { onClose: () => void }) {
                   )}
                 </div>
 
-                {/* Nav link */}
+                {/* Nav link + chevron */}
                 <div className="flex items-center gap-3">
                   <Link
                     href={item.href}
                     onClick={onClose}
                     className={cn(
                       "font-display font-bold leading-none",
-                      "text-4xl md:text-5xl lg:text-6xl",
+                      "text-3xl md:text-4xl lg:text-5xl",
                       "transition-colors duration-200",
                       indicatorIndex === index
                         ? "text-fg-brand"
@@ -170,7 +190,6 @@ function NavColumn({ onClose }: { onClose: () => void }) {
                     {item.label}
                   </Link>
 
-                  {/* Chevron for items with children */}
                   {item.children && (
                     <button
                       onClick={() =>

@@ -279,6 +279,85 @@ export const menuItemsContainer: Variants = {
 };
 
 // =============================================================================
+// Overlay Menu
+// =============================================================================
+
+export const overlayFullscreen: Variants = {
+  closed: {
+    opacity: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1],
+      when: "afterChildren",
+    },
+  },
+  open: {
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1],
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+export const overlayColumn: Variants = {
+  closed: {
+    opacity: 0,
+    y: 40,
+  },
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1],
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+export const overlayNavItem: Variants = {
+  closed: {
+    opacity: 0,
+    y: 30,
+  },
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
+
+export const menuTriggerText: Variants = {
+  initial: {
+    opacity: 0,
+    y: -10,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.2,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: 10,
+    transition: {
+      duration: 0.15,
+      ease: "easeIn",
+    },
+  },
+};
+
+// =============================================================================
 // Accordion
 // =============================================================================
 

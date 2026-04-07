@@ -114,19 +114,16 @@ export const projects: Project[] = [
     buttonHref: "https://example.com",
     sections: [
       {
-        type: "challenge",
         heading: "The Challenge",
         headline: "One-line challenge statement",
         body: "Describe the core challenge the client faced.",
       },
       {
-        type: "solution",
         heading: "Our Solution",
         headline: "One-line solution statement",
         body: "Describe how you approached and solved it.",
       },
       {
-        type: "impact",
         heading: "The Impact",
         headline: "One-line impact statement",
         body: "Describe the measurable outcomes.",

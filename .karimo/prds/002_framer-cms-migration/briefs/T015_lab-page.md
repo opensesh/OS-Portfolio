@@ -37,7 +37,7 @@ This task is part of **Wave 4** — integration and polish. All content infrastr
 
 1. Create `src/app/lab/page.tsx` as a Next.js App Router page (no `"use client"` — server component is fine since no interactive state needed at the page level)
 2. The page renders three named sections in order:
-   - **Free Resources** — uses `FreeResourcesGrid` from `src/components/resources/FreeResourcesGrid.tsx`
+   - **Free Resources** — uses `FreeResourcesGrid` from `src/components/resources/free-resources-grid.tsx`
    - **Blog Posts** — renders all posts from `src/data/blog.ts` using `BlogCard` from `src/components/blog/blog-card.tsx`
    - **Playbooks** — renders an empty state when `playbooks` array is empty
 3. Create `src/components/lab/LabHero.tsx` — a hero/header component for the page with a title, section label, and short description copy
@@ -85,18 +85,42 @@ Complete ALL criteria before marking task done:
 
 ### Existing Navigation Structure
 
-`src/data/navigation.ts` currently has three arrays that need updating:
+`src/data/navigation.ts` currently has three arrays that need updating. Read the file before editing to verify line numbers — the exact current structure (confirmed from codebase) is:
 
 ```typescript
 // mainNavItems — line 18
-{ label: "The Lab", href: "/templates" }  // change to /lab
+{ label: "The Lab", href: "/templates" }  // change href to "/lab"
 
-// footerNavItems.theLab — line 31
-{ label: "View All", href: "/templates" }  // change to /lab
+// footerNavItems.theLab — lines 27-31 (4 items, not 3)
+theLab: [
+  { label: "Blog", href: "/blog" },
+  { label: "Playbooks", href: "/playbooks" },
+  { label: "Free Assets", href: "/free-assets" },   // NOTE: "Free Assets" entry exists with href /free-assets
+  { label: "View All", href: "/templates" },         // change href to "/lab"
+],
 
-// overlayNavItems — line 47
-{ label: "The Lab", href: "/templates", children: [...] }  // change parent href to /lab
+// overlayNavItems — lines 44-53
+{
+  label: "The Lab",
+  href: "/templates",    // change href to "/lab"
+  children: [
+    { label: "Blog", href: "/blog" },
+    { label: "Playbooks", href: "/playbooks" },
+    { label: "Resources", href: "/resources" },     // NOTE: label is "Resources" (not "Free Assets") and href is "/resources"
+    { label: "View All", href: "/templates" },      // change href to "/lab"
+  ],
+},
 ```
+
+**Key differences from what the brief originally described:**
+- `footerNavItems.theLab` has **4 entries** (not 3) — includes `Free Assets` as a separate entry
+- `overlayNavItems` children uses `{ label: "Resources", href: "/resources" }` — NOT `{ label: "Free Assets", href: "/free-assets" }`
+- The `Free Assets` entry in `footerNavItems.theLab` links to `/free-assets` — this route does not yet exist. Do NOT change this href in T015 (leave it as-is for now; it's an orphaned link that will be resolved in a future task)
+
+**Changes required in T015:**
+1. `mainNavItems`: Change `The Lab` href from `/templates` to `/lab`
+2. `footerNavItems.theLab`: Change `View All` href from `/templates` to `/lab`
+3. `overlayNavItems`: Change `The Lab` parent href from `/templates` to `/lab`; also change the `View All` child href from `/templates` to `/lab`
 
 ### Lab Page Structure
 
@@ -105,9 +129,9 @@ Complete ALL criteria before marking task done:
 import type { Metadata } from "next";
 import { blogPosts } from "@/data/blog";
 import { playbooks } from "@/data/playbooks";
-import { freeResources } from "@/data/free-resources";
+// Note: do NOT import freeResources here — FreeResourcesGrid handles its own data import
 import { LabHero } from "@/components/lab/LabHero";
-import { FreeResourcesGrid } from "@/components/resources/FreeResourcesGrid";
+import { FreeResourcesGrid } from "@/components/resources/free-resources-grid";
 import { BlogCard } from "@/components/blog/blog-card";
 
 export const metadata: Metadata = {
@@ -122,7 +146,9 @@ export default function LabPage() {
         <LabHero />
 
         {/* Free Resources section */}
-        <section> ... <FreeResourcesGrid resources={freeResources} /> </section>
+        <section> ... <FreeResourcesGrid /> </section>
+        {/* NOTE: FreeResourcesGrid (from T012) imports freeResources internally — it takes NO props.
+            Do not pass a resources prop; check the actual component signature before writing the call. */}
 
         {/* Blog section */}
         <section> ... {blogPosts.map(post => <BlogCard key={post.id} post={post} />)} </section>
@@ -161,7 +187,7 @@ The playbooks empty state should feel intentional, not broken. A recommended tre
 - Page layout: See `src/app/blog/page.tsx` for the standard `py-20 md:py-32` + `container-main` pattern
 - Section labels: Use `<p className="section-label mb-4">` above section headings (see blog page)
 - Blog cards: `BlogCard` from `src/components/blog/blog-card.tsx` takes `{ post: BlogPost }` — no need to build a new one
-- `FreeResourcesGrid`: Will be available from T012 at `src/components/resources/FreeResourcesGrid.tsx` — import it directly
+- `FreeResourcesGrid`: Will be available from T012 at `src/components/resources/free-resources-grid.tsx` — import it directly
 
 ### Code Style
 
@@ -195,7 +221,7 @@ Tasks that depend on this one: **T016** (SEO metadata generation depends on this
 
 **Before starting:** Verify dependencies are complete by checking:
 - `ls src/data/playbooks.ts` exists
-- `ls src/components/resources/FreeResourcesGrid.tsx` exists
+- `ls src/components/resources/free-resources-grid.tsx` exists
 - `src/data/blog.ts` has at least 4 posts
 
 ---

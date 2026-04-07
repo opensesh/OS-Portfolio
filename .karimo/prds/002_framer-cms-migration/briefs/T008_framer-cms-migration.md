@@ -565,11 +565,14 @@ Complete ALL criteria before marking task done:
 | `src/content/legal/terms.mdx` | create | Terms content as MDX |
 | `src/content/legal/privacy.mdx` | create | Privacy Policy content as MDX |
 | `src/data/navigation.ts` | modify | Update `footerNavItems.legal` hrefs from `/terms` → `/legal/terms` and `/privacy` → `/legal/privacy` |
+| `src/app/terms/page.tsx` | modify | Replace stub content with `redirect("/legal/terms")` |
+| `src/app/privacy/page.tsx` | modify | Replace stub content with `redirect("/legal/privacy")` |
 
 ### File Ownership Notes
 
 - `src/components/layout/footer.tsx` does not need changes — it reads from `footerNavItems.legal` dynamically. Updating `navigation.ts` is sufficient.
 - The legal content directory `/src/content/legal/` does not currently exist. Create it as part of this task (T003 only creates `blog/` and `playbooks/`).
+- `/src/app/terms/page.tsx` and `/src/app/privacy/page.tsx` already exist — do not create them, modify them.
 
 ---
 
@@ -659,7 +662,27 @@ legal: [
 
 ### Old Routes
 
-There are no existing `/src/app/terms/` or `/src/app/privacy/` directories (confirmed via codebase check). No redirect needed — the old hrefs simply didn't have corresponding pages.
+**Both `/src/app/terms/page.tsx` and `/src/app/privacy/page.tsx` exist in the codebase** (confirmed). They are stub pages with minimal placeholder content. This task must handle them — do NOT assume they are absent.
+
+**Required action:** Replace the contents of both existing route files with `redirect()` calls pointing to the new `/legal/` routes:
+
+```tsx
+// src/app/terms/page.tsx — replace entirely with:
+import { redirect } from "next/navigation";
+export default function TermsRedirect() {
+  redirect("/legal/terms");
+}
+```
+
+```tsx
+// src/app/privacy/page.tsx — replace entirely with:
+import { redirect } from "next/navigation";
+export default function PrivacyRedirect() {
+  redirect("/legal/privacy");
+}
+```
+
+This ensures any bookmarked or linked `/terms` and `/privacy` URLs continue to work by redirecting users to the canonical `/legal/terms` and `/legal/privacy` pages.
 
 ### Content Directory
 

@@ -265,7 +265,7 @@ Complete ALL criteria before marking task done:
 
 - [ ] 4 MDX files exist in `/src/content/blog/` with correct slugs: `ep02-creative-ai-framework.mdx`, `ep01-creativity-over-compute.mdx`, `democratizing-fortune-500-design.mdx`, `mcp-for-designers.mdx`
 - [ ] Each MDX file contains clean markdown with no raw HTML, no inline styles, no `data-preset-tag` attributes
-- [ ] `/src/data/blog.ts` exports 4 posts with `contentPath` field (not inline `content`)
+- [ ] `/src/data/blog.ts` exports 4 posts with `contentPath` field AND a temporary `content: ""` bridge field (the empty string prevents blog-post.tsx from crashing before T011 replaces the renderer)
 - [ ] The 3 old stub posts (`design-systems-2025`, `ai-brand-identity`, `collaboration-remote`) are replaced by the 4 real posts
 - [ ] MCP for Designers post is present with correct metadata (slug: `mcp-for-designers`, date: `2025-09-12`)
 - [ ] `BlogCategory` union in `src/types/blog.ts` includes `"Creative Philosophy"`, `"About Us"`, `"Digital Design"` (T002 handles this — verify before starting)
@@ -305,6 +305,7 @@ interface BlogPost {
   title: string;
   excerpt: string;
   contentPath: string;         // replaces `content: string`
+  content: string;             // BRIDGE: temporary empty string until T011 — T002 must keep this field or declare it optional
   author: { name: string; image?: string };
   date: string;
   category: BlogCategory;
@@ -313,15 +314,16 @@ interface BlogPost {
   featured?: boolean;
 }
 
+// T002 defines ONLY these values — the old "Design", "AI", "Process", "Insights" values are REMOVED:
 type BlogCategory =
-  | "Design"
-  | "AI"
-  | "Process"
-  | "Insights"
-  | "Creative Philosophy"  // new
-  | "About Us"             // new
-  | "Digital Design";      // new
+  | 'Creative Philosophy'
+  | 'About Us'
+  | 'Digital Design'
+  | 'Design Strategy'
+  | 'Brand Identity';
 ```
+
+**Note:** T002 removes the old `BlogCategory` values entirely. This brief shows the correct post-T002 state — do NOT use `"Design"`, `"AI"`, `"Process"`, or `"Insights"` as category values in the blog.ts records you write.
 
 ### blog.ts Data Structure
 
@@ -346,13 +348,34 @@ Thumbnails are downloaded by T001. Local paths (using the Framer hash filenames)
 
 ### Handling Existing Blog Detail Page
 
-`/src/app/blog/[slug]/page.tsx` currently looks up posts by slug from `blogPosts` and renders `post.content` (the inline string). After this task, `post.content` will no longer exist (replaced by `contentPath`).
+`/src/app/blog/[slug]/page.tsx` currently looks up posts by slug from `blogPosts` and renders `post.content` (the inline string). After this task, `post.content` will no longer exist (replaced by `contentPath`). `src/components/blog/blog-post.tsx` line 117 calls `post.content.split("\n\n")` — removing the field without a bridge will crash all 4 blog detail pages at runtime, breaking the Wave 2 build before T011 arrives in Wave 3.
 
-**To avoid breaking the build:** Either:
-1. Keep a stub `content: ""` field alongside `contentPath` until T011 migrates the detail page (not ideal but safe), OR
-2. Update `generateStaticParams()` in the detail page to use slugs from the data file — but not change the rendering yet. The page may render an empty content area temporarily.
+**Required bridge strategy:** Keep a temporary `content: ""` (empty string) alongside `contentPath` in each blog.ts record until T011 replaces the renderer. This prevents the build break while still adding the `contentPath` field T011 needs.
 
-The recommended approach is option 1 — check with the team. If the build breaks, adding a temporary empty `content: ""` is acceptable as a bridge until T011.
+```typescript
+{
+  id: "ep02-creative-ai-framework",
+  slug: "ep02-creative-ai-framework",
+  // ... other fields ...
+  contentPath: "blog/ep02-creative-ai-framework.mdx",
+  content: "",   // BRIDGE: temporary empty string; T011 removes this once MDX renderer is in place
+}
+```
+
+Apply this pattern to all 4 blog post records in `blog.ts`. The empty `content` field means existing blog detail pages render no visible body — that is acceptable during the Wave 2 → Wave 3 transition.
+
+**Note on BlogCategory values:** `src/app/blog/[slug]/page.tsx` line 53 uses `p.category === post.category` to find related posts. After T002 replaces the old `BlogCategory` values (`"Design"`, `"AI"`, `"Process"`, `"Insights"`) with new ones, this filter will produce empty related-posts arrays for posts that still use old category strings. Ensure all 4 blog.ts records use the new T002 `BlogCategory` values (`"Creative Philosophy"`, `"About Us"`, `"Digital Design"`) — which this brief already does. This is not a crash but a note for awareness.
+
+### MDX Quality Review
+
+After writing MDX files, manually review the output for formatting issues — especially:
+- Nested lists (ensure no extra blank lines break list continuity)
+- Code blocks (verify backtick fences are balanced)
+- Special characters from HTML conversion (`&amp;`, `&lt;`, `&gt;` should be decoded to `&`, `<`, `>`)
+- Bold text using `**` syntax (not `<strong>` tags)
+- No residual `data-preset-tag` attributes or inline `style=""` props
+
+The MDX content in this brief has already been pre-converted. Do a spot-check after writing to ensure no HTML artifacts were carried over.
 
 ### MDX Format
 
@@ -461,7 +484,7 @@ Before creating PR:
 - [ ] Build passes: `npm run build`
 - [ ] `npm run lint` passes
 - [ ] 4 MDX files exist in `src/content/blog/`
-- [ ] `src/data/blog.ts` has 4 posts with `contentPath` fields
+- [ ] `src/data/blog.ts` has 4 posts with both `contentPath` and `content: ""` bridge fields
 - [ ] No `framerusercontent.com` URLs in any file you created/modified
 - [ ] Branch rebased on target branch
 

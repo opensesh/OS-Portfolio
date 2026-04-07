@@ -76,7 +76,8 @@ All source URLs use base: `https://framerusercontent.com/images/{hash}.{ext}` (s
 - `1PeraZj4rwCBVywk3sEvPzcRvYw.jpg`
 - `kdIwpWfuzthCYLWztP0haNTzq0.jpg`
 
-**Infinite Nature (Google Gemini)** → `/public/images/projects/gemini-infinite-nature/`
+**Infinite Nature (Google Gemini)** → `/public/images/projects/google-gemini-infinite-nature/`
+(Canonical slug is `google-gemini-infinite-nature` per Framer CSV — see C3 note below)
 - `enyu0AxPncALYsOKGqBz5dcGo.svg` (hero)
 - `0u9mpn2lZqvhWVHgtmYJo9S2ns.jpg`
 - `akEhFihTl9pdmzuHDf5W4UluIjA.jpg`
@@ -125,6 +126,7 @@ All source URLs use base: `https://framerusercontent.com/images/{hash}.{ext}` (s
 - The CDN URLs sometimes include `?width=X&height=Y` params — always strip the query string before downloading.
 - The `about` hero image is 7008x4672 — Next.js Image will optimize it at serve time, so download it as-is. Do not resize during download.
 - `UGUpj8bdCLO6Q9L1oTIFNm1BtI.gif` is a GIF for Universal Audio — treat it as a binary file (no text encoding).
+- **Slug decision (Infinite Nature):** The existing codebase uses `gemini-infinite-nature` as the project slug, but the Framer CSV uses `google-gemini-infinite-nature`. This migration uses `google-gemini-infinite-nature` as the canonical slug going forward (the site is being migrated FROM Framer, so the Framer slug is the source of truth). Download images to `/public/images/projects/google-gemini-infinite-nature/`. T005 will use the same slug in project data. The hash filenames are intentional (they match the Framer CDN source identifiers) — semantic renaming is a future enhancement.
 
 ---
 
@@ -148,7 +150,7 @@ All source URLs use base: `https://framerusercontent.com/images/{hash}.{ext}` (s
 Complete ALL criteria before marking task done:
 
 - [ ] `scripts/download-framer-images.js` exists
-- [ ] Running `node scripts/download-framer-images.js` downloads all ~75 images
+- [ ] Running `node scripts/download-framer-images.js` downloads ~57 new images from framerusercontent.com (the PRD figure of ~75 included client logos already present locally in `/public/logos/` — the script only downloads the ~57 framerusercontent.com images not yet present)
 - [ ] Re-running the script skips all already-downloaded files without re-fetching
 - [ ] A single failed URL does not stop the remaining downloads
 - [ ] All 5 project hero SVGs land in `/public/images/projects/{slug}/`

@@ -40,7 +40,8 @@ This approach:
 
 ### After Wave 2 (T006)
 
-- `BlogPost.content` is removed; `BlogPost.contentPath` is a string like `"blog/ep02-creative-ai-framework.mdx"`
+- `BlogPost.contentPath` is present as a string like `"blog/ep02-creative-ai-framework.mdx"`
+- `BlogPost.content` is kept as a temporary bridge field with value `""` (empty string) — T006 added this to prevent blog-post.tsx from crashing before this task replaces the renderer. **This task must remove the `content: ""` entries from all 4 posts in `src/data/blog.ts` after updating the renderer**, OR T002 must have made `content` optional so the type still compiles after T011 removes the field.
 - 4 MDX files exist at `src/content/blog/{slug}.mdx`
 - `next-mdx-remote` is installed (T002 installed it as part of Wave 1)
 - `src/data/blog.ts` has 4 posts with correct `contentPath` values
@@ -253,6 +254,7 @@ After the change, `blog-post.tsx` receives `children: React.ReactNode`. The comp
 ### Edge Cases
 
 - If the MDX file does not exist at the `contentPath`, `getMdxContent` will throw. This will surface at build time as a proper error rather than a silent empty page — acceptable behavior.
+- `src/app/blog/[slug]/page.tsx` line 53 uses `p.category === post.category` to derive related posts. This filter requires that all 4 blog posts use the new `BlogCategory` values from T002 (e.g., `"Creative Philosophy"`, `"About Us"`, `"Digital Design"`). T006 ensures this — verify before considering the related-posts filter broken. The filter itself works correctly; it is a data dependency, not a code bug.
 - The `compileMDX` call should not need frontmatter parsing since all post metadata lives in `src/data/blog.ts`, not in MDX frontmatter. Pass `{ source, components }` without a `parseFrontmatter: true` option.
 - Code blocks in the MDX posts may contain language hints (```typescript, ```bash) — the `pre`/`code` component map handles basic styling. Syntax highlighting is out of scope for this task.
 
@@ -342,6 +344,7 @@ Before creating PR:
 - [ ] Lint passes: `npm run lint`
 - [ ] No `never_touch` files modified
 - [ ] `post.content` references removed from `blog-post.tsx` (no more paragraph splitter)
+- [ ] `content: ""` bridge entries removed from all 4 posts in `src/data/blog.ts` (or confirmed that `content` is declared optional in `BlogPost` type so omitting it does not cause TypeScript errors)
 - [ ] Branch rebased on target branch
 
 ---

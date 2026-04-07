@@ -206,6 +206,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   contentPath: string;   // path to MDX file, e.g. "blog/ep02-creative-ai-framework.mdx"
+  content?: string;      // BRIDGE: optional empty string kept by T006 to prevent blog-post.tsx crash before T011 lands; T011 removes it
   author: {
     name: string;
     image?: string;
@@ -281,7 +282,7 @@ export interface FreeResource {
 
 ### 5. Create `src/types/index.ts`
 
-Barrel export for all types:
+**This file does not yet exist — create it.** `src/types/` currently only has `blog.ts` and `project.ts`. The barrel export collects all four type files:
 
 ```typescript
 export * from './project';
@@ -289,6 +290,8 @@ export * from './blog';
 export * from './playbook';
 export * from './free-resources';
 ```
+
+Verify all four files exist before writing this barrel export (i.e., confirm `playbook.ts` and `free-resources.ts` were created in steps 3 and 4 above).
 
 ### 6. Update `src/data/projects.ts` to match new schema
 
@@ -374,7 +377,7 @@ Complete ALL criteria before marking task done:
 | `src/types/blog.ts` | modify | Replace content with contentPath; expand BlogCategory union |
 | `src/types/playbook.ts` | create | New Playbook type |
 | `src/types/free-resources.ts` | create | New FreeResource, ResourceBadge, ResourceMedia types |
-| `src/types/index.ts` | create | Barrel export for all types |
+| `src/types/index.ts` | create (file does not yet exist) | Barrel export for all four type files |
 | `src/data/projects.ts` | modify | Update to use categories[] and stub new required fields |
 | `src/data/blog.ts` | modify | Replace content with contentPath; update categories and slugs to Framer data |
 | `package.json` | modify | Add next-mdx-remote dependency |

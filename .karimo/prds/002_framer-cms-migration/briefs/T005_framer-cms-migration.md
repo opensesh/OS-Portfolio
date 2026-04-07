@@ -80,19 +80,11 @@ export interface Project {
 
 **Note:** If T002 hasn't landed yet when you start, confirm the schema matches before writing data. The `category` field (singular) is replaced by `categories` (array). The `projectCategories` const and `ProjectCategory` type are removed or replaced.
 
-### Filter Logic Change (projects page)
+### Filter Logic Change (NOT in scope for T005)
 
-`/src/app/projects/page.tsx` currently filters with:
-```typescript
-return projects.filter((p) => p.category === activeFilter);
-```
+**T009 owns all filter logic changes in `src/app/projects/page.tsx`.** Do NOT modify filter logic or the projects page in this task. T005 is scoped exclusively to populating the `src/data/projects.ts` data file and adding the redirect rule for the old Infinite Nature slug.
 
-This must change to array intersection:
-```typescript
-return projects.filter((p) => p.categories.includes(activeFilter));
-```
-
-The filter state type must also change from `ProjectCategory | "All"` to `string | "All"` since `ProjectCategory` enum is removed.
+The filter change from `p.category === activeFilter` to `p.categories.includes(activeFilter)` will be done by T009 in Wave 3.
 
 ---
 
@@ -332,8 +324,7 @@ Complete ALL criteria before marking task done:
 - [ ] BILTFOUR, NEXT, and Universal Audio projects have `results[]` with metrics
 - [ ] Infinite Nature project has no `testimonials` and no `results` fields (omit or set to undefined)
 - [ ] All image paths reference `/images/projects/{slug}/` (not `framerusercontent.com`)
-- [ ] `/src/app/projects/page.tsx` filter uses `p.categories.includes(activeFilter)` instead of `p.category === activeFilter`
-- [ ] Filter state type updated from `ProjectCategory | "All"` to `string | "All"`
+- [ ] A redirect rule from `/projects/gemini-infinite-nature` → `/projects/google-gemini-infinite-nature` is present in `next.config.ts`
 - [ ] `npm run build` passes with TypeScript strict mode (no `any`, no type errors)
 - [ ] `npm run lint` passes with no errors
 
@@ -344,14 +335,14 @@ Complete ALL criteria before marking task done:
 | File | Action | Purpose |
 |------|--------|---------|
 | `src/data/projects.ts` | modify | Replace 5 stub records with full enriched data |
-| `src/app/projects/page.tsx` | modify | Update filter logic from single-category to array intersection |
-| `src/components/projects/project-filters.tsx` | modify | Update type from `ProjectCategory` to `string` for filter state |
+| `next.config.ts` | modify | Add redirect from `/projects/gemini-infinite-nature` to `/projects/google-gemini-infinite-nature` |
 
 ### File Ownership Notes
 
 - `src/types/project.ts` is owned by T002. Do NOT modify it in this task — only read from it.
 - `src/app/projects/[slug]/page.tsx` is owned by T010 (Wave 3). The project detail page rendering is out of scope here.
-- The filter component (`project-filters.tsx`) currently imports `ProjectCategory` and `projectCategories` from `@/types/project`. After T002, those may be removed or changed. Update imports accordingly.
+- `src/app/projects/page.tsx` and `src/components/projects/project-filters.tsx` are owned by T009 (Wave 3) for filter logic. Do NOT modify these files in T005.
+- `next.config.ts` — add only the redirect rule for `gemini-infinite-nature`. Do not modify any other configuration.
 
 ---
 
@@ -374,40 +365,11 @@ thumbnail: "/images/projects/iterra/vvl6xyIdUMskDBgstfyClKSxE8.svg",
 ```
 The `images[0]` entry (context: "hero") duplicates this same path. This redundancy is intentional — `thumbnail` is for lightweight listing usage, `images[]` is for the detail page gallery.
 
-### Filter Logic Migration
-
-In `src/app/projects/page.tsx`, the current filter line:
-```typescript
-return projects.filter((p) => p.category === activeFilter);
-```
-Must become:
-```typescript
-return projects.filter((p) => p.categories.includes(activeFilter));
-```
-
-The state type `ProjectCategory | "All"` must change to `string | "All"`. The import of `ProjectCategory` from `@/types/project` should be removed if T002 has removed that export.
-
-In `project-filters.tsx`, the `ALL_FILTERS` array is currently derived from `projectCategories`. After T002, derive it from `Categories.csv` canonical values. For this task, you can hardcode the display names inline if the `categories.ts` data file doesn't exist yet (T009 creates it in Wave 3):
-
-```typescript
-const ALL_FILTERS = ["All", "art-direction", "strategy", "digital-design", "brand-identity", "web-design"] as const;
-```
-Or show human-readable labels with a simple map:
-```typescript
-const CATEGORY_LABELS: Record<string, string> = {
-  "art-direction": "Art Direction",
-  "strategy": "Strategy",
-  "digital-design": "Digital Design",
-  "brand-identity": "Brand Identity",
-  "web-design": "Web Design",
-};
-```
-
 ### Edge Cases
 
 - `buttonHref` for Iterra is an empty string `""`. Either omit the button in the detail view (T010 handles rendering) or keep it as empty string — the data file should store it faithfully.
 - `year` for projects with ranges (e.g., "2023-2024", "2022-present") must be stored as a string, not a number.
-- For `google-gemini-infinite-nature`, the slug in the current codebase is `gemini-infinite-nature` but the Framer CSV slug is `google-gemini-infinite-nature`. Use the Framer CSV slug `google-gemini-infinite-nature` as it matches the image download paths from T001.
+- For `google-gemini-infinite-nature`, the slug in the current codebase is `gemini-infinite-nature` but the Framer CSV slug is `google-gemini-infinite-nature`. Use the Framer CSV slug `google-gemini-infinite-nature` as the canonical slug — it matches the image download paths from T001. The existing `/projects/gemini-infinite-nature` URL will 404 after this change. Add a redirect rule in `next.config.ts` for the old URL: `{ source: '/projects/gemini-infinite-nature', destination: '/projects/google-gemini-infinite-nature', permanent: true }`. This prevents broken links from any indexed or shared URLs.
 
 ### TypeScript
 

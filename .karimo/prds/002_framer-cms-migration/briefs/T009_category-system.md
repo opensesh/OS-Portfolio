@@ -37,7 +37,7 @@ export const projectCategories: ProjectCategory[] = [
 ];
 ```
 
-Wave 2 task T005 has already migrated all 5 projects to use `categories: string[]` (replacing `category: ProjectCategory`). This task wires up the data side (canonical slug list + display labels) and updates the filter components so the UI works correctly with the new array-based categories.
+Wave 2 task T005 has already migrated all 5 projects to use `categories: string[]` (replacing `category: ProjectCategory`). T005 does NOT modify `src/app/projects/page.tsx` or `project-filters.tsx` — **T009 owns all filter logic changes**. This task wires up the data side (canonical slug list + display labels) and updates the filter components so the UI works correctly with the new array-based categories.
 
 The Framer CMS CSV defines these canonical slugs:
 - `art-direction`
@@ -110,7 +110,7 @@ Complete ALL criteria before marking task done:
 
 ### File Ownership Notes
 
-`src/app/projects/page.tsx` is also modified by T014. T009 makes the type/filter-logic change; T014 handles further filter UI refinement. Do not overlap — T009 focuses on the data wiring and type removal; T014 focuses on the filter component tab rendering.
+`src/app/projects/page.tsx` is also modified by T014. T009 makes the type/filter-logic change (previously described as T005's job — that is incorrect; T005 was scoped back to data-only); T014 handles further filter UI refinement. Do not overlap — T009 focuses on the data wiring and type removal; T014 focuses on the filter component tab rendering.
 
 ---
 

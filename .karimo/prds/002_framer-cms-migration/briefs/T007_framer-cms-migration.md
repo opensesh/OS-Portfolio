@@ -35,9 +35,10 @@ This task is part of **Wave 2** — content migration.
 The `resourceCards` array in the source component contains 5 entries with this shape:
 
 ```typescript
+// Source shape in OS_our-links (for reference only — do NOT copy verbatim):
 interface ResourceCard {
   id: string;
-  badge: { text: string; variant: "coming-soon" | "live" };
+  badge: { text: string; variant: "coming-soon" | "live" };  // source uses object shape
   mediaDefault: string;  // image or video src
   mediaType: "image" | "video";
   imageHover: string;
@@ -46,6 +47,8 @@ interface ResourceCard {
   href: string;
   buttonLabel: string;
 }
+// NOTE: The OS-Portfolio FreeResource type uses badge: "live" | "coming-soon" (plain string),
+// NOT the object shape above. Adapt when writing free-resources.ts.
 ```
 
 ### Resource 1: Portfolio Template
@@ -159,25 +162,18 @@ Copy all 10 files (9 images + 1 MP4 video) to `/public/images/resources/` in the
 After T002 completes, `/src/types/free-resources.ts` will export:
 
 ```typescript
-export type BadgeVariant = "live" | "coming-soon";
-
-export interface ResourceBadge {
-  text: string;
-  variant: BadgeVariant;
-}
-
-export type MediaType = "image" | "video";
+export type ResourceBadge = 'live' | 'coming-soon';
 
 export interface ResourceMedia {
+  type: 'image' | 'video';
   src: string;
-  type: MediaType;
 }
 
 export interface FreeResource {
   id: string;
-  badge: ResourceBadge;
+  badge: ResourceBadge;    // simple string union — NOT an object
   media: ResourceMedia;
-  hoverImage: string;
+  hoverImage?: string;
   title: string;
   description: string;
   href: string;
@@ -185,7 +181,7 @@ export interface FreeResource {
 }
 ```
 
-**Note:** If T002 defines the types differently (different field names), adapt your data file to match what T002 actually exports. The shape above is the target based on the PRD.
+**Critical:** `badge` is a plain string (`'live' | 'coming-soon'`), NOT an object `{ text, variant }`. Use the string form in all data records. The badge text displayed in the UI ("Live" / "Coming Soon") is derived by the component, not stored in data.
 
 ---
 
@@ -199,7 +195,7 @@ import { FreeResource } from "@/types/free-resources";
 export const freeResources: FreeResource[] = [
   {
     id: "portfolio",
-    badge: { text: "Live", variant: "live" },
+    badge: "live",
     media: { src: "/images/resources/portfolio-01.jpg", type: "image" },
     hoverImage: "/images/resources/portfolio-02.jpg",
     title: "Portfolio Template",
@@ -209,7 +205,7 @@ export const freeResources: FreeResource[] = [
   },
   {
     id: "design-directory",
-    badge: { text: "Live", variant: "live" },
+    badge: "live",
     media: { src: "/images/resources/design-directory-01.mp4", type: "video" },
     hoverImage: "/images/resources/design-directory-02.jpg",
     title: "Design Directory",
@@ -219,7 +215,7 @@ export const freeResources: FreeResource[] = [
   },
   {
     id: "brand-design-system",
-    badge: { text: "Live", variant: "live" },
+    badge: "live",
     media: { src: "/images/resources/brand-design-system-01.jpg", type: "image" },
     hoverImage: "/images/resources/brand-design-system-02.jpg",
     title: "Brand Design System",
@@ -229,7 +225,7 @@ export const freeResources: FreeResource[] = [
   },
   {
     id: "linktree-template",
-    badge: { text: "Live", variant: "live" },
+    badge: "live",
     media: { src: "/images/resources/linktree-template-01.jpg", type: "image" },
     hoverImage: "/images/resources/linktree-template-02.jpg",
     title: "Linktree Template",
@@ -239,7 +235,7 @@ export const freeResources: FreeResource[] = [
   },
   {
     id: "karimo",
-    badge: { text: "Live", variant: "live" },
+    badge: "live",
     media: { src: "/images/resources/karimo-01.jpg", type: "image" },
     hoverImage: "/images/resources/karimo-02.jpg",
     title: "KARIMO",
@@ -292,15 +288,26 @@ Complete ALL criteria before marking task done:
 
 ## Implementation Guidance
 
-### Step 1: Locate Source Assets
+### Step 1: Verify Source Assets Exist (required before proceeding)
 
-Before writing any TypeScript, verify the source assets exist:
+**Do not skip this step.** Before writing any TypeScript or copying any files, verify the source directory exists and contains the expected assets:
 
 ```bash
-ls /Users/alexbouhdary/Documents/GitHub.nosync/OS_our-links/public/
+ls /Users/alexbouhdary/Documents/GitHub.nosync/OS_our-links/public/images/
 ```
 
-Look for an `images/` subdirectory or an `OS_our-links/` subdirectory. If the glob search returned no results during brief generation, it may be that the `public/` folder has a different structure. Common Next.js setups serve `public/` at the root, so `/OS_our-links/images/portfolio-01.jpg` in the component means the file is at `OS_our-links/public/OS_our-links/images/portfolio-01.jpg`.
+The reviewer confirmed these 10 files exist at that exact flat path:
+- `portfolio-01.jpg`, `portfolio-02.jpg`
+- `design-directory-01.mp4`, `design-directory-02.jpg`
+- `brand-design-system-01.jpg`, `brand-design-system-02.jpg`
+- `linktree-template-01.jpg`, `linktree-template-02.jpg`
+- `karimo-01.jpg`, `karimo-02.jpg`
+
+If `ls` returns results confirming these files are present, proceed. If the directory doesn't exist or files are missing, check these fallback paths:
+1. `/Users/alexbouhdary/Documents/GitHub.nosync/OS_our-links/public/`
+2. `/Users/alexbouhdary/Documents/GitHub.nosync/OS_our-links/public/OS_our-links/images/`
+
+Do not assume the path — verify it first.
 
 ### Step 2: Create Destination Directory
 

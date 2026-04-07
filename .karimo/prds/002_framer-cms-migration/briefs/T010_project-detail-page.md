@@ -37,7 +37,7 @@ Wave 2 task T005 has enriched the `Project` type and populated all 5 project dat
 - `buttonHref?: string`
 - `categories: string[]` (replaces `category`)
 
-This task builds the rendering components to display all of that data. All 5 project detail pages must render correctly: `/projects/iterra`, `/projects/biltfour`, `/projects/google-cloud-next`, `/projects/gemini-infinite-nature`, `/projects/universal-audio`.
+This task builds the rendering components to display all of that data. All 5 project detail pages must render correctly: `/projects/iterra`, `/projects/biltfour`, `/projects/google-cloud-next`, `/projects/google-gemini-infinite-nature`, `/projects/universal-audio`.
 
 This task is part of **Wave 3** — Component Updates.
 
@@ -107,7 +107,7 @@ No structural changes needed. Verify the page still calls `<ProjectDetail projec
 
 Complete ALL criteria before marking task done:
 
-- [ ] All 5 project detail pages render without errors (`/projects/iterra`, `/projects/biltfour`, `/projects/google-cloud-next`, `/projects/gemini-infinite-nature`, `/projects/universal-audio`)
+- [ ] All 5 project detail pages render without errors (`/projects/iterra`, `/projects/biltfour`, `/projects/google-cloud-next`, `/projects/google-gemini-infinite-nature`, `/projects/universal-audio`)
 - [ ] Hero image renders using `next/image` (not a placeholder div)
 - [ ] Challenge, Solution, and Impact sections display with correct heading text and body copy from `project.sections`
 - [ ] Gallery images render using `next/image` with proper aspect ratio containers (no layout shift)
@@ -135,7 +135,7 @@ Complete ALL criteria before marking task done:
 
 ### File Ownership Notes
 
-`project-detail.tsx` is the only existing component touched here. The new sub-components are net-new files. T009 also touches the categories rendering in `project-detail.tsx` — coordinate: T009 changes `project.category` → `project.categories`, this task uses `project.categories` as already updated by T009.
+`project-detail.tsx` is the only existing component touched here. The new sub-components are net-new files. T009 also touches `project-detail.tsx` to change `{project.category}` → joined category labels. **T010 should run after T009 completes** to avoid merge conflicts on this file. T009 owns the category rendering change; T010 owns the full layout enhancement. If T009 has already made the category change, T010 should incorporate it (not overwrite it).
 
 ---
 

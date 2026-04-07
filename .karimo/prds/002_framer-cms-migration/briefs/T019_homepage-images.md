@@ -153,15 +153,15 @@ Keep the existing `MagneticCursorLabel` overlay on top.
 ```
 The gradient shows before the image loads (it will be covered once the image renders).
 
-### 4. Update `src/data/blog.ts` thumbnail paths
+### 4. Verify `src/data/blog.ts` thumbnail paths (verify only — do NOT modify)
 
-T006 has already set thumbnail paths to `/public/images/blog/{filename}.jpg`. Verify these paths match the actual downloaded filenames from T001. The mapping is:
-- EP02 → `KKSflaBzLhQtCCknGCHsQqbqU2s.jpg`
-- EP01 → `dAlZcH0hvoB0zkWQSH2BA5MJRY.jpg`
-- Democratizing → `c1JC3v6vQ3z0r5tG78dzNkn9iTI.jpg`
-- MCP Guide → `6zZWCJwMNLKAwcShUSZbwsO7prA.jpg`
+T006 owns `src/data/blog.ts`. **Do not modify this file in T019.** Instead, only verify that T006 set the correct thumbnail paths. The expected mapping is:
+- EP02 → `/images/blog/KKSflaBzLhQtCCknGCHsQqbqU2s.jpg`
+- EP01 → `/images/blog/dAlZcH0hvoB0zkWQSH2BA5MJRY.jpg`
+- Democratizing → `/images/blog/c1JC3v6vQ3z0r5tG78dzNkn9iTI.jpg`
+- MCP Guide → `/images/blog/6zZWCJwMNLKAwcShUSZbwsO7prA.jpg`
 
-If T006 already set these paths correctly, no change needed. Just verify.
+If the paths are incorrect in `blog.ts`, report it in your PR description and flag it for T006 to fix — do not apply the fix yourself in T019. Applying a fix in T019 risks conflicting with T006's ownership and may be overwritten.
 
 ### 5. Hero image note
 
@@ -196,13 +196,13 @@ Complete ALL criteria before marking task done:
 | `src/data/what-we-do.ts` | modify | Add optional `image` field to `WhatWeDoItem`, populate for 4 items |
 | `src/components/home/what-we-do-section.tsx` | modify | Render downloaded images in PixelTransition slots |
 | `src/components/projects/project-card.tsx` | modify | Enable next/image in both carousel and grid card variants |
-| `src/data/blog.ts` | modify | Verify/update thumbnail paths to local files |
+| `src/data/blog.ts` | verify only (do NOT modify) | Confirm T006 set correct thumbnail paths; report discrepancies in PR |
 
 ### File Ownership Notes
 
 `project-card.tsx` is also relevant to T010 (project detail page) — but the card component itself is only touched here. T010 creates new sub-components. No conflict.
 
-`src/data/blog.ts` may be owned by T006. If T006 already set the correct local paths, do not re-modify — just verify.
+`src/data/blog.ts` is owned by T006. T019 must not modify it — verify only. Any path corrections belong in T006.
 
 ---
 

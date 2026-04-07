@@ -64,15 +64,14 @@ export function Header() {
         <div className="relative">
           {/*
             Background shape:
-            - Inset from viewport edges by bgInset
+            - Centered, max-width matches container-main (1280px)
+            - Pinches inward by bgInset on scroll
             - Flush with top, bottom corners round
-            - Covers both nav and menu content
           */}
           <div
-            className="absolute top-0 bottom-0 bg-bg-secondary transition-all duration-300 ease-out"
+            className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-full bg-bg-secondary transition-all duration-300 ease-out"
             style={{
-              left: `${bgInset}px`,
-              right: `${bgInset}px`,
+              maxWidth: `calc(1280px - ${bgInset * 2}px)`,
               opacity: bgOpacity,
               borderBottomLeftRadius: `${bottomRadius}px`,
               borderBottomRightRadius: `${bottomRadius}px`,

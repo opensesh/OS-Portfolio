@@ -8,7 +8,7 @@ import "./text-block-reveal.css";
 
 interface TextBlockRevealProps {
   /** Text to reveal — use \n for explicit line breaks */
-  children: string;
+  children: string | string[];
   /** HTML element tag */
   as?: "h1" | "h2" | "h3" | "h4" | "p" | "span";
   /** Additional className for the text element */
@@ -37,7 +37,8 @@ export function TextBlockReveal({
   const isInView = useInView(containerRef, { once: true, margin: "-10%" });
   const pageLoaded = usePageLoaded();
 
-  const lines = children.split("\n").filter(Boolean);
+  const text = Array.isArray(children) ? children.join("") : children;
+  const lines = text.split("\n").filter(Boolean);
 
   const animate =
     trigger === "after-loader" ? pageLoaded : isInView;

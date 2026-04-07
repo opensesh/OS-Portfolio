@@ -137,7 +137,7 @@ export function ProjectFilters({
           )}
         >
           <span className="font-accent text-xs uppercase tracking-wider">
-            FILTER
+            {activeFilter === "All" ? "FILTER" : categoryLabel(activeFilter).toUpperCase()}
           </span>
         </span>
         <span

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -13,9 +14,10 @@ import { devProps } from "@/utils/dev-props";
 interface BlogPostViewProps {
   post: BlogPost;
   relatedPosts: BlogPost[];
+  children?: React.ReactNode;
 }
 
-export function BlogPostView({ post, relatedPosts }: BlogPostViewProps) {
+export function BlogPostView({ post, relatedPosts, children }: BlogPostViewProps) {
   return (
     <article {...devProps('BlogPostView')}>
       {/* Hero */}
@@ -112,30 +114,7 @@ export function BlogPostView({ post, relatedPosts }: BlogPostViewProps) {
       {/* Content */}
       <section className="pb-20 md:pb-32">
         <div className="container-main max-w-3xl mx-auto">
-          <div className="prose">
-            {/* Render markdown content - bridge renderer until T011 installs MDX pipeline */}
-            {(post.content ?? "").split("\n\n").map((paragraph, index) => {
-              const trimmed = paragraph.trim();
-              if (!trimmed) return null;
-
-              if (trimmed.startsWith("## ")) {
-                return (
-                  <h2 key={index} className="text-heading text-2xl mt-12 mb-4">
-                    {trimmed.replace("## ", "")}
-                  </h2>
-                );
-              }
-
-              return (
-                <p
-                  key={index}
-                  className="text-fg-secondary text-lg leading-relaxed mb-6"
-                >
-                  {trimmed}
-                </p>
-              );
-            })}
-          </div>
+          <div className="prose">{children}</div>
         </div>
       </section>
 

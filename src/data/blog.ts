@@ -9,7 +9,6 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "How we think about AI as a creative partner — not a replacement. A framework for integrating AI into design workflows without losing the human edge.",
     contentPath: "blog/ep02-creative-ai-framework.mdx",
-    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
       name: "Karim Bouhdary",
     },
@@ -26,7 +25,6 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Why the best AI-assisted work still requires a strong creative vision. On not outsourcing your taste to a model.",
     contentPath: "blog/ep01-creativity-over-compute.mdx",
-    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
       name: "Karim Bouhdary",
     },
@@ -43,7 +41,6 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "The tools that used to be locked behind agency retainers are now accessible to every founder. Here's what that means for the design industry.",
     contentPath: "blog/democratizing-fortune-500-design.mdx",
-    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
       name: "Karim Bouhdary",
     },
@@ -60,7 +57,6 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Model Context Protocol is changing how designers interact with AI tools. A plain-English guide to what it is and why it matters.",
     contentPath: "blog/mcp-for-designers.mdx",
-    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
       name: "Karim Bouhdary",
     },

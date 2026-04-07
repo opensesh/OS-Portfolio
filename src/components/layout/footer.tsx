@@ -8,7 +8,6 @@ import { socialIcons } from "@/components/shared/social-icons";
 import { TriplingText } from "@/components/shared/tripling-text";
 import { SectionLabel } from "@/components/shared/section-label";
 import { ScrollReveal } from "@/components/shared/scroll-reveal";
-import { InputBase } from "@/components/uui/base/input/input";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { useInView } from "@/hooks/use-in-view";
 import { devProps } from "@/utils/dev-props";
@@ -41,13 +40,13 @@ export function Footer() {
               </ul>
             </ScrollReveal>
 
-            {/* Resources Links */}
+            {/* The Lab Links */}
             <ScrollReveal delay={0.15} duration={0.6} direction="up">
               <SectionLabel className="mb-4" animate={false} variant="brand">
-                Resources
+                The Lab
               </SectionLabel>
               <ul className="space-y-2.5">
-                {footerNavItems.resources.map((item) => (
+                {footerNavItems.theLab.map((item) => (
                   <li key={item.href}>
                     <Link href={item.href} className="text-sm inline-block text-fg-secondary hover:text-fg-primary transition-colors duration-200">
                       <TriplingText>{item.label}</TriplingText>
@@ -96,26 +95,30 @@ export function Footer() {
                 Get updates on design, AI, and creative tools.
               </p>
               <form
-                className="flex gap-2"
+                className="flex items-end gap-3"
                 onSubmit={(e) => {
                   e.preventDefault();
                 }}
               >
-                <InputBase
+                <input
                   type="email"
                   placeholder="your@email.com"
-                  size="sm"
-                  wrapperClassName="flex-1"
+                  className={cn(
+                    "flex-1 bg-transparent border-0 border-b border-border-secondary",
+                    "py-2 text-sm text-fg-primary placeholder:text-fg-tertiary",
+                    "focus:outline-none focus:border-b-2 focus:border-fg-brand",
+                    "transition-colors duration-200"
+                  )}
                 />
                 <button
                   type="submit"
                   className={cn(
-                    "h-10 px-5 text-sm font-medium whitespace-nowrap",
-                    "bg-bg-brand-solid text-white",
-                    "hover:opacity-90 transition-opacity duration-200"
+                    "pb-2 text-sm font-medium whitespace-nowrap",
+                    "text-fg-brand hover:text-fg-primary",
+                    "transition-colors duration-200"
                   )}
                 >
-                  Join
+                  Subscribe
                 </button>
               </form>
             </ScrollReveal>

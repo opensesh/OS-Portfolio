@@ -201,7 +201,7 @@ export function TVChannelMenu({
     <>
       <motion.div
         ref={menuRef}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 lg:bottom-10 z-40 flex flex-col items-center max-sm:bottom-6"
+        className="absolute bottom-8 right-8 lg:bottom-10 lg:right-[6%] z-40 flex flex-col items-end max-sm:bottom-6 max-sm:right-6"
         style={{
           opacity: menuOpacity,
           pointerEvents: isVisible ? "auto" : "none",
@@ -212,7 +212,7 @@ export function TVChannelMenu({
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              className="mb-3 w-80 origin-bottom overflow-hidden rounded-[6px] border border-fg-primary/10 bg-bg-secondary/95 backdrop-blur-xl max-sm:w-72"
+              className="mb-3 w-80 origin-bottom-right overflow-hidden rounded-[6px] border border-fg-primary/10 bg-bg-secondary/95 backdrop-blur-xl max-sm:w-72"
               variants={menuCardVariants}
               initial="hidden"
               animate="visible"

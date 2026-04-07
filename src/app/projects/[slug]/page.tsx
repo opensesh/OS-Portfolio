@@ -27,13 +27,29 @@ export async function generateMetadata({
     };
   }
 
+  const baseUrl = "https://opensession.co";
   return {
-    title: `${project.title} | Projects`,
+    title: project.title,
     description: project.description,
+    alternates: {
+      canonical: `${baseUrl}/projects/${slug}`,
+    },
     openGraph: {
-      title: `${project.title} | Open Session`,
+      title: project.title,
       description: project.description,
       type: "article",
+      ...(project.thumbnail
+        ? {
+            images: [
+              {
+                url: `${baseUrl}${project.thumbnail}`,
+                width: 1200,
+                height: 630,
+                alt: project.title,
+              },
+            ],
+          }
+        : {}),
     },
   };
 }

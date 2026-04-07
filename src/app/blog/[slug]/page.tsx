@@ -26,13 +26,29 @@ export async function generateMetadata({
     return { title: "Post Not Found" };
   }
 
+  const baseUrl = "https://opensession.co";
   return {
-    title: `${post.title} | Open Session Blog`,
+    title: post.title,
     description: post.excerpt,
+    alternates: {
+      canonical: `${baseUrl}/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: post.thumbnail ? [{ url: post.thumbnail }] : [],
+      type: "article",
+      ...(post.thumbnail
+        ? {
+            images: [
+              {
+                url: `${baseUrl}${post.thumbnail}`,
+                width: 1200,
+                height: 630,
+                alt: post.title,
+              },
+            ],
+          }
+        : {}),
     },
   };
 }

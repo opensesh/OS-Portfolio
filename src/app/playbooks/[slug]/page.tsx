@@ -22,9 +22,29 @@ export async function generateMetadata({
     return { title: "Playbook Not Found" };
   }
 
+  const baseUrl = "https://opensession.co";
   return {
-    title: `${playbook.title} | Open Session`,
+    title: playbook.title,
     description: playbook.excerpt,
+    alternates: {
+      canonical: `${baseUrl}/playbooks/${slug}`,
+    },
+    ...(playbook.thumbnail
+      ? {
+          openGraph: {
+            title: playbook.title,
+            description: playbook.excerpt,
+            images: [
+              {
+                url: `${baseUrl}${playbook.thumbnail}`,
+                width: 1200,
+                height: 630,
+                alt: playbook.title,
+              },
+            ],
+          },
+        }
+      : {}),
   };
 }
 

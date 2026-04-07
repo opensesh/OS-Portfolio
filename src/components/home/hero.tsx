@@ -242,7 +242,7 @@ export function Hero() {
                 <br />
                 Work With
               </p>
-              <div className="flex items-center gap-1.5 pointer-events-auto">
+              <div className="flex items-center gap-5 pointer-events-auto">
                 {CLIENTS.map((client) => (
                   <a
                     key={client.name}
@@ -255,9 +255,9 @@ export function Hero() {
                     <Image
                       src={client.src}
                       alt={client.name}
-                      width={680}
-                      height={336}
-                      className="h-14 w-auto opacity-70 hover:opacity-100 transition-opacity invert dark:invert-0"
+                      width={200}
+                      height={40}
+                      className="h-7 w-auto opacity-70 hover:opacity-100 transition-opacity invert dark:invert-0"
                     />
                     <span className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-bg-secondary px-2 py-1 text-xs text-fg-secondary opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border-secondary">
                       {client.name}

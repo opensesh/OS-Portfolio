@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { AboutHero } from "@/components/about/about-hero";
 import { TeamShowcase } from "@/components/about/team-showcase";
-import { TeamSection } from "@/components/about/team-section";
+import { ThesisSection } from "@/components/home/thesis-section";
 import { ValuesSection } from "@/components/about/values-section";
 import { BeliefsSection } from "@/components/home/beliefs-section";
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export default function AboutPage() {
     <>
       <AboutHero />
       <TeamShowcase />
-      <TeamSection />
+      <ThesisSection />
       <ValuesSection />
       <BeliefsSection />
     </>

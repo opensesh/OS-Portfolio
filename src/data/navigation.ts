@@ -22,11 +22,13 @@ export const footerNavItems: Record<string, NavItem[]> = {
   company: [
     { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
-    { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
   ],
   resources: [
     { label: "The Lab", href: "/templates" },
+    { label: "Blog", href: "/blog" },
+    { label: "Playbooks", href: "/playbooks" },
+    { label: "Free Assets", href: "/free-assets" },
   ],
   legal: [
     { label: "Terms of Service", href: "/terms" },

@@ -16,7 +16,6 @@ import { staggerContainer, fadeInUp } from "@/lib/motion";
 import { useInView } from "@/hooks/use-in-view";
 import { devProps } from "@/utils/dev-props";
 
-
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const footerRef = useRef<HTMLElement>(null);
@@ -32,39 +31,40 @@ export function Footer() {
   const brandTextOpacity = useTransform(scrollYProgress, [0, 0.4], [0, 1]);
 
   return (
-    <footer {...devProps('Footer')} ref={footerRef}>
+    // Force dark theme on footer regardless of site theme
+    <footer {...devProps('Footer')} ref={footerRef} className="dark">
       {/* ================================================================
-          Zone A — Dark Brand Statement + Navigation
+          Zone A — Brand Statement + Navigation
           ================================================================ */}
-      <div className="bg-bg-inverse text-fg-inverse">
-        <div className="container-main py-16 md:py-24 lg:py-32">
-          {/* Brand Statement */}
-          <div className="mb-16 md:mb-20">
+      <div className="bg-bg-primary text-fg-primary">
+        <div className="container-main py-12 md:py-16 lg:py-20">
+          {/* Top: Logo + Headline side by side on desktop */}
+          <div className="mb-10 md:mb-12">
             <ScrollReveal delay={0} duration={0.5} direction="up">
-              <Logo logoType="combo" className="mb-8" />
+              <Logo logoType="combo" className="mb-6" />
             </ScrollReveal>
             <TextBlockReveal
               as="h2"
-              className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight max-w-3xl"
+              className="font-display text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight"
               trigger="scroll"
               delay={0.1}
-              stagger={0.2}
+              stagger={0.15}
             >
-              {"We help the world make\nthe most of design\nand technology."}
+              {"We help the world make the most\nof design and technology."}
             </TextBlockReveal>
           </div>
 
-          {/* Navigation Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+          {/* Navigation Grid: 2 link columns + CTA */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-16">
             {/* Company Links */}
             <ScrollReveal delay={0.1} duration={0.6} direction="up">
-              <SectionLabel className="mb-5" animate={false} variant="brand">
+              <SectionLabel className="mb-4" animate={false} variant="brand">
                 Company
               </SectionLabel>
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {footerNavItems.company.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="text-sm inline-block text-fg-inverse/70 hover:text-fg-inverse transition-colors duration-200">
+                    <Link href={item.href} className="text-sm inline-block text-fg-secondary hover:text-fg-primary transition-colors duration-200">
                       <TriplingText>{item.label}</TriplingText>
                     </Link>
                   </li>
@@ -74,13 +74,13 @@ export function Footer() {
 
             {/* Resources Links */}
             <ScrollReveal delay={0.2} duration={0.6} direction="up">
-              <SectionLabel className="mb-5" animate={false} variant="brand">
+              <SectionLabel className="mb-4" animate={false} variant="brand">
                 Resources
               </SectionLabel>
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {footerNavItems.resources.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="text-sm inline-block text-fg-inverse/70 hover:text-fg-inverse transition-colors duration-200">
+                    <Link href={item.href} className="text-sm inline-block text-fg-secondary hover:text-fg-primary transition-colors duration-200">
                       <TriplingText>{item.label}</TriplingText>
                     </Link>
                   </li>
@@ -88,40 +88,19 @@ export function Footer() {
               </ul>
             </ScrollReveal>
 
-            {/* Social Links */}
-            <ScrollReveal delay={0.3} duration={0.6} direction="up">
-              <SectionLabel className="mb-5" animate={false} variant="brand">
-                Social
-              </SectionLabel>
-              <ul className="space-y-3">
-                {socialLinks.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm inline-block text-fg-inverse/70 hover:text-fg-inverse transition-colors duration-200"
-                    >
-                      <TriplingText>{link.label}</TriplingText>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </ScrollReveal>
-
             {/* CTA */}
-            <ScrollReveal delay={0.4} duration={0.6} direction="up">
-              <SectionLabel className="mb-5" animate={false} variant="brand">
+            <ScrollReveal delay={0.3} duration={0.6} direction="up" className="col-span-2 md:col-span-1">
+              <SectionLabel className="mb-4" animate={false} variant="brand">
                 Get in touch
               </SectionLabel>
-              <p className="text-sm text-fg-inverse/60 mb-6">
+              <p className="text-sm text-fg-secondary mb-5">
                 Have a project in mind? Let&apos;s build something together.
               </p>
               <Link
                 href="/contact"
                 className={cn(
                   "inline-flex items-center justify-center",
-                  "h-11 px-6 text-sm font-medium",
+                  "h-10 px-6 text-sm font-medium",
                   "bg-bg-brand-solid text-white",
                   "hover:opacity-90 transition-opacity duration-200"
                 )}
@@ -134,22 +113,23 @@ export function Footer() {
       </div>
 
       {/* ================================================================
-          Zone B — Aperol Orange Block
+          Zone B — Aperol Orange Block (newsletter + socials + legal)
           ================================================================ */}
       <div className="bg-bg-brand-solid" ref={orangeRef}>
         <motion.div
-          className="container-main py-10 md:py-14"
+          className="container-main py-8 md:py-10"
           variants={staggerContainer}
           initial="hidden"
           animate={orangeInView ? "visible" : "hidden"}
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          {/* Top row: newsletter + social icons */}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
             {/* Newsletter */}
-            <motion.div variants={fadeInUp} className="max-w-md">
+            <motion.div variants={fadeInUp} className="max-w-sm">
               <p className="text-sm font-medium text-fg-on-brand mb-1">
                 Stay in the loop
               </p>
-              <p className="text-xs text-fg-on-brand/70 mb-4">
+              <p className="text-xs text-fg-on-brand/70 mb-3">
                 Get updates on design, AI, and creative tools.
               </p>
               <form
@@ -168,7 +148,7 @@ export function Footer() {
                   type="submit"
                   className={cn(
                     "h-10 px-5 text-sm font-medium whitespace-nowrap",
-                    "bg-bg-inverse text-fg-inverse",
+                    "bg-bg-primary text-fg-primary",
                     "hover:opacity-90 transition-opacity duration-200"
                   )}
                 >
@@ -178,7 +158,7 @@ export function Footer() {
             </motion.div>
 
             {/* Social Icons */}
-            <motion.div variants={fadeInUp} className="flex items-center gap-4">
+            <motion.div variants={fadeInUp} className="flex items-center gap-3">
               {socialLinks.map((link) => {
                 const Icon = socialIcons[link.icon];
                 return (
@@ -189,8 +169,8 @@ export function Footer() {
                     rel="noopener noreferrer"
                     className={cn(
                       "flex items-center justify-center",
-                      "w-10 h-10 rounded-full",
-                      "bg-bg-inverse/10 hover:bg-bg-inverse/20",
+                      "w-9 h-9 rounded-full",
+                      "bg-bg-primary/10 hover:bg-bg-primary/20",
                       "text-fg-on-brand hover:text-white",
                       "transition-all duration-200"
                     )}
@@ -202,53 +182,51 @@ export function Footer() {
               })}
             </motion.div>
           </div>
-        </motion.div>
-      </div>
 
-      {/* ================================================================
-          Zone C — Giant Brand Text + Copyright
-          ================================================================ */}
-      <div className="bg-bg-inverse overflow-hidden relative">
-        {/* Giant parallax brand text */}
-        <div className="pt-12 md:pt-16 pb-20 md:pb-24">
+          {/* Bottom row: copyright + legal (inside orange block) */}
           <motion.div
-            style={{ y: brandTextY, opacity: brandTextOpacity }}
-            className="container-main"
+            variants={fadeInUp}
+            className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-6 border-t border-fg-on-brand/15"
           >
-            <p className="font-display font-bold tracking-tighter leading-none select-none text-center text-fg-inverse/10">
-              {/* Mobile: stacked */}
-              <span className="block md:hidden text-7xl">
-                OPEN
-                <br />
-                SESSION
-              </span>
-              {/* Tablet+ : single line */}
-              <span className="hidden md:block text-9xl lg:text-[10rem] xl:text-[12rem] whitespace-nowrap">
-                OPEN SESSION
-              </span>
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Copyright bar */}
-        <div className="absolute bottom-0 inset-x-0 py-5">
-          <div className="container-main flex flex-col md:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-fg-inverse/40">
+            <p className="text-xs text-fg-on-brand/60">
               &copy; {currentYear} Open Session. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-5">
               {footerNavItems.legal.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-xs text-fg-inverse/40 hover:text-fg-inverse/70 transition-colors duration-200"
+                  className="text-xs text-fg-on-brand/60 hover:text-fg-on-brand transition-colors duration-200"
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* ================================================================
+          Zone C — Giant Brand Text (parallax)
+          ================================================================ */}
+      <div className="bg-bg-primary overflow-hidden">
+        <motion.div
+          style={{ y: brandTextY, opacity: brandTextOpacity }}
+          className="container-main py-8 md:py-10"
+        >
+          <p className="font-display font-bold tracking-tighter leading-none select-none text-center text-fg-primary/[0.06]">
+            {/* Mobile: stacked */}
+            <span className="block md:hidden text-7xl">
+              OPEN
+              <br />
+              SESSION
+            </span>
+            {/* Tablet+: single line */}
+            <span className="hidden md:block text-8xl lg:text-[10rem] xl:text-[12rem] whitespace-nowrap">
+              OPEN SESSION
+            </span>
+          </p>
+        </motion.div>
       </div>
     </footer>
   );

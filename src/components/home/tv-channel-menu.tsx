@@ -73,27 +73,17 @@ export function TVChannelMenu({
 }: TVChannelMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeChannel, setActiveChannel] = useState(DEFAULT_CHANNEL);
-  const [isVisible, setIsVisible] = useState(true);
   const [showCameraModal, setShowCameraModal] = useState(false);
   const pageLoaded = usePageLoaded();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Menu card fades as zoom-into-screen begins (55-65%), but FAB stays visible longer
   const menuOpacity = useTransform(scrollYProgress, [0.55, 0.65], [1, 0]);
-  // FAB stays fully visible and interactive until the very end of the scroll (85-95%)
-  const fabOpacity = useTransform(scrollYProgress, [0.85, 0.95], [1, 0]);
 
   // Orange glow intensity: ramps up as TV centers (10-18%), holds during dwell, fades as zoom starts (50-58%)
   const glowOpacity = useTransform(scrollYProgress, [0.10, 0.18, 0.50, 0.58], [0, 1, 1, 0]);
   const [isGlowing, setIsGlowing] = useState(false);
 
-  // Track FAB opacity to disable pointer events when fully faded out
-  useEffect(() => {
-    const unsubscribe = fabOpacity.on("change", (v) => {
-      setIsVisible(v > 0.1);
-    });
-    return unsubscribe;
-  }, [fabOpacity]);
 
   // Track glow state for CSS animation toggle
   useEffect(() => {
@@ -201,12 +191,9 @@ export function TVChannelMenu({
 
   return (
     <>
-      <motion.div
+      <div
         ref={menuRef}
         className="absolute bottom-8 right-8 lg:bottom-10 lg:right-[6%] z-40 flex flex-col items-end max-sm:bottom-6 max-sm:right-6"
-        style={{
-          pointerEvents: isVisible ? "auto" : "none",
-        }}
         {...devProps("TVChannelMenu")}
       >
         {/* Channel menu card — fades earlier with the TV zoom */}
@@ -382,7 +369,7 @@ export function TVChannelMenu({
         </AnimatePresence>
 
         {/* FAB — ghost style with orange glow behind during TV hold phase */}
-        <motion.div className="relative" style={{ opacity: fabOpacity }}>
+        <div className="relative">
           {/* Glow aura — pulsing orange behind the button, no fill on the button itself */}
           <motion.div
             className="absolute inset-[-8px] rounded-full pointer-events-none"
@@ -416,8 +403,8 @@ export function TVChannelMenu({
           >
             <Monitor03 className="h-4.5 w-4.5" />
           </motion.button>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Camera / Go Live modal */}
       <AnimatePresence>

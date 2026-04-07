@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Connect with Open Session for collaborations, partnerships, and networking.",
+  alternates: {
+    canonical: "https://opensession.co/contact",
+  },
 };
 
 export default function ContactPage() {

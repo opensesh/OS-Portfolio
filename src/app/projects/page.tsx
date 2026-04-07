@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { projects } from "@/data/projects";
-import { ProjectCategory, ViewMode } from "@/types/project";
+import { ViewMode } from "@/types/project";
 import { ProjectFilters } from "@/components/projects/project-filters";
 import { ProjectGrid } from "@/components/projects/project-grid";
 import { ProjectCarousel } from "@/components/projects/project-carousel";
@@ -16,17 +16,17 @@ export default function ProjectsPage() {
   const headerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(headerRef, { once: true });
 
-  const [activeFilter, setActiveFilter] = useState<ProjectCategory | "All">("All");
+  const [activeFilter, setActiveFilter] = useState<string | "All">("All");
   const [viewMode, setViewMode] = useState<ViewMode>("carousel");
   const [activeIndex, setActiveIndex] = useState(0);
 
   const filteredProjects = useMemo(() => {
     if (activeFilter === "All") return projects;
-    return projects.filter((p) => p.category === activeFilter);
+    return projects.filter((p) => p.categories.some((c) => c === activeFilter));
   }, [activeFilter]);
 
   // Reset active index when filter changes
-  const handleFilterChange = useCallback((filter: ProjectCategory | "All") => {
+  const handleFilterChange = useCallback((filter: string | "All") => {
     setActiveFilter(filter);
     setActiveIndex(0);
   }, []);

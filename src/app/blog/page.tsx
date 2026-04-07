@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Blog",
   description:
     "Thoughts on design, AI, process, and building meaningful brands.",
+  alternates: {
+    canonical: "https://opensession.co/blog",
+  },
 };
 
 export default function BlogPage() {

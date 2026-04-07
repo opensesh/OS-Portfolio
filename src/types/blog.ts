@@ -1,9 +1,11 @@
+// TEMPLATE: replace with your content
+
 export interface BlogPost {
   id: string;
   slug: string;
   title: string;
   excerpt: string;
-  content: string;
+  contentPath: string;   // path to MDX file, e.g. "blog/ep02-creative-ai-framework.mdx"
   author: {
     name: string;
     image?: string;
@@ -15,11 +17,17 @@ export interface BlogPost {
   featured?: boolean;
 }
 
-export type BlogCategory = "Design" | "AI" | "Process" | "Insights";
+export type BlogCategory =
+  | 'Creative Philosophy'
+  | 'About Us'
+  | 'Digital Design'
+  | 'Design Strategy'
+  | 'Brand Identity';
 
 export const blogCategories: BlogCategory[] = [
-  "Design",
-  "AI",
-  "Process",
-  "Insights",
+  'Creative Philosophy',
+  'About Us',
+  'Digital Design',
+  'Design Strategy',
+  'Brand Identity',
 ];

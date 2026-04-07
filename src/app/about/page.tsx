@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Learn about Open Session, a design company focused on brand systems, creative AI, and community.",
+  alternates: {
+    canonical: "https://opensession.co/about",
+  },
 };
 
 export default function AboutPage() {

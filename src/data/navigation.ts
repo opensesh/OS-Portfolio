@@ -15,7 +15,7 @@ export const mainNavItems: NavItem[] = [
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
-  { label: "The Lab", href: "/templates" },
+  { label: "The Lab", href: "/lab" },
 ];
 
 export const footerNavItems: Record<string, NavItem[]> = {
@@ -28,11 +28,11 @@ export const footerNavItems: Record<string, NavItem[]> = {
     { label: "Blog", href: "/blog" },
     { label: "Playbooks", href: "/playbooks" },
     { label: "Free Assets", href: "/free-assets" },
-    { label: "View All", href: "/templates" },
+    { label: "View All", href: "/lab" },
   ],
   legal: [
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/legal/terms" },
+    { label: "Privacy Policy", href: "/legal/privacy" },
   ],
 };
 
@@ -43,15 +43,14 @@ export const overlayNavItems: NavItem[] = [
   { label: "About", href: "/about" },
   {
     label: "The Lab",
-    href: "/templates",
+    href: "/lab",
     children: [
       { label: "Blog", href: "/blog" },
       { label: "Playbooks", href: "/playbooks" },
       { label: "Resources", href: "/resources" },
-      { label: "View All", href: "/templates" },
+      { label: "View All", href: "/lab" },
     ],
   },
-  { label: "Contact", href: "/contact" },
 ];
 
 export const contactEmails = [

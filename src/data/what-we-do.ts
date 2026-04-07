@@ -5,6 +5,7 @@ export interface WhatWeDoItem {
   items: string[];
   imageBg: string;
   imageHoverBg: string;
+  image?: string;   // optional path to a real image, e.g. /images/homepage/filename.jpg
 }
 
 export const whatWeDoItems: WhatWeDoItem[] = [
@@ -23,6 +24,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
     ],
     imageBg: "bg-bg-brand-solid",
     imageHoverBg: "bg-bg-tertiary",
+    image: "/images/homepage/CIdLigrNXaT82y2MrGUQ5vZgJ9c.jpg",
   },
   {
     id: "design-systems",
@@ -39,6 +41,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
     ],
     imageBg: "bg-bg-tertiary",
     imageHoverBg: "bg-bg-brand-solid",
+    image: "/images/homepage/Kl75QrcWL7nXMDWTJy9SnCCpbPQ.jpg",
   },
   {
     id: "content-strategy",
@@ -55,6 +58,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
     ],
     imageBg: "bg-fg-tertiary",
     imageHoverBg: "bg-bg-brand-solid",
+    image: "/images/homepage/XjqOKRycfg2fdjXcHMmUYeI4xLw.jpg",
   },
   {
     id: "context-optimization",
@@ -71,6 +75,7 @@ export const whatWeDoItems: WhatWeDoItem[] = [
     ],
     imageBg: "bg-bg-secondary",
     imageHoverBg: "bg-bg-brand-solid",
+    image: "/images/homepage/nQ5h9VMZNz5knXmzATISCBWqakc.jpg",
   },
   {
     id: "creative-ai",
@@ -87,5 +92,6 @@ export const whatWeDoItems: WhatWeDoItem[] = [
     ],
     imageBg: "bg-bg-brand-solid",
     imageHoverBg: "bg-bg-tertiary",
+    image: "/images/homepage/p9gXmNi8RoFZnjeP0zGW3fJ2M.jpg",
   },
 ];

@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, type MotionValue } from "framer-motion";
 import { ArrowUpRight } from "@untitledui-pro/icons/line";
+import Image from "next/image";
 import { Project } from "@/types/project";
 import { categoryLabel } from "@/data/categories";
 import { cn } from "@/lib/utils";
@@ -70,11 +71,21 @@ function CarouselCard({ project, parallaxX }: { project: Project; parallaxX?: Mo
           className="absolute inset-0"
           style={parallaxX ? { x: parallaxX, scale: 1.225 } : undefined}
         >
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-secondary">
-            <span className="text-fg-tertiary text-sm font-medium">
-              {project.title}
-            </span>
-          </div>
+          {project.thumbnail ? (
+            <Image
+              src={project.thumbnail}
+              alt={project.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 80vw"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-secondary">
+              <span className="text-fg-tertiary text-sm font-medium">
+                {project.title}
+              </span>
+            </div>
+          )}
         </motion.div>
 
         {/* Magnetic cursor overlay */}
@@ -123,11 +134,21 @@ function GridCard({ project }: { project: Project }) {
             "group-hover:scale-105"
           )}
         >
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-secondary">
-            <span className="text-fg-tertiary text-sm font-medium">
-              {project.title}
-            </span>
-          </div>
+          {project.thumbnail ? (
+            <Image
+              src={project.thumbnail}
+              alt={project.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-secondary">
+              <span className="text-fg-tertiary text-sm font-medium">
+                {project.title}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Gradient overlay on hover */}

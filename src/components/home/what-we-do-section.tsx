@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
@@ -266,9 +267,19 @@ export function OurExpertiseSection() {
                       <div className="mt-6 lg:hidden rounded-xl overflow-hidden">
                         <PixelTransition
                           firstContent={
-                            <div
-                              className={cn("w-full h-full", item.imageBg)}
-                            />
+                            item.image ? (
+                              <div className="relative w-full h-full">
+                                <Image
+                                  src={item.image}
+                                  alt={item.title}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 1024px) 100vw, 50vw"
+                                />
+                              </div>
+                            ) : (
+                              <div className={cn("w-full h-full", item.imageBg)} />
+                            )
                           }
                           secondContent={
                             <div className={cn("w-full h-full", item.imageHoverBg)} />
@@ -303,9 +314,19 @@ export function OurExpertiseSection() {
                 >
                   <PixelTransition
                     firstContent={
-                      <div
-                        className={cn("w-full h-full", item.imageBg)}
-                      />
+                      item.image ? (
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={item.image}
+                            alt={item.title}
+                            fill
+                            className="object-cover"
+                            sizes="50vw"
+                          />
+                        </div>
+                      ) : (
+                        <div className={cn("w-full h-full", item.imageBg)} />
+                      )
                     }
                     secondContent={
                       <div className="w-full h-full bg-bg-brand-solid" />

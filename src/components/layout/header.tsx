@@ -20,7 +20,6 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const pathname = usePathname();
-
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -45,70 +44,47 @@ export function Header() {
     };
   }, [isMenuOpen]);
 
-  // Scroll-driven interpolations
-  const bgOpacity = scrollProgress * 1; // 0 -> 1
-  const logoScale = 1 - scrollProgress * 0.1;
-  const navHeight = 80 - scrollProgress * 16; // 80px -> 64px
-  // Pinch: extra inline padding as container forms (0 -> 16px)
-  const pinchPadding = scrollProgress * 16;
-  // Container shape: rounded-[6px] matching ActionButton
-  const borderRadius = scrollProgress * 6;
-  // Top offset to float the container down slightly
-  const topOffset = scrollProgress * 6;
+  // Scroll-driven: only the background container changes.
+  // Content never moves, shrinks, or rescales.
+  const bgOpacity = scrollProgress;
+  // Horizontal margin on the bg container (0 -> 12px) creates "pinch" look
+  const bgMargin = scrollProgress * 12;
+  // Only bottom corners round (top stays flush with browser edge)
+  const bgBottomRadius = scrollProgress * 6;
 
   return (
     <>
       <motion.header
         {...devProps("Header")}
+
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="fixed top-0 left-0 right-0 z-50"
-        style={{ paddingTop: `${topOffset}px` }}
       >
-        {/*
-          Container: always container-main width (1280px centered).
-          On scroll, bg-bg-secondary fills in and corners round.
-        */}
-        <div
-          className="relative mx-auto w-full transition-all duration-200 ease-out"
-          style={{
-            maxWidth: "1280px",
-            borderRadius: `${borderRadius}px`,
-            paddingLeft: `${pinchPadding}px`,
-            paddingRight: `${pinchPadding}px`,
-          }}
-        >
-          {/* Background fill — bg-secondary, fades in on scroll */}
+        <div className="relative">
+          {/*
+            Background container:
+            - Flush against top of viewport (borderRadius top = 0)
+            - Slight horizontal margins on scroll create pinch look
+            - Bottom corners round to 6px
+            - bg-secondary fills in on scroll
+          */}
           <div
-            className="absolute inset-0 bg-bg-secondary transition-opacity duration-200"
+            className="absolute inset-0 bg-bg-secondary transition-all duration-300 ease-out"
             style={{
               opacity: bgOpacity,
-              borderRadius: `${borderRadius}px`,
+              marginLeft: `${bgMargin}px`,
+              marginRight: `${bgMargin}px`,
+              borderBottomLeftRadius: `${bgBottomRadius}px`,
+              borderBottomRightRadius: `${bgBottomRadius}px`,
             }}
           />
 
-          {/* Subtle bottom border on scroll */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-px bg-border-secondary"
-            style={{
-              opacity: scrollProgress,
-              marginLeft: `${borderRadius}px`,
-              marginRight: `${borderRadius}px`,
-            }}
-          />
-
-          <nav
-            className="relative flex items-center justify-between px-6 md:px-8 lg:px-16 transition-all duration-200"
-            style={{ height: `${navHeight}px` }}
-          >
+          {/* Nav content — uses container-wide to match hero/impact sections */}
+          <nav className="container-wide relative flex items-center justify-between h-20">
             {/* Logo */}
-            <div
-              className="transition-transform duration-200 origin-left"
-              style={{ transform: `scale(${logoScale})` }}
-            >
-              <Logo />
-            </div>
+            <Logo />
 
             {/* Right side actions */}
             <div className="flex items-center gap-2 md:gap-3">
@@ -165,13 +141,29 @@ export function Header() {
             </div>
           </nav>
         </div>
+
+        {/* Menu panel — expands down from header as unified container */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <OverlayMenu onClose={() => setIsMenuOpen(false)} />
+          )}
+        </AnimatePresence>
       </motion.header>
 
-      {/* Overlay menu — blurred backdrop + content panel below header */}
-      <OverlayMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-      />
+      {/* Blurred backdrop when menu is open */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 bg-bg-inverse/40 backdrop-blur-md"
+            onClick={() => setIsMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -17,7 +17,6 @@ import {
 } from "@/data/navigation";
 import type { NavItem } from "@/data/navigation";
 import {
-  overlayFullscreen,
   overlayColumn,
   overlayNavItem,
   accordionContent,
@@ -27,17 +26,14 @@ import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { devProps } from "@/utils/dev-props";
 
 interface OverlayMenuProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
+export function OverlayMenu({ onClose }: OverlayMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Focus trap & escape
   useEffect(() => {
-    if (!isOpen) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
@@ -62,64 +58,48 @@ export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Blurred backdrop — covers entire viewport */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-bg-inverse/40 backdrop-blur-md"
-            onClick={onClose}
-            aria-hidden="true"
-          />
+    <motion.div
+      {...devProps("OverlayMenu")}
+      ref={menuRef}
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{
+        height: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+        opacity: { duration: 0.3, ease: "easeOut" },
+      }}
+      className="relative overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+    >
+      {/* Background that matches the header bg — creates unified container feel */}
+      <div
+        className="absolute inset-0 bg-bg-secondary"
+        style={{
+          marginLeft: "12px",
+          marginRight: "12px",
+          borderBottomLeftRadius: "6px",
+          borderBottomRightRadius: "6px",
+        }}
+      />
 
-          {/* Content panel — positioned below header, container-width */}
-          <motion.div
-            {...devProps("OverlayMenu")}
-            ref={menuRef}
-            variants={overlayFullscreen}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            className={cn(
-              "fixed left-0 right-0 z-40",
-              "top-[88px] md:top-[92px]",
-              "max-h-[calc(100vh-96px)] overflow-y-auto"
-            )}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-          >
-            <div className="mx-auto max-w-[1280px] px-4 md:px-6 pb-4">
-              <div
-                className={cn(
-                  "bg-bg-secondary rounded-xl",
-                  "border border-border-secondary",
-                  "px-8 py-10 md:px-10 md:py-12 lg:px-14 lg:py-14"
-                )}
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14">
-                  {/* Column 1: Navigation */}
-                  <NavColumn onClose={onClose} />
+      <div className="container-wide relative py-10 md:py-12 lg:py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14">
+          {/* Column 1: Navigation */}
+          <NavColumn onClose={onClose} />
 
-                  {/* Column 2: Contact & Status */}
-                  <ContactColumn />
+          {/* Column 2: Contact & Status */}
+          <ContactColumn />
 
-                  {/* Column 3: Featured (desktop only) */}
-                  <FeaturedColumn onClose={onClose} />
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          {/* Column 3: Featured (desktop only) */}
+          <FeaturedColumn onClose={onClose} />
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -140,14 +120,19 @@ function NavColumn({ onClose }: { onClose: () => void }) {
   const indicatorIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
 
   return (
-    <motion.nav variants={overlayColumn} className="flex flex-col">
+    <motion.nav
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col"
+    >
       <LayoutGroup>
         <ul
           className="space-y-1 md:space-y-2"
           onMouseLeave={() => setHoveredIndex(null)}
         >
           {overlayNavItems.map((item, index) => (
-            <motion.li key={item.href} variants={overlayNavItem}>
+            <li key={item.href}>
               <div
                 className="flex items-center gap-3 md:gap-4"
                 onMouseEnter={() => {
@@ -223,7 +208,7 @@ function NavColumn({ onClose }: { onClose: () => void }) {
                   )}
                 </AnimatePresence>
               )}
-            </motion.li>
+            </li>
           ))}
         </ul>
       </LayoutGroup>
@@ -279,7 +264,12 @@ function SubNav({
 
 function ContactColumn() {
   return (
-    <motion.div variants={overlayColumn} className="space-y-8 md:space-y-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className="space-y-8 md:space-y-10"
+    >
       {/* Emails */}
       <div>
         <SectionLabel animate={false} className="mb-4">
@@ -359,7 +349,9 @@ function ContactColumn() {
 function FeaturedColumn({ onClose }: { onClose: () => void }) {
   return (
     <motion.div
-      variants={overlayColumn}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className="hidden lg:flex flex-col gap-6"
     >
       {/* About the Studio */}

@@ -47,25 +47,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFAEE" },
-    { media: "(prefers-color-scheme: dark)", color: "#191919" },
-  ],
+  themeColor: "#191919",
   width: "device-width",
   initialScale: 1,
 };
 
-// Inline script to prevent flash of wrong theme
-const themeScript = `
-  (function() {
-    const stored = localStorage.getItem('os-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = stored === 'dark' || stored === 'light'
-      ? stored
-      : (prefersDark ? 'dark' : 'light');
-    document.documentElement.classList.add(theme);
-  })();
-`;
+// Force dark theme
+const themeScript = `document.documentElement.classList.add('dark');`;
 
 export default function RootLayout({
   children,

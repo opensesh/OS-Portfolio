@@ -78,7 +78,7 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
     >
       {/* No separate bg — parent container in header.tsx provides it */}
       <div
-        className="relative py-10 md:py-12 lg:py-14"
+        className="relative py-8 md:py-10 lg:py-10"
         style={{
           paddingLeft: "calc(5% + 16px)",
           paddingRight: "calc(5% + 16px)",
@@ -365,24 +365,6 @@ function FeaturedColumn({ onClose }: { onClose: () => void }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <span className="absolute bottom-4 left-4 text-accent text-xs text-white">
           About the Studio
-        </span>
-      </Link>
-
-      {/* Featured Project */}
-      <Link
-        href="/projects"
-        onClick={onClose}
-        className="group relative block overflow-hidden rounded-lg aspect-[4/3]"
-      >
-        <Image
-          src="/images/team/morgan.webp"
-          alt="Featured Project"
-          fill
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <span className="absolute bottom-4 left-4 text-accent text-xs text-white">
-          Featured Project
         </span>
       </Link>
     </motion.div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { wordContainer, wordReveal, fadeInUp } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
@@ -62,6 +63,25 @@ export function AboutHero() {
               is the work.
             </p>
           </div>
+        </motion.div>
+
+        {/* Hero image */}
+        <motion.div
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.8 }}
+          className="relative w-full aspect-[16/9] md:aspect-[21/9] mt-16 lg:mt-24 overflow-hidden bg-bg-tertiary"
+        >
+          <Image
+            src="/images/about/Sj4TYZrc68BDHPXs5O5D19mVik.jpg"
+            alt="Open Session team at work"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            quality={85}
+            priority
+          />
         </motion.div>
       </div>
     </section>

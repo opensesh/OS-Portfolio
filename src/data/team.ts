@@ -31,7 +31,7 @@ export const showcase: TeamMember[] = [
     name: "Karim",
     role: "Co-Founder & CEO",
     bio: "Karim drives the strategic vision behind Open Session, bridging creative ambition with business impact to help brands find their voice.",
-    image: "/images/team/karim.webp",
+    image: "/images/about/HZHRFcDFfGNqJUjMRtKYNqSezcg.jpg",
     social: {
       linkedin: "https://linkedin.com/in/karim",
     },
@@ -41,9 +41,17 @@ export const showcase: TeamMember[] = [
     name: "Morgan",
     role: "Co-Founder & COO",
     bio: "Morgan brings operational excellence and creative leadership, ensuring every project delivers on its promise from concept to launch.",
-    image: "/images/team/morgan.webp",
+    image: "/images/about/Zh4XMHMk3BgiZszy1fcQk5ZGueQ.webp",
     social: {
       linkedin: "https://linkedin.com/in/morgan",
     },
   },
+];
+
+// Story images for future use (about page narrative section)
+export const storyImages = [
+  "/images/about/TqpOzHSCxAEs7wnhiAD4SGGci4c.jpg",
+  "/images/about/wKJt8b9CgcZCyP5NKky2RDcdQ.jpg",
+  "/images/about/hAhO4qlpgRYUDxrvypSNiIK6ZE.jpg",
+  "/images/about/qvzOeu5vdocdhOTq2yANNjMg0.jpg",
 ];

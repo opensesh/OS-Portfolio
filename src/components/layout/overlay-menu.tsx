@@ -76,18 +76,14 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
       aria-modal="true"
       aria-label="Navigation menu"
     >
-      {/* Background that matches the header bg — creates unified container feel */}
+      {/* No separate bg — parent container in header.tsx provides it */}
       <div
-        className="absolute inset-0 bg-bg-secondary"
+        className="relative py-10 md:py-12 lg:py-14"
         style={{
-          marginLeft: "12px",
-          marginRight: "12px",
-          borderBottomLeftRadius: "6px",
-          borderBottomRightRadius: "6px",
+          paddingLeft: "calc(5% + 16px)",
+          paddingRight: "calc(5% + 16px)",
         }}
-      />
-
-      <div className="container-wide relative py-10 md:py-12 lg:py-14">
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14">
           {/* Column 1: Navigation */}
           <NavColumn onClose={onClose} />

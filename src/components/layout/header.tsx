@@ -20,6 +20,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const pathname = usePathname();
+
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -44,49 +45,62 @@ export function Header() {
     };
   }, [isMenuOpen]);
 
-  // Scroll-driven: only the background container changes.
-  // Content never moves, shrinks, or rescales.
-  const bgOpacity = scrollProgress;
-  // Horizontal margin on the bg container (0 -> 12px) creates "pinch" look
-  const bgMargin = scrollProgress * 12;
-  // Only bottom corners round (top stays flush with browser edge)
-  const bgBottomRadius = scrollProgress * 6;
+  const bgOpacity = isMenuOpen ? 1 : scrollProgress;
+  // Horizontal margin on the unified container (0 -> 12px on scroll)
+  const containerMargin = isMenuOpen ? 12 : scrollProgress * 12;
+  // Bottom radius
+  const bottomRadius = isMenuOpen ? 6 : scrollProgress * 6;
+  // Content pinch: logo and right-side content shift inward (0 -> 16px extra padding)
+  const contentPinch = isMenuOpen ? 16 : scrollProgress * 16;
 
   return (
     <>
       <motion.header
         {...devProps("Header")}
-
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="fixed top-0 left-0 right-0 z-50"
       >
-        <div className="relative">
-          {/*
-            Background container:
-            - Flush against top of viewport (borderRadius top = 0)
-            - Slight horizontal margins on scroll create pinch look
-            - Bottom corners round to 6px
-            - bg-secondary fills in on scroll
-          */}
+        {/*
+          Single unified container: wraps both nav bar AND menu content.
+          - Flush with browser top (radius 0 on top)
+          - Horizontal margins create inset from viewport edge
+          - Bottom corners round to 6px
+          - bg-secondary fills in on scroll or when menu is open
+          - When menu opens, this same container grows to show menu content
+        */}
+        <div
+          className="relative transition-all duration-300 ease-out"
+          style={{
+            marginLeft: `${containerMargin}px`,
+            marginRight: `${containerMargin}px`,
+            borderBottomLeftRadius: `${bottomRadius}px`,
+            borderBottomRightRadius: `${bottomRadius}px`,
+          }}
+        >
+          {/* Background fill */}
           <div
-            className="absolute inset-0 bg-bg-secondary transition-all duration-300 ease-out"
+            className="absolute inset-0 bg-bg-secondary transition-opacity duration-300"
             style={{
               opacity: bgOpacity,
-              marginLeft: `${bgMargin}px`,
-              marginRight: `${bgMargin}px`,
-              borderBottomLeftRadius: `${bgBottomRadius}px`,
-              borderBottomRightRadius: `${bgBottomRadius}px`,
+              borderBottomLeftRadius: `${bottomRadius}px`,
+              borderBottomRightRadius: `${bottomRadius}px`,
             }}
           />
 
-          {/* Nav content — uses container-wide to match hero/impact sections */}
-          <nav className="container-wide relative flex items-center justify-between h-20">
-            {/* Logo */}
+          {/* Nav bar */}
+          <nav
+            className="relative flex items-center justify-between h-20 transition-[padding] duration-300 ease-out"
+            style={{
+              paddingLeft: `calc(5% + ${contentPinch}px)`,
+              paddingRight: `calc(5% + ${contentPinch}px)`,
+            }}
+          >
+            {/* Logo — shifts right as content pinches */}
             <Logo />
 
-            {/* Right side actions */}
+            {/* Right side — shifts left as content pinches */}
             <div className="flex items-center gap-2 md:gap-3">
               {/* MENU / CLOSE trigger */}
               <button
@@ -140,14 +154,14 @@ export function Header() {
               </ActionButton>
             </div>
           </nav>
-        </div>
 
-        {/* Menu panel — expands down from header as unified container */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <OverlayMenu onClose={() => setIsMenuOpen(false)} />
-          )}
-        </AnimatePresence>
+          {/* Menu content — expands inside the SAME container */}
+          <AnimatePresence>
+            {isMenuOpen && (
+              <OverlayMenu onClose={() => setIsMenuOpen(false)} />
+            )}
+          </AnimatePresence>
+        </div>
       </motion.header>
 
       {/* Blurred backdrop when menu is open */}

@@ -62,9 +62,9 @@ export function Header() {
           positioned child, so it inherits the same width.
         */}
         <div className="container-wide relative">
-          {/* Background fill — exactly matches container-wide content box */}
+          {/* Background fill — matches container-wide outer box */}
           <div
-            className="absolute top-0 bottom-0 -left-[5%] -right-[5%] lg:-left-[6%] lg:-right-[6%] bg-bg-secondary transition-all duration-300 ease-out"
+            className="absolute inset-0 bg-bg-secondary transition-all duration-300 ease-out"
             style={{
               opacity: bgOpacity,
               borderBottomLeftRadius: `${bottomRadius}px`,

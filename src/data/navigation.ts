@@ -31,8 +31,8 @@ export const footerNavItems: Record<string, NavItem[]> = {
     { label: "View All", href: "/templates" },
   ],
   legal: [
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/legal/terms" },
+    { label: "Privacy Policy", href: "/legal/privacy" },
   ],
 };
 

@@ -23,6 +23,18 @@ const nextConfig: NextConfig = {
     // Setting minimumCacheTTL ensures optimized variants are cached.
     minimumCacheTTL: 60,
   },
+
+  async redirects() {
+    return [
+      // Slug changed from gemini-infinite-nature to google-gemini-infinite-nature
+      // to match Framer CMS canonical slug. Redirect old URLs permanently.
+      {
+        source: "/projects/gemini-infinite-nature",
+        destination: "/projects/google-gemini-infinite-nature",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

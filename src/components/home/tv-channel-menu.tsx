@@ -77,13 +77,9 @@ export function TVChannelMenu({
   const pageLoaded = usePageLoaded();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Menu card fades as zoom-into-screen begins (55-65%), but FAB stays visible longer
-  const menuOpacity = useTransform(scrollYProgress, [0.55, 0.65], [1, 0]);
-
   // Orange glow intensity: ramps up as TV centers (10-18%), holds during dwell, fades as zoom starts (50-58%)
   const glowOpacity = useTransform(scrollYProgress, [0.10, 0.18, 0.50, 0.58], [0, 1, 1, 0]);
   const [isGlowing, setIsGlowing] = useState(false);
-
 
   // Track glow state for CSS animation toggle
   useEffect(() => {
@@ -92,6 +88,14 @@ export function TVChannelMenu({
     });
     return unsubscribe;
   }, [glowOpacity]);
+
+  // Auto-close menu when TV zooms into screen (past 60% scroll)
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (v) => {
+      if (v > 0.6 && isOpen) setIsOpen(false);
+    });
+    return unsubscribe;
+  }, [scrollYProgress, isOpen]);
 
   // Sync activeChannel when live mode changes
   useEffect(() => {
@@ -201,7 +205,6 @@ export function TVChannelMenu({
           {isOpen && (
             <motion.div
               className="mb-3 w-80 origin-bottom-right overflow-hidden rounded-[6px] border border-fg-primary/10 bg-bg-secondary/95 backdrop-blur-xl max-sm:w-72"
-              style={{ opacity: menuOpacity }}
               variants={menuCardVariants}
               initial="hidden"
               animate="visible"

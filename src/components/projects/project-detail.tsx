@@ -49,7 +49,7 @@ export function ProjectDetail({
             className="flex flex-wrap items-center gap-2 mb-4"
           >
             <span className="text-sm text-fg-tertiary font-mono uppercase">
-              {project.category}
+              {project.categories[0]}
             </span>
             <span className="text-fg-tertiary">—</span>
             <span className="text-sm text-fg-tertiary font-mono uppercase">

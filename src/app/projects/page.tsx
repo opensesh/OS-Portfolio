@@ -22,7 +22,7 @@ export default function ProjectsPage() {
 
   const filteredProjects = useMemo(() => {
     if (activeFilter === "All") return projects;
-    return projects.filter((p) => p.category === activeFilter);
+    return projects.filter((p) => p.categories.some((c) => c === activeFilter));
   }, [activeFilter]);
 
   // Reset active index when filter changes

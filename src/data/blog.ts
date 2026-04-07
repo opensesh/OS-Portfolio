@@ -1,94 +1,73 @@
+// TEMPLATE: replace with your content
 import { BlogPost } from "@/types/blog";
 
 export const blogPosts: BlogPost[] = [
   {
-    id: "design-systems-2025",
-    slug: "design-systems-in-2025",
-    title: "Design Systems in 2025: What's Changed and What's Next",
+    id: "ep02-creative-ai-framework",
+    slug: "ep02-creative-ai-framework",
+    title: "EP02: The Creative AI Framework",
     excerpt:
-      "A look at how design systems have evolved and where they're headed as AI becomes a bigger part of the design workflow.",
-    content: `
-      Design systems have come a long way since the early days of style guides and pattern libraries. Today, they're sophisticated ecosystems that power some of the world's largest digital products.
-
-      ## The Evolution
-
-      When we first started building design systems, they were primarily documentation—a way to keep track of colors, typography, and basic components. Now, they're living systems that bridge design and development.
-
-      ## AI Integration
-
-      The biggest shift we're seeing is the integration of AI tools directly into design systems. From automated accessibility checks to intelligent component suggestions, AI is becoming an essential part of the workflow.
-
-      ## What's Next
-
-      Looking ahead, we expect to see even tighter integration between design systems and code generation tools. The gap between design and implementation will continue to shrink.
-    `,
+      "How we think about AI as a creative partner — not a replacement. A framework for integrating AI into design workflows without losing the human edge.",
+    contentPath: "blog/ep02-creative-ai-framework.mdx",
+    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
-      name: "Alex Bouhdary",
+      name: "Karim Bouhdary",
     },
-    date: "2025-03-15",
-    category: "Design",
-    thumbnail: "/images/blog/design-systems.jpg",
+    date: "2026-02-03",
+    category: "Creative Philosophy",
+    thumbnail: "/images/blog/KKSflaBzLhQtCCknGCHsQqbqU2s.jpg",
     readingTime: "5 min read",
     featured: true,
   },
   {
-    id: "ai-brand-identity",
-    slug: "ai-in-brand-identity",
-    title: "How We Use AI in Brand Identity Work",
+    id: "ep01-creativity-over-compute",
+    slug: "ep01-creativity-over-compute",
+    title: "EP01: Creativity Over Compute",
     excerpt:
-      "AI isn't replacing designers—it's augmenting our capabilities. Here's how we integrate AI tools into our brand identity process.",
-    content: `
-      There's been a lot of discussion about AI in design, much of it focused on image generation. But the real opportunity lies in how AI can enhance—not replace—human creativity.
-
-      ## Research and Discovery
-
-      We use AI to accelerate our research phase. From analyzing competitor positioning to identifying market trends, AI helps us gather insights faster.
-
-      ## Exploration
-
-      During the exploration phase, AI helps us generate variations and explore directions we might not have considered. It's a brainstorming partner that never gets tired.
-
-      ## Refinement
-
-      The actual refinement and decision-making remains deeply human. We use our judgment to select, combine, and perfect the work.
-    `,
+      "Why the best AI-assisted work still requires a strong creative vision. On not outsourcing your taste to a model.",
+    contentPath: "blog/ep01-creativity-over-compute.mdx",
+    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
-      name: "Alex Bouhdary",
+      name: "Karim Bouhdary",
     },
-    date: "2025-03-01",
-    category: "AI",
-    thumbnail: "/images/blog/ai-brand.jpg",
+    date: "2026-01-20",
+    category: "Creative Philosophy",
+    thumbnail: "/images/blog/dAlZcH0hvoB0zkWQSH2BA5MJRY.jpg",
     readingTime: "4 min read",
     featured: true,
   },
   {
-    id: "collaboration-remote",
-    slug: "effective-remote-collaboration",
-    title: "Making Remote Design Collaboration Actually Work",
+    id: "democratizing-fortune-500-design",
+    slug: "democratizing-fortune-500-design",
+    title: "Democratizing Fortune 500 Design",
     excerpt:
-      "After years of remote work, we've learned what actually makes distributed design collaboration effective.",
-    content: `
-      Remote work is here to stay, and design teams need to adapt. Here's what we've learned about making distributed collaboration work.
-
-      ## Async-First Communication
-
-      The biggest mindset shift is moving from real-time to async-first communication. Not everything needs a meeting.
-
-      ## Visual Documentation
-
-      We've invested heavily in visual documentation. Screenshots, recordings, and annotated designs replace lengthy written explanations.
-
-      ## Intentional Sync Time
-
-      When we do meet synchronously, it's intentional. Design critiques, brainstorming sessions, and team bonding work best in real-time.
-    `,
+      "The tools that used to be locked behind agency retainers are now accessible to every founder. Here's what that means for the design industry.",
+    contentPath: "blog/democratizing-fortune-500-design.mdx",
+    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
     author: {
-      name: "Alex Bouhdary",
+      name: "Karim Bouhdary",
     },
-    date: "2025-02-15",
-    category: "Process",
-    thumbnail: "/images/blog/remote-collab.jpg",
+    date: "2025-12-10",
+    category: "Design Strategy",
+    thumbnail: "/images/blog/c1JC3v6vQ3z0r5tG78dzNkn9iTI.jpg",
     readingTime: "6 min read",
+    featured: false,
+  },
+  {
+    id: "mcp-for-designers",
+    slug: "mcp-for-designers",
+    title: "MCP for Designers: A Practical Guide",
+    excerpt:
+      "Model Context Protocol is changing how designers interact with AI tools. A plain-English guide to what it is and why it matters.",
+    contentPath: "blog/mcp-for-designers.mdx",
+    content: "",  // BRIDGE: empty string prevents blog-post.tsx crash before T011 lands
+    author: {
+      name: "Karim Bouhdary",
+    },
+    date: "2026-03-15",
+    category: "Digital Design",
+    thumbnail: "/images/blog/6zZWCJwMNLKAwcShUSZbwsO7prA.jpg",
+    readingTime: "7 min read",
     featured: false,
   },
 ];

@@ -113,8 +113,8 @@ export function BlogPostView({ post, relatedPosts }: BlogPostViewProps) {
       <section className="pb-20 md:pb-32">
         <div className="container-main max-w-3xl mx-auto">
           <div className="prose">
-            {/* Render markdown content - simplified for now */}
-            {post.content.split("\n\n").map((paragraph, index) => {
+            {/* Render markdown content - bridge renderer until T011 installs MDX pipeline */}
+            {(post.content ?? "").split("\n\n").map((paragraph, index) => {
               const trimmed = paragraph.trim();
               if (!trimmed) return null;
 

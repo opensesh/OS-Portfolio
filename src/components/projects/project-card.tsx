@@ -91,7 +91,7 @@ function CarouselCard({ project, parallaxX }: { project: Project; parallaxX?: Mo
         </ScrambleText>
         <div className="flex items-center gap-2 text-fg-secondary">
           <span className="font-accent text-xs uppercase tracking-wider">
-            [{project.category}]
+            [{project.categories[0]}]
           </span>
           {project.industry && (
             <>
@@ -161,7 +161,7 @@ function GridCard({ project }: { project: Project }) {
             "transition-transform duration-300 ease-out"
           )}
         >
-          {project.category}
+          {project.categories[0]}
         </div>
       </div>
 

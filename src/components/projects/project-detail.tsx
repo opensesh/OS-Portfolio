@@ -5,12 +5,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { Project } from "@/types/project";
-import { categoryLabel } from "@/data/categories";
 import { Button } from "@/components/shared/button";
-import { fadeInUp, staggerContainer } from "@/lib/motion";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/uui/base/badges/badges";
+import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
+import { categoryLabel } from "@/data/categories";
+import { ProjectSectionBlock } from "./project-section";
+import { ProjectTestimonialBlock } from "./project-testimonial";
+import { ProjectResults } from "./project-results";
 
 interface ProjectDetailProps {
   project: Project;
@@ -23,8 +25,26 @@ export function ProjectDetail({
   prevProject,
   nextProject,
 }: ProjectDetailProps) {
+  const heroImage = project.images.find((img) => img.context === "hero");
+  const heroSrc = heroImage?.src ?? project.thumbnail;
+
+  // Group gallery images by section
+  const sectionImages = (sectionKey: string) =>
+    project.images.filter(
+      (img) => img.context === "gallery" && img.section === sectionKey
+    );
+
+  // Map section heading to section key for image lookup
+  const sectionKey = (heading: string): string => {
+    const lower = heading.toLowerCase();
+    if (lower.includes("challenge")) return "challenge";
+    if (lower.includes("solution")) return "solution";
+    if (lower.includes("impact")) return "impact";
+    return lower.replace(/[^a-z0-9]/g, "-");
+  };
+
   return (
-    <article {...devProps('ProjectDetail')}>
+    <article {...devProps("ProjectDetail")}>
       {/* Hero */}
       <motion.section
         variants={staggerContainer}
@@ -95,20 +115,21 @@ export function ProjectDetail({
         className="mb-20 md:mb-32"
       >
         <div className="container-main">
-          <div className="relative aspect-[16/9] bg-bg-tertiary">
-            {/* Placeholder */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-fg-tertiary">Project Hero Image</span>
-            </div>
-            {/* Uncomment when images are available
-            <Image
-              src={project.thumbnail}
-              alt={project.title}
-              fill
-              className="object-cover"
-              priority
-            />
-            */}
+          <div className="relative aspect-[16/9] bg-bg-tertiary overflow-hidden">
+            {heroSrc ? (
+              <Image
+                src={heroSrc}
+                alt={heroImage?.alt ?? project.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                priority
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-fg-tertiary">Project Hero Image</span>
+              </div>
+            )}
           </div>
         </div>
       </motion.section>
@@ -132,81 +153,68 @@ export function ProjectDetail({
                   </h3>
                   <p className="text-fg-secondary">{project.year}</p>
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-fg-primary mb-2 uppercase tracking-wider">
-                    Services
-                  </h3>
-                  <ul className="text-fg-secondary space-y-1">
-                    {project.tags.map((tag) => (
-                      <li key={tag}>{tag}</li>
-                    ))}
-                  </ul>
-                </div>
+                {project.duration && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-fg-primary mb-2 uppercase tracking-wider">
+                      Duration
+                    </h3>
+                    <p className="text-fg-secondary">{project.duration}</p>
+                  </div>
+                )}
+                {project.services.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-fg-primary mb-2 uppercase tracking-wider">
+                      Services
+                    </h3>
+                    <ul className="text-fg-secondary space-y-1">
+                      {project.services.map((service) => (
+                        <li key={service}>{service}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {project.buttonText && project.buttonHref && (
+                  <div>
+                    <Button
+                      href={project.buttonHref}
+                      variant="primary"
+                      external
+                    >
+                      {project.buttonText}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Main Content */}
-            <div className="lg:col-span-2">
-              <div className="prose max-w-none">
-                <p className="text-fg-secondary text-lg leading-relaxed mb-8">
-                  {project.description}
-                </p>
+            <div className="lg:col-span-2 space-y-16">
+              <p className="text-fg-secondary text-lg leading-relaxed">
+                {project.description}
+              </p>
 
-                {/* Placeholder content sections */}
-                <div className="space-y-16">
-                  {/* Image */}
-                  <div className="relative aspect-[4/3] bg-bg-tertiary">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-fg-tertiary">Project Image 1</span>
-                    </div>
-                  </div>
+              {/* Sections */}
+              {project.sections.map((section) => (
+                <ProjectSectionBlock
+                  key={section.heading}
+                  section={section}
+                  images={sectionImages(sectionKey(section.heading))}
+                />
+              ))}
 
-                  {/* Text block */}
-                  <div>
-                    <h2 className="text-heading text-2xl mb-4">The Challenge</h2>
-                    <p className="text-fg-secondary leading-relaxed">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris.
-                    </p>
-                  </div>
-
-                  {/* Image */}
-                  <div className="relative aspect-[16/9] bg-bg-tertiary">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-fg-tertiary">Project Image 2</span>
-                    </div>
-                  </div>
-
-                  {/* Text block */}
-                  <div>
-                    <h2 className="text-heading text-2xl mb-4">The Solution</h2>
-                    <p className="text-fg-secondary leading-relaxed">
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                      sint occaecat cupidatat non proident, sunt in culpa qui
-                      officia deserunt mollit anim id est laborum.
-                    </p>
-                  </div>
-
-                  {/* Image grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="relative aspect-square bg-bg-tertiary">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-fg-tertiary text-sm">Image 3</span>
-                      </div>
-                    </div>
-                    <div className="relative aspect-square bg-bg-tertiary">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-fg-tertiary text-sm">Image 4</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Testimonials */}
+              {project.testimonials && project.testimonials.length > 0 && (
+                <ProjectTestimonialBlock testimonials={project.testimonials} />
+              )}
             </div>
           </div>
+
+          {/* Results — full-width below the grid */}
+          {project.results && project.results.length > 0 && (
+            <div className="mt-16 md:mt-24">
+              <ProjectResults results={project.results} />
+            </div>
+          )}
         </div>
       </section>
 

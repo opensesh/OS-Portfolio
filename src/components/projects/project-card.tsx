@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, type MotionValue } from "framer-motion";
 import { ArrowUpRight } from "@untitledui-pro/icons/line";
 import { Project } from "@/types/project";
+import { categoryLabel } from "@/data/categories";
 import { cn } from "@/lib/utils";
 import { ScrambleText } from "@/components/shared/scramble-text";
 import { useMagneticCursor } from "@/hooks/use-magnetic-cursor";
@@ -91,7 +92,7 @@ function CarouselCard({ project, parallaxX }: { project: Project; parallaxX?: Mo
         </ScrambleText>
         <div className="flex items-center gap-2 text-fg-secondary">
           <span className="font-accent text-xs uppercase tracking-wider">
-            [{project.categories[0]}]
+            [{categoryLabel(project.categories[0]).toUpperCase()}]
           </span>
           {project.industry && (
             <>
@@ -161,7 +162,7 @@ function GridCard({ project }: { project: Project }) {
             "transition-transform duration-300 ease-out"
           )}
         >
-          {project.categories[0]}
+          {categoryLabel(project.categories[0])}
         </div>
       </div>
 

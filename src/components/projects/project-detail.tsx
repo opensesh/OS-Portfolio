@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { Project } from "@/types/project";
+import { categoryLabel } from "@/data/categories";
 import { Button } from "@/components/shared/button";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,7 @@ export function ProjectDetail({
             className="flex flex-wrap items-center gap-2 mb-4"
           >
             <span className="text-sm text-fg-tertiary font-mono uppercase">
-              {project.categories[0]}
+              {project.categories.map(categoryLabel).join(" / ")}
             </span>
             <span className="text-fg-tertiary">—</span>
             <span className="text-sm text-fg-tertiary font-mono uppercase">

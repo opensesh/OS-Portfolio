@@ -42,19 +42,4 @@ export interface Project {
   results?: string[];
 }
 
-// Keep for backwards compat — old enum no longer used on Project
-// but may still be used in filter UI until T009 replaces it
-export type ProjectCategory =
-  | "Brand Identity"
-  | "Digital Design"
-  | "Art Direction"
-  | "Strategy";
-
-export const projectCategories: ProjectCategory[] = [
-  "Brand Identity",
-  "Digital Design",
-  "Art Direction",
-  "Strategy",
-];
-
 export type ViewMode = "carousel" | "two-column" | "grid";

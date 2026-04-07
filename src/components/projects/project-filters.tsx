@@ -3,15 +3,15 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ProjectCategory, projectCategories } from "@/types/project";
+import { CATEGORY_SLUGS, categoryLabel } from "@/data/categories";
 import { devProps } from "@/utils/dev-props";
 
 interface ProjectFiltersProps {
-  activeFilter: ProjectCategory | "All";
-  onFilterChange: (filter: ProjectCategory | "All") => void;
+  activeFilter: string | "All";
+  onFilterChange: (filter: string | "All") => void;
 }
 
-const ALL_FILTERS: (ProjectCategory | "All")[] = ["All", ...projectCategories];
+const ALL_FILTERS: (string | "All")[] = ["All", ...CATEGORY_SLUGS];
 
 function ChevronDownIcon({ className }: { className?: string }) {
   return (
@@ -101,7 +101,7 @@ export function ProjectFilters({
     option?.scrollIntoView({ block: "nearest" });
   }, [focusedIndex, isOpen]);
 
-  const handleSelect = (filter: ProjectCategory | "All") => {
+  const handleSelect = (filter: string | "All") => {
     onFilterChange(filter);
     setIsOpen(false);
   };
@@ -193,7 +193,7 @@ export function ProjectFilters({
                     <span className="w-2 h-2 bg-bg-brand-solid flex-shrink-0" />
                   )}
                   <span className="font-accent text-xs uppercase tracking-wider">
-                    [{filter.toUpperCase()}]
+                    [{filter === "All" ? "ALL" : categoryLabel(filter).toUpperCase()}]
                   </span>
                 </div>
               );

@@ -1,0 +1,282 @@
+version: "1.0"
+project: framer-cms-migration
+created: "2026-04-07"
+total_tasks: 20
+total_waves: 4
+principle: "Get it right over ship fast. Commit after each task. PR per wave."
+
+git:
+  base_branch: main
+  feature_branch: feat/framer-cms-migration
+  workflow: "feature branch → task branches as worktrees → merge via PR per wave"
+
+waves:
+  - wave: 1
+    name: Foundation
+    description: >
+      All tasks in this wave have no inter-task dependencies. They can be
+      executed in any order, or in parallel across worktrees. This wave
+      establishes the asset pipeline, type system, content directory structure,
+      and image configuration that all subsequent waves depend on.
+    tasks:
+      - id: T001
+        title: Write image download script
+        priority: must
+        complexity: 4
+        run_order: 1
+        notes: >
+          Run the script immediately after writing it to download all images
+          before framerusercontent.com URLs change. Do not wait for Wave 2.
+      - id: T002
+        title: Define enriched TypeScript schemas for all content types
+        priority: must
+        complexity: 5
+        run_order: 1
+        notes: >
+          Install next-mdx-remote as part of this task. Verify build passes
+          after type changes — existing data files will need temporary stub
+          updates to satisfy strict TypeScript until Wave 2 populates them.
+      - id: T003
+        title: Set up content directory structure for MDX files
+        priority: must
+        complexity: 2
+        run_order: 1
+        notes: Trivial task. Complete first to unblock T006.
+      - id: T004
+        title: Update next.config.ts for image optimization
+        priority: must
+        complexity: 2
+        run_order: 1
+        notes: Ensure no framerusercontent.com domain leaks into config.
+    exit_criteria:
+      - All ~75 images downloaded to /public/images/ with correct subdirectory structure
+      - Enriched types compile with npm run build
+      - /src/content/blog/ and /src/content/playbooks/ directories exist
+      - next.config.ts is clean (no external image domains)
+      - Wave 1 changes merged to main via PR
+
+  - wave: 2
+    name: Content Migration
+    description: >
+      Populate all data files and MDX content. T005 (projects) is the most
+      complex single task. T006 requires manual HTML-to-MDX conversion.
+      T007, T008, and T013 are self-contained and can run in parallel.
+      T013 (playbook scaffolding) moved here from Wave 3 to unblock T015 earlier.
+    depends_on_waves:
+      - 1
+    tasks:
+      - id: T005
+        title: Migrate all 5 project data records
+        priority: must
+        complexity: 8
+        run_order: 1
+        notes: >
+          Heaviest task. Data population only — do not update filter UI.
+          Reference research/findings.md Section 7 for all image hashes.
+          Source section content from Framer CSV and scraped detail pages.
+      - id: T006
+        title: Convert 4 blog posts from HTML to MDX files
+        priority: must
+        complexity: 6
+        run_order: 1
+        notes: >
+          Convert HTML to clean MDX manually. Keep original HTML as a comment
+          block at the top of each MDX file for reference until review complete.
+          The 4th post (MCP for Designers) does not exist yet — create from
+          Framer CSV data.
+      - id: T007
+        title: Migrate free resources data and copy assets from OS_our-links
+        priority: must
+        complexity: 4
+        run_order: 1
+        notes: >
+          Audit OS_our-links/public/images/ first to confirm file names
+          before writing data records.
+      - id: T008
+        title: Migrate legal page content from CSV HTML
+        priority: should
+        complexity: 4
+        run_order: 1
+        notes: >
+          Also handle removing/redirecting existing /terms and /privacy routes
+          to the new /legal/ paths.
+      - id: T013
+        title: Create playbook schema and empty content infrastructure
+        priority: should
+        complexity: 3
+        run_order: 1
+        notes: >
+          Moved from Wave 3 to Wave 2. Depends only on T002 and T003 (Wave 1).
+          Early completion unblocks T015 (Lab page) in Wave 4.
+    exit_criteria:
+      - All 5 projects have complete data including sections, gallery images, and categories
+      - 4 MDX blog post files exist with clean content
+      - Free resources data file has 5 complete records
+      - Legal pages accessible at /legal/terms and /legal/privacy
+      - Old /terms and /privacy routes cleaned up
+      - Playbook scaffolding in place (empty data, route pages)
+      - npm run build passes cleanly
+      - Wave 2 changes merged to main via PR
+
+  - wave: 3
+    name: Component Updates
+    description: >
+      Update and create all components required to render the enriched data.
+      T009 (category system) moved here from Wave 2 since it depends on T005.
+      T010 and T011 are the critical path. T019 and T020 wire downloaded
+      images into homepage and about page components.
+    depends_on_waves:
+      - 2
+    tasks:
+      - id: T009
+        title: Update category system to multi-tag with canonical slugs
+        priority: must
+        complexity: 3
+        run_order: 1
+        notes: >
+          Moved from Wave 2. Depends on T005 completing so category data
+          exists to validate against.
+      - id: T010
+        title: Update project detail page to render enriched schema
+        priority: must
+        complexity: 7
+        run_order: 1
+        notes: >
+          Build new sub-components (ProjectSection, ProjectGallery,
+          ProjectTestimonial, ProjectResults) as separate files.
+          Test each of the 5 project detail pages individually.
+      - id: T011
+        title: Update blog system to render MDX files
+        priority: must
+        complexity: 6
+        run_order: 1
+        notes: >
+          Create /src/lib/mdx.ts as a utility module for reading and
+          serializing MDX content. Pass custom MDX components for
+          consistent styling.
+      - id: T012
+        title: Create free resources data structure and card component
+        priority: must
+        complexity: 5
+        run_order: 1
+        notes: >
+          Video media should use autoplay, muted, loop, playsInline.
+          Use next/image for image media. Hover crossfade with Framer Motion.
+      - id: T014
+        title: Update project listing to use multi-tag filtering
+        priority: must
+        complexity: 4
+        run_order: 2
+        notes: >
+          Depends on T009 completing. Run after T009 is confirmed.
+          Verify filter behavior manually for all 5 category tabs.
+      - id: T019
+        title: Update homepage components with downloaded image paths
+        priority: must
+        complexity: 4
+        run_order: 1
+        notes: >
+          Wire downloaded images into hero, expertise section, featured
+          work, and blog thumbnails. No external CDN references should remain.
+      - id: T020
+        title: Update about page components with downloaded image paths
+        priority: must
+        complexity: 4
+        run_order: 1
+        notes: >
+          Wire downloaded images into about hero, team photos, story images.
+          Update team data with local image paths.
+    exit_criteria:
+      - All 5 project detail pages render sections, galleries, testimonials, and results
+      - All 4 blog posts render MDX content on their detail pages
+      - FreeResourceCard and FreeResourcesGrid components exist and render correctly
+      - Project listing filter correctly handles multi-tag categories
+      - Homepage renders all images from local /public/images/ paths
+      - About page renders all images from local /public/images/ paths
+      - No framerusercontent.com references remain in any component
+      - npm run build and npm run lint both pass
+      - Wave 3 changes merged to main via PR
+
+  - wave: 4
+    name: Integration & Polish
+    description: >
+      Final integration wave. Lab page aggregates all content types. SEO
+      metadata generation adds discoverability. Validation and template
+      stripping scripts close out the migration with quality guarantees.
+    depends_on_waves:
+      - 3
+    tasks:
+      - id: T015
+        title: Build Lab / View All page aggregating blog, playbooks, and free resources
+        priority: should
+        complexity: 5
+        run_order: 1
+        notes: >
+          Design the layout to make the empty playbooks section feel
+          intentional. Add Lab to navigation in /src/data/navigation.ts.
+      - id: T016
+        title: Add SEO metadata generation from content
+        priority: should
+        complexity: 4
+        run_order: 1
+        notes: >
+          Can run in parallel with T015. Use the Next.js App Router
+          generateMetadata() API.
+      - id: T017
+        title: Write content validation script
+        priority: should
+        complexity: 4
+        run_order: 2
+        notes: >
+          Run this script as the final check before declaring migration
+          complete. Fix any issues it surfaces before closing the PR.
+      - id: T018
+        title: Write template stripping script
+        priority: could
+        complexity: 5
+        run_order: 3
+        notes: >
+          Lower priority — complete only after T015-T017 are done.
+          Nice-to-have for the open-source template release.
+    exit_criteria:
+      - /lab page renders with all content sections
+      - All dynamic content pages have generateMetadata() with correct title and og:image
+      - scripts/validate-content.js runs and exits 0
+      - scripts/strip-for-template.sh exists (T018 optional)
+      - Final npm run build and npm run lint both pass with zero errors
+      - All Wave 4 changes merged to main via PR
+      - Migration declared complete
+
+complexity_summary:
+  wave_1_total: 13
+  wave_2_total: 25
+  wave_3_total: 33
+  wave_4_total: 18
+  grand_total: 89
+  model_assignment: "complexity >= 5 tasks → Opus preferred; complexity <= 4 → Sonnet"
+
+high_complexity_tasks:
+  - id: T005
+    complexity: 8
+    reason: 5 projects × full structured content + gallery images (data only)
+  - id: T010
+    complexity: 7
+    reason: Multiple new sub-components, 5 project pages to validate, image rendering
+  - id: T011
+    complexity: 6
+    reason: MDX pipeline setup, custom components, static generation update
+  - id: T006
+    complexity: 6
+    reason: Manual HTML-to-MDX conversion for 4 posts, new 4th post creation
+  - id: T002
+    complexity: 5
+    reason: 4 type files changed, MDX dependency install, full build validation
+  - id: T012
+    complexity: 5
+    reason: Video + image media cards, hover states, responsive grid
+  - id: T015
+    complexity: 5
+    reason: Aggregation page across 3 content types with empty state handling
+  - id: T018
+    complexity: 5
+    reason: Script must strip content while keeping build passing

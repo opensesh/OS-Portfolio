@@ -1,0 +1,590 @@
+version: "1.0"
+project: framer-cms-migration
+created: "2026-04-07"
+
+tasks:
+  # ─────────────────────────────────────────────
+  # WAVE 1: Foundation
+  # ─────────────────────────────────────────────
+
+  - id: T001
+    title: Write image download script
+    description: >
+      Write a Node.js script at scripts/download-framer-images.js that reads
+      the full image URL catalog (from research/findings.md) and downloads all
+      ~75 images from framerusercontent.com to /public/images/ with correct
+      subdirectory structure: projects/{slug}/, blog/, about/, homepage/,
+      resources/. Strip CDN query params before downloading to get originals.
+      Script should be idempotent (skip already-downloaded files), log progress,
+      and report any failures without crashing the full run.
+    type: chore
+    complexity: 4
+    priority: must
+    depends_on: []
+    acceptance_criteria:
+      - Script exists at scripts/download-framer-images.js
+      - Running the script downloads all ~75 images to correct subdirectories
+      - Already-downloaded files are skipped (idempotent)
+      - Failures are logged but do not stop the remaining downloads
+      - All 5 project hero SVGs land in /public/images/projects/{slug}/
+      - All gallery JPGs land in /public/images/projects/{slug}/
+      - About page hero, team photos, and story images land in /public/images/about/
+      - Homepage images land in /public/images/homepage/
+      - Blog thumbnails land in /public/images/blog/
+    files_likely_affected:
+      - scripts/download-framer-images.js
+
+  - id: T002
+    title: Define enriched TypeScript schemas for all content types
+    description: >
+      Update /src/types/ to reflect the enriched data model. Specifically:
+      (1) Enrich the Project type with sections (ProjectSection[]),
+      images (ProjectImage[]), testimonials, results, services, duration,
+      buttonText, buttonHref, and change category to categories (string[]).
+      (2) Update BlogPost type to replace embedded content string with
+      contentPath string. Expand BlogCategory union to include
+      "Creative Philosophy", "About Us", "Digital Design".
+      (3) Add new Playbook type (mirrors BlogPost with contentPath).
+      (4) Add new FreeResource type with badge, media, hoverImage, href,
+      buttonLabel fields.
+      Also install next-mdx-remote (or @next/mdx) and verify no version
+      conflicts with Next.js 16+.
+    type: refactor
+    complexity: 5
+    priority: must
+    depends_on: []
+    acceptance_criteria:
+      - /src/types/project.ts exports enriched Project, ProjectSection, ProjectImage, ProjectTestimonial types
+      - Project.category field replaced with Project.categories (string[])
+      - /src/types/blog.ts exports updated BlogPost with contentPath field
+      - BlogCategory union includes Creative Philosophy, About Us, Digital Design
+      - /src/types/playbook.ts exports Playbook type
+      - /src/types/free-resources.ts exports FreeResource, ResourceBadge, ResourceMedia types
+      - next-mdx-remote (or equivalent) installed and resolvable
+      - npm run build passes after schema changes (existing data files updated to match new types)
+    files_likely_affected:
+      - src/types/project.ts
+      - src/types/blog.ts
+      - src/types/playbook.ts
+      - src/types/free-resources.ts
+      - src/types/index.ts
+      - package.json
+      - package-lock.json
+
+  - id: T003
+    title: Set up content directory structure for MDX files
+    description: >
+      Create the directory structure for file-based MDX content.
+      Create /src/content/blog/ and /src/content/playbooks/ with .gitkeep
+      files so empty directories are tracked. Add a README.md in each
+      explaining the file format. Ensure Next.js can resolve these paths
+      at build time (update tsconfig.json paths if needed).
+    type: chore
+    complexity: 2
+    priority: must
+    depends_on: []
+    acceptance_criteria:
+      - /src/content/blog/ directory exists and is tracked in git
+      - /src/content/playbooks/ directory exists and is tracked in git
+      - tsconfig.json includes a path alias or baseUrl that resolves src/content/
+      - npm run build does not error on empty content directories
+    files_likely_affected:
+      - src/content/blog/.gitkeep
+      - src/content/playbooks/.gitkeep
+      - tsconfig.json
+
+  - id: T004
+    title: Update next.config.ts for image optimization
+    description: >
+      Update next.config.ts to ensure Next.js Image is configured correctly
+      for local images. Remove any stale framerusercontent.com domain
+      allowlisting if present. Confirm remotePatterns is clean. Add any
+      image size or format configuration needed for the large about hero
+      (7008x4672). Document the config changes inline.
+    type: chore
+    complexity: 2
+    priority: must
+    depends_on: []
+    acceptance_criteria:
+      - next.config.ts does not allowlist framerusercontent.com
+      - All images reference /public/images/ paths (local)
+      - npm run build passes with no image configuration warnings
+    files_likely_affected:
+      - next.config.ts
+
+  # ─────────────────────────────────────────────
+  # WAVE 2: Content Migration
+  # ─────────────────────────────────────────────
+
+  - id: T005
+    title: Migrate all 5 project data records
+    description: >
+      Populate /src/data/projects.ts with the full enriched data for all 5
+      projects (Iterra, BILTFOUR, NEXT, Infinite Nature, Universal Audio).
+      Each project must include: categories (multi-tag string[]), services[],
+      sections[] (Challenge/Solution/Impact each with heading, headline, body),
+      images[] (hero + gallery grouped by section context), testimonials (where
+      available — Iterra has one), results (where available — BILTFOUR, NEXT,
+      Universal Audio have them), duration, buttonText, buttonHref.
+      Source data from Framer CSV and scraped detail pages in research findings.
+      Also update the project listing filter logic to handle categories as an
+      array intersection rather than a single enum match.
+    type: feature
+    complexity: 8
+    priority: must
+    depends_on:
+      - T001
+      - T002
+    acceptance_criteria:
+      - All 5 projects have non-empty sections[] with Challenge, Solution, Impact
+      - All 5 projects have images[] including hero SVG and 7-8 gallery images
+      - All 5 projects have categories as string[] using canonical slugs
+      - Iterra project has testimonials[] with at least 1 entry
+      - BILTFOUR, NEXT, Universal Audio projects have results[] with metrics
+      - All image paths reference /public/images/projects/{slug}/ (local, no CDN)
+      - npm run build passes with TypeScript strict mode
+      - npm run lint passes with no errors
+    files_likely_affected:
+      - src/data/projects.ts
+      - src/types/project.ts
+
+  - id: T006
+    title: Convert 4 blog posts from HTML to MDX files
+    description: >
+      Create MDX files for all 4 blog posts in /src/content/blog/.
+      Posts: ep02-creative-ai-framework.mdx, ep01-creativity-over-compute.mdx,
+      democratizing-fortune-500-design.mdx, mcp-for-designers.mdx.
+      Convert Framer HTML content to clean MDX (strip inline styles, convert
+      <h2>/<p>/<ul> to markdown, preserve any code blocks or special formatting).
+      Update /src/data/blog.ts to use contentPath field instead of embedded
+      content. Add the 4th post (MCP for Designers) which is currently missing
+      from the codebase. Expand BlogCategory union for new categories.
+    type: feature
+    complexity: 6
+    priority: must
+    depends_on:
+      - T002
+      - T003
+    acceptance_criteria:
+      - 4 MDX files exist in /src/content/blog/ with correct slugs
+      - Each MDX file has clean markdown (no inline styles or raw HTML unless unavoidable)
+      - /src/data/blog.ts has contentPath fields pointing to the MDX files
+      - MCP for Designers post is present in blog data with correct metadata
+      - BlogCategory union includes Creative Philosophy, About Us, Digital Design
+      - All 4 posts have correct date, readingTime, author, thumbnail path
+      - Thumbnail paths reference /public/images/blog/ (local)
+      - Blog listing page at /blog renders all 4 posts with correct thumbnails and metadata
+      - npm run build passes
+    files_likely_affected:
+      - src/content/blog/ep02-creative-ai-framework.mdx
+      - src/content/blog/ep01-creativity-over-compute.mdx
+      - src/content/blog/democratizing-fortune-500-design.mdx
+      - src/content/blog/mcp-for-designers.mdx
+      - src/data/blog.ts
+      - src/types/blog.ts
+
+  - id: T007
+    title: Migrate free resources data and copy assets from OS_our-links
+    description: >
+      Create /src/data/free-resources.ts with all 5 free resource records:
+      Portfolio Template, Design Directory, Brand Design System,
+      Linktree Template, KARIMO.
+      Copy all associated images/videos from
+      /Users/alexbouhdary/Documents/GitHub.nosync/OS_our-links/public/images/
+      into /public/images/resources/.
+      Each resource must have: id, badge (live/coming-soon), media (image or
+      video with src), hoverImage (if applicable), title, description, href
+      (external link), buttonLabel.
+    type: feature
+    complexity: 4
+    priority: must
+    depends_on:
+      - T001
+      - T002
+    acceptance_criteria:
+      - /src/data/free-resources.ts exports an array of 5 FreeResource objects
+      - All 5 records have complete fields (no undefined required fields)
+      - All image/video assets copied to /public/images/resources/
+      - All media src paths reference /public/images/resources/ (local)
+      - External href values are valid URLs
+      - npm run build passes
+    files_likely_affected:
+      - src/data/free-resources.ts
+      - public/images/resources/ (directory + files)
+
+  - id: T008
+    title: Migrate legal page content from CSV HTML
+    description: >
+      Parse Legal.csv and extract Terms & Conditions and Privacy Policy content.
+      Create route pages at /src/app/legal/terms/page.tsx and
+      /src/app/legal/privacy/page.tsx. Either render as MDX files in
+      /src/content/legal/ or as static HTML within a shared layout component.
+      Add a /src/app/legal/layout.tsx for shared legal page chrome (heading,
+      back navigation). Add links to legal pages in the site footer.
+    type: feature
+    complexity: 4
+    priority: should
+    depends_on:
+      - T002
+      - T003
+    acceptance_criteria:
+      - /legal/terms renders Terms & Conditions content without 404
+      - /legal/privacy renders Privacy Policy content without 404
+      - Content is readable and properly formatted (no raw HTML tags visible)
+      - Both pages share a consistent legal layout
+      - Footer includes links to both legal pages
+      - Old /terms and /privacy routes either removed or redirect to /legal/ equivalents
+      - npm run build passes
+    files_likely_affected:
+      - src/app/legal/layout.tsx
+      - src/app/legal/terms/page.tsx
+      - src/app/legal/privacy/page.tsx
+      - src/content/legal/terms.mdx
+      - src/content/legal/privacy.mdx
+      - src/components/layout/footer.tsx
+      - src/app/terms/page.tsx
+      - src/app/privacy/page.tsx
+
+  - id: T013
+    title: Create playbook schema and empty content infrastructure
+    description: >
+      Set up the playbook content type so it is ready for future content without
+      blocking any other work. Create /src/data/playbooks.ts exporting an empty
+      array typed as Playbook[]. Create /src/app/playbooks/[slug]/page.tsx with
+      generateStaticParams() that handles an empty array gracefully. Create
+      /src/app/playbooks/page.tsx with an empty listing state. Add an index
+      export in /src/types/ for Playbook.
+    type: chore
+    complexity: 3
+    priority: should
+    depends_on:
+      - T002
+      - T003
+    acceptance_criteria:
+      - /src/data/playbooks.ts exports an empty Playbook[] array
+      - /src/app/playbooks/page.tsx renders without errors (empty state)
+      - /src/app/playbooks/[slug]/page.tsx handles empty generateStaticParams gracefully
+      - npm run build passes
+    files_likely_affected:
+      - src/data/playbooks.ts
+      - src/app/playbooks/page.tsx
+      - src/app/playbooks/[slug]/page.tsx
+      - src/types/playbook.ts
+
+  # ─────────────────────────────────────────────
+  # WAVE 3: Component Updates
+  # ─────────────────────────────────────────────
+
+  - id: T009
+    title: Update category system to multi-tag with canonical slugs
+    description: >
+      Define canonical category slugs as a const array in /src/data/categories.ts:
+      art-direction, strategy, digital-design, brand-identity, web-design.
+      Derive the Category type from this array. Update any existing components
+      that use the old single ProjectCategory enum to use the new string-based
+      system. Ensure the filter UI on /projects handles multi-tag intersection
+      (a project with categories ["brand-identity", "web-design"] appears under
+      both filters). Also pull display labels from Categories.csv data.
+    type: refactor
+    complexity: 3
+    priority: must
+    depends_on:
+      - T005
+    acceptance_criteria:
+      - /src/data/categories.ts exports canonical slugs and display labels
+      - No remaining references to old ProjectCategory enum in components
+      - Project listing filter shows correct projects for each category tab
+      - Projects with multiple categories appear under each applicable filter
+      - npm run lint passes
+    files_likely_affected:
+      - src/data/categories.ts
+      - src/types/project.ts
+      - src/app/projects/page.tsx
+
+  - id: T010
+    title: Update project detail page to render enriched schema
+    description: >
+      Update /src/app/projects/[slug]/page.tsx and related components to render
+      the enriched project data: structured sections (Challenge/Solution/Impact
+      each with heading, headline, and body text), gallery images grouped by
+      section, testimonials block (if present), results/metrics list (if present),
+      services tags, duration, and a CTA button using buttonText/buttonHref.
+      Use next/image for all gallery images. Ensure graceful fallback if optional
+      fields (testimonials, results) are absent.
+    type: feature
+    complexity: 7
+    priority: must
+    depends_on:
+      - T005
+    acceptance_criteria:
+      - All 5 project detail pages render without errors
+      - Challenge, Solution, and Impact sections display with correct headings and body
+      - Gallery images display correctly using next/image (no layout shift)
+      - Testimonial block renders on Iterra project page; absent on others
+      - Results block renders on BILTFOUR, NEXT, Universal Audio pages; absent on others
+      - Services tags visible on project detail
+      - CTA button links to correct external URL
+      - npm run build passes with no TypeScript errors
+      - npm run lint passes
+    files_likely_affected:
+      - src/app/projects/[slug]/page.tsx
+      - src/components/projects/ProjectDetail.tsx
+      - src/components/projects/ProjectGallery.tsx
+      - src/components/projects/ProjectSection.tsx
+      - src/components/projects/ProjectTestimonial.tsx
+      - src/components/projects/ProjectResults.tsx
+
+  - id: T011
+    title: Update blog system to render MDX files
+    description: >
+      Update the blog detail page (/src/app/blog/[slug]/page.tsx) to load and
+      render MDX content from /src/content/blog/{slug}.mdx using next-mdx-remote
+      (or @next/mdx). The data layer in /src/data/blog.ts now provides contentPath
+      — the page component should read the file contents and pass through the
+      MDX renderer. Update generateStaticParams() to derive slugs from MDX
+      filenames. Ensure custom MDX components (if needed) are passed as components
+      prop for consistent heading/paragraph/link styling.
+    type: feature
+    complexity: 6
+    priority: must
+    depends_on:
+      - T006
+    acceptance_criteria:
+      - All 4 blog post detail pages render MDX content without errors
+      - generateStaticParams() correctly returns all 4 slugs
+      - MDX headings, paragraphs, lists, and any code blocks render correctly
+      - Blog listing page shows all 4 posts with correct metadata
+      - npm run build passes (static generation includes all 4 posts)
+      - npm run lint passes
+    files_likely_affected:
+      - src/app/blog/[slug]/page.tsx
+      - src/app/blog/page.tsx
+      - src/lib/mdx.ts
+      - src/components/blog/MDXComponents.tsx
+
+  - id: T012
+    title: Create free resources data structure and card component
+    description: >
+      Build a FreeResourceCard component that renders a single free resource:
+      media (image or video autoplay), hover image overlay, badge (live/coming-soon),
+      title, description, and CTA button linking to the external href.
+      Create a FreeResourcesGrid component that maps over the resources array.
+      These components will be used in the Lab page (T015) and potentially
+      on the homepage.
+    type: feature
+    complexity: 5
+    priority: must
+    depends_on:
+      - T007
+    acceptance_criteria:
+      - FreeResourceCard renders image media correctly using next/image
+      - FreeResourceCard renders video media with autoplay, muted, loop attributes
+      - Badge displays "Live" or "Coming Soon" with appropriate styling
+      - CTA button opens href in a new tab
+      - Hover state shows hoverImage if provided
+      - FreeResourcesGrid renders all 5 resource cards
+      - Components are typed with FreeResource interface (no any)
+      - npm run build passes
+    files_likely_affected:
+      - src/components/resources/FreeResourceCard.tsx
+      - src/components/resources/FreeResourcesGrid.tsx
+
+  - id: T014
+    title: Update project listing to use multi-tag filtering
+    description: >
+      Update the /projects listing page filter UI to work with the new
+      multi-tag category system. A project should appear under a category
+      filter if any of its categories array values match. Ensure the "All"
+      tab shows all projects. Use the canonical categories from
+      /src/data/categories.ts for the filter tabs (not hardcoded strings).
+      Update URL params or filter state as needed.
+    type: refactor
+    complexity: 4
+    priority: must
+    depends_on:
+      - T009
+    acceptance_criteria:
+      - Selecting a category filter shows all projects with that category in their array
+      - "All" tab shows all 5 projects
+      - Category tab labels use display names from /src/data/categories.ts
+      - No TypeScript errors related to old ProjectCategory enum
+      - npm run lint passes
+    files_likely_affected:
+      - src/app/projects/page.tsx
+      - src/components/projects/project-filters.tsx
+
+  - id: T019
+    title: Update homepage components with downloaded image paths
+    description: >
+      Update homepage components to reference locally downloaded images instead
+      of placeholders or external URLs. This includes: hero image in hero.tsx,
+      service images in the expertise/what-we-do section, team photo, and blog
+      post thumbnails in the featured work section. All image paths should point
+      to /public/images/homepage/ and /public/images/blog/ as downloaded by T001.
+      Use next/image for all images.
+    type: feature
+    complexity: 4
+    priority: must
+    depends_on:
+      - T001
+      - T005
+    acceptance_criteria:
+      - Homepage hero renders the downloaded hero image from /public/images/homepage/
+      - Service/expertise section renders 4 downloaded service images
+      - Featured work section renders project thumbnails from /public/images/projects/
+      - Blog thumbnails on homepage reference /public/images/blog/
+      - No images reference framerusercontent.com or external CDNs
+      - npm run build passes
+    files_likely_affected:
+      - src/components/home/hero.tsx
+      - src/components/home/our-expertise-section.tsx
+      - src/components/home/featured-work-section.tsx
+      - src/data/what-we-do.ts
+
+  - id: T020
+    title: Update about page components with downloaded image paths
+    description: >
+      Update about page components to use locally downloaded images. This includes:
+      the about hero image (7008x4672 JPG), team member photos (Karim + Morgan),
+      team story images (4 images), and any additional logos. Update the team
+      data in /src/data/team.ts with correct local image paths. Use next/image
+      for all images with appropriate sizes prop.
+    type: feature
+    complexity: 4
+    priority: must
+    depends_on:
+      - T001
+    acceptance_criteria:
+      - About page hero renders downloaded image from /public/images/about/
+      - Team member photos render from /public/images/about/ (not external URLs)
+      - Team story images render correctly
+      - /src/data/team.ts has updated image paths pointing to local files
+      - No images reference framerusercontent.com or external CDNs
+      - npm run build passes
+    files_likely_affected:
+      - src/app/about/page.tsx
+      - src/data/team.ts
+      - src/components/about/about-hero.tsx
+      - src/components/about/team-showcase.tsx
+
+  # ─────────────────────────────────────────────
+  # WAVE 4: Integration & Polish
+  # ─────────────────────────────────────────────
+
+  - id: T015
+    title: Build Lab / View All page aggregating blog, playbooks, and free resources
+    description: >
+      Create /src/app/lab/page.tsx as a unified content hub that shows:
+      - Free resources section (using FreeResourcesGrid from T012)
+      - Blog posts section (latest posts, linking to /blog/[slug])
+      - Playbooks section (empty state until content exists)
+      Design the layout to handle the empty playbooks state gracefully.
+      Add Lab to the site navigation.
+    type: feature
+    complexity: 5
+    priority: should
+    depends_on:
+      - T011
+      - T012
+      - T013
+    acceptance_criteria:
+      - /lab page renders without errors
+      - Free resources section shows all 5 resource cards
+      - Blog section shows all 4 posts with correct metadata
+      - Playbooks section shows appropriate empty state (not an error)
+      - Lab link present in site navigation
+      - npm run build passes
+    files_likely_affected:
+      - src/app/lab/page.tsx
+      - src/components/lab/LabHero.tsx
+      - src/data/navigation.ts
+
+  - id: T016
+    title: Add SEO metadata generation from content
+    description: >
+      Add generateMetadata() exports to all dynamic content pages:
+      /projects/[slug], /blog/[slug], /playbooks/[slug], /lab.
+      Metadata should derive title, description, and Open Graph image from
+      the content data (project.title + project.description, post.title +
+      post.excerpt, etc.). Use the thumbnail/hero image as og:image where
+      available. Add canonical URLs. Ensure static pages (/, /projects,
+      /blog, /about, /contact) also have appropriate static metadata.
+    type: feature
+    complexity: 4
+    priority: should
+    depends_on:
+      - T010
+      - T011
+      - T015
+    acceptance_criteria:
+      - All dynamic route pages export generateMetadata()
+      - Page titles follow pattern: "{Content Title} | Open Session"
+      - og:image set to content thumbnail where available
+      - Canonical URLs present on all pages
+      - npm run build passes
+    files_likely_affected:
+      - src/app/projects/[slug]/page.tsx
+      - src/app/blog/[slug]/page.tsx
+      - src/app/playbooks/[slug]/page.tsx
+      - src/app/lab/page.tsx
+      - src/app/layout.tsx
+
+  - id: T017
+    title: Write content validation script
+    description: >
+      Write a Node.js script at scripts/validate-content.js that checks:
+      (1) All image paths referenced in data files exist in /public/images/
+      (2) All contentPath values in blog/playbook data point to existing MDX files
+      (3) All required fields are present on each data record (no undefined slugs,
+      no empty titles, etc.)
+      (4) All external hrefs in free-resources use https://
+      Script should exit with code 1 on failures and print a clear list of issues.
+    type: chore
+    complexity: 4
+    priority: should
+    depends_on:
+      - T005
+      - T006
+      - T007
+    acceptance_criteria:
+      - scripts/validate-content.js exists and is runnable with node
+      - Script checks image path existence for all data records
+      - Script checks MDX file existence for all contentPath references
+      - Script exits 0 when all content is valid
+      - Script exits 1 with a list of issues when content is invalid
+      - Running against complete Wave 2 content exits 0
+    files_likely_affected:
+      - scripts/validate-content.js
+
+  - id: T018
+    title: Write template stripping script
+    description: >
+      Write a shell script or Node.js script at scripts/strip-for-template.sh
+      (or .js) that transforms the repo into a clean template by:
+      (1) Removing /src/content/* (all MDX files)
+      (2) Replacing data files (/src/data/projects.ts, blog.ts, free-resources.ts,
+      team.ts, etc.) with example stub versions containing a single placeholder
+      record and a comment "// TEMPLATE: replace with your content"
+      (3) Replacing /public/images/ contents with placeholder gradient images
+      or empty directories
+      (4) Verifying npm run build still passes after stripping
+      Add a comment at the top of each data file: "// TEMPLATE: replace with your content"
+      (this must be in the data files before this task runs).
+    type: chore
+    complexity: 5
+    priority: could
+    depends_on:
+      - T017
+    acceptance_criteria:
+      - scripts/strip-for-template.sh (or .js) exists and is documented
+      - Running the script removes all MDX content files
+      - Running the script replaces data files with stub versions
+      - npm run build passes after stripping (no broken image references, no missing slugs)
+      - All data files have "// TEMPLATE: replace with your content" comment
+      - Script is idempotent (safe to run twice)
+    files_likely_affected:
+      - scripts/strip-for-template.sh
+      - src/data/projects.ts
+      - src/data/blog.ts
+      - src/data/free-resources.ts
+      - src/data/team.ts

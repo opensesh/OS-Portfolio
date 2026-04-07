@@ -1,0 +1,11 @@
+{
+  "status": "approved",
+  "created": "2026-04-07",
+  "last_updated": "2026-04-07",
+  "research_complete": true,
+  "prd_complete": true,
+  "tasks_defined": 20,
+  "phases": 4,
+  "current_phase": null,
+  "completed_tasks": 0
+}

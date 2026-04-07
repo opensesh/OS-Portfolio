@@ -46,11 +46,10 @@ export function Header() {
   }, [isMenuOpen]);
 
   const bgOpacity = isMenuOpen ? 1 : scrollProgress;
-  // Horizontal margin on the unified container (0 -> 12px on scroll)
-  const containerMargin = isMenuOpen ? 12 : scrollProgress * 12;
-  // Bottom radius
+  // On scroll (or menu open): 12px horizontal inset on the bg shape
+  const bgInset = isMenuOpen ? 12 : scrollProgress * 12;
   const bottomRadius = isMenuOpen ? 6 : scrollProgress * 6;
-  // Content pinch: logo and right-side content shift inward (0 -> 16px extra padding)
+  // Content pinch: extra padding pushes logo/buttons inward
   const contentPinch = isMenuOpen ? 16 : scrollProgress * 16;
 
   return (
@@ -62,109 +61,102 @@ export function Header() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="fixed top-0 left-0 right-0 z-50"
       >
-        {/*
-          Single unified container: wraps both nav bar AND menu content.
-          - Flush with browser top (radius 0 on top)
-          - Horizontal margins create inset from viewport edge
-          - Bottom corners round to 6px
-          - bg-secondary fills in on scroll or when menu is open
-          - When menu opens, this same container grows to show menu content
-        */}
-        <div
-          className="relative transition-all duration-300 ease-out"
-          style={{
-            marginLeft: `${containerMargin}px`,
-            marginRight: `${containerMargin}px`,
-            borderBottomLeftRadius: `${bottomRadius}px`,
-            borderBottomRightRadius: `${bottomRadius}px`,
-          }}
-        >
-          {/* Background fill */}
+        <div className="relative">
+          {/*
+            Background shape:
+            - Inset from viewport edges by bgInset
+            - Flush with top, bottom corners round
+            - Covers both nav and menu content
+          */}
           <div
-            className="absolute inset-0 bg-bg-secondary transition-opacity duration-300"
+            className="absolute top-0 bottom-0 bg-bg-secondary transition-all duration-300 ease-out"
             style={{
+              left: `${bgInset}px`,
+              right: `${bgInset}px`,
               opacity: bgOpacity,
               borderBottomLeftRadius: `${bottomRadius}px`,
               borderBottomRightRadius: `${bottomRadius}px`,
             }}
           />
 
-          {/* Nav bar */}
-          <nav
-            className="relative flex items-center justify-between h-20 transition-[padding] duration-300 ease-out"
-            style={{
-              paddingLeft: `calc(5% + ${contentPinch}px)`,
-              paddingRight: `calc(5% + ${contentPinch}px)`,
-            }}
-          >
-            {/* Logo — shifts right as content pinches */}
-            <Logo />
+          {/*
+            Content wrapper: container-wide to exactly match section widths.
+            Extra padding via contentPinch shifts content inward on scroll.
+          */}
+          <div className="relative">
+            {/* Nav bar */}
+            <nav
+              className="container-wide flex items-center justify-between h-20 transition-[padding] duration-300 ease-out"
+              style={{
+                paddingLeft: `calc(max(1.5rem, 5%) + ${contentPinch}px)`,
+                paddingRight: `calc(max(1.5rem, 5%) + ${contentPinch}px)`,
+              }}
+            >
+              <Logo />
 
-            {/* Right side — shifts left as content pinches */}
-            <div className="flex items-center gap-2 md:gap-3">
-              {/* MENU / CLOSE trigger */}
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-[6px]",
-                  "text-fg-primary hover:bg-bg-tertiary",
-                  "transition-colors duration-200"
-                )}
-                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={isMenuOpen}
-              >
-                <span className="text-accent text-xs">
-                  <AnimatePresence mode="wait" initial={false}>
-                    {isMenuOpen ? (
-                      <motion.span
-                        key="close"
-                        variants={menuTriggerText}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        className="flex items-center gap-2"
-                      >
-                        CLOSE
-                        <XClose className="w-4 h-4" />
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="menu"
-                        variants={menuTriggerText}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        className="flex items-center gap-2"
-                      >
-                        MENU
-                        <Menu01 className="w-4 h-4" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </span>
-              </button>
+              <div className="flex items-center gap-2 md:gap-3">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-[6px]",
+                    "text-fg-primary hover:bg-bg-tertiary",
+                    "transition-colors duration-200"
+                  )}
+                  aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                  aria-expanded={isMenuOpen}
+                >
+                  <span className="text-accent text-xs">
+                    <AnimatePresence mode="wait" initial={false}>
+                      {isMenuOpen ? (
+                        <motion.span
+                          key="close"
+                          variants={menuTriggerText}
+                          initial="initial"
+                          animate="animate"
+                          exit="exit"
+                          className="flex items-center gap-2"
+                        >
+                          CLOSE
+                          <XClose className="w-4 h-4" />
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="menu"
+                          variants={menuTriggerText}
+                          initial="initial"
+                          animate="animate"
+                          exit="exit"
+                          className="flex items-center gap-2"
+                        >
+                          MENU
+                          <Menu01 className="w-4 h-4" />
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </span>
+                </button>
 
-              {/* CTA Button */}
-              <ActionButton
-                href="/contact"
-                variant="brand"
-                className="hidden sm:inline-flex"
-              >
-                Let&apos;s Connect
-              </ActionButton>
-            </div>
-          </nav>
+                <ActionButton
+                  href="/contact"
+                  variant="brand"
+                  className="hidden sm:inline-flex"
+                >
+                  Let&apos;s Connect
+                </ActionButton>
+              </div>
+            </nav>
 
-          {/* Menu content — expands inside the SAME container */}
-          <AnimatePresence>
-            {isMenuOpen && (
-              <OverlayMenu onClose={() => setIsMenuOpen(false)} />
-            )}
-          </AnimatePresence>
+            {/* Menu content — expands inside same bg shape */}
+            <AnimatePresence>
+              {isMenuOpen && (
+                <OverlayMenu onClose={() => setIsMenuOpen(false)} />
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </motion.header>
 
-      {/* Blurred backdrop when menu is open */}
+      {/* Blurred backdrop */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div

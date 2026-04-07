@@ -78,10 +78,10 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
     >
       {/* No separate bg — parent container in header.tsx provides it */}
       <div
-        className="relative py-8 md:py-10 lg:py-10"
+        className="container-wide relative py-8 md:py-10 lg:py-10"
         style={{
-          paddingLeft: "calc(5% + 16px)",
-          paddingRight: "calc(5% + 16px)",
+          paddingLeft: "calc(max(1.5rem, 5%) + 16px)",
+          paddingRight: "calc(max(1.5rem, 5%) + 16px)",
         }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14">

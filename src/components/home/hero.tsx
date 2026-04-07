@@ -237,12 +237,12 @@ export function Hero() {
             className="container-wide"
           >
             <div className="flex items-center gap-4">
-              <p className="font-accent text-sm font-bold uppercase tracking-widest text-fg-tertiary leading-relaxed whitespace-nowrap">
+              <p className="font-accent text-sm font-bold uppercase tracking-widest text-fg-tertiary leading-tight whitespace-nowrap">
                 Past Design
                 <br />
                 Work With
               </p>
-              <div className="flex items-center gap-5 pointer-events-auto">
+              <div className="flex items-center gap-10 pointer-events-auto">
                 {CLIENTS.map((client) => (
                   <a
                     key={client.name}

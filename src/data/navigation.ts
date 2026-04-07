@@ -51,7 +51,6 @@ export const overlayNavItems: NavItem[] = [
       { label: "View All", href: "/lab" },
     ],
   },
-  { label: "Contact", href: "/contact" },
 ];
 
 export const contactEmails = [

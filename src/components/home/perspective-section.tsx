@@ -189,7 +189,7 @@ export function PerspectiveSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-bg-primary py-24 sm:py-32 lg:py-40 overflow-hidden"
+      className="relative bg-bg-primary py-24 sm:py-32 lg:py-40 min-h-screen flex flex-col justify-center overflow-hidden"
       {...devProps("PerspectiveSection")}
     >
       <div ref={inViewRef} className="mx-auto max-w-7xl px-6">
@@ -208,7 +208,7 @@ export function PerspectiveSection() {
             trigger="scroll"
             className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
           >
-            {"We Combine Creative\nDomains"}
+            Combining Creative Domains
           </TextBlockReveal>
         </div>
 
@@ -238,7 +238,7 @@ export function PerspectiveSection() {
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight"
                 style={{
                   fontFamily: "var(--font-accent)",
-                  color: "var(--fg-brand)",
+                  color: "var(--bg-brand-solid)",
                 }}
               >
                 Product
@@ -326,7 +326,7 @@ export function PerspectiveSection() {
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight"
                 style={{
                   fontFamily: "var(--font-accent)",
-                  color: "var(--fg-brand)",
+                  color: "var(--bg-brand-solid)",
                 }}
               >
                 Marketing

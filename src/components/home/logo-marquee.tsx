@@ -22,7 +22,7 @@ export function LogoMarquee() {
 
   return (
     <section
-      className="py-16 md:py-20 border-y border-border-secondary"
+      className="py-24 md:py-32 border-y border-border-secondary"
       style={{ overflowX: "clip", overflowY: "visible" }}
       {...devProps("LogoMarquee")}
     >

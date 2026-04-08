@@ -365,7 +365,7 @@ export function ImpactSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-20 md:py-32"
+      className="py-28 md:py-40"
       style={{
         backgroundColor: "var(--color-gray-950)",
         color: "var(--color-gray-50)",

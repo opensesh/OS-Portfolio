@@ -9,7 +9,7 @@ export function TestimonialsSection() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
 
   return (
-    <section ref={ref} className="py-20 md:py-32" {...devProps("TestimonialsSection")}>
+    <section ref={ref} className="py-28 md:py-40" {...devProps("TestimonialsSection")}>
       <div className="container-main">
         {/* Section Header */}
         <div className="mb-16 md:mb-20 text-center">

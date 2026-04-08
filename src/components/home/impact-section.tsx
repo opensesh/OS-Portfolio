@@ -116,7 +116,7 @@ function BoundingBox({
 
   return (
     <div
-      className={cn("relative border border-brand-500 h-full", className)}
+      className={cn("relative border border-warm-gray-50 h-full", className)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -133,7 +133,7 @@ function BoundingBox({
           key={pos}
           className={cn("absolute h-3 w-3 z-20 transition-colors", pos)}
           style={{
-            backgroundColor: hovered ? "var(--fg-inverse)" : "#fe5102",
+            backgroundColor: hovered ? "var(--fg-inverse)" : "var(--color-gray-50)",
             transitionDuration: "200ms",
             transitionDelay: hovered ? "0ms" : `${STAG * 4}ms`,
           }}
@@ -367,25 +367,25 @@ export function ImpactSection() {
       ref={sectionRef}
       className="py-20 md:py-32"
       style={{
-        backgroundColor: "var(--color-gray-50)",
-        color: "var(--color-gray-950)",
-        // Force vanilla palette regardless of theme
-        ["--bg-primary" as string]: "var(--color-gray-50)",
-        ["--fg-primary" as string]: "var(--color-gray-950)",
-        ["--fg-secondary" as string]: "var(--color-gray-600)",
+        backgroundColor: "var(--color-gray-950)",
+        color: "var(--color-gray-50)",
+        // Force dark palette regardless of theme
+        ["--bg-primary" as string]: "var(--color-gray-950)",
+        ["--fg-primary" as string]: "var(--color-gray-50)",
+        ["--fg-secondary" as string]: "var(--color-gray-400)",
         ["--fg-tertiary" as string]: "var(--color-gray-500)",
-        ["--fg-inverse" as string]: "var(--color-gray-950)",
-        ["--border-primary" as string]: "var(--color-gray-300)",
-        ["--border-secondary" as string]: "var(--color-gray-200)",
+        ["--fg-inverse" as string]: "var(--color-gray-50)",
+        ["--border-primary" as string]: "var(--color-gray-700)",
+        ["--border-secondary" as string]: "var(--color-gray-800)",
         ["--fg-brand" as string]: "#fe5102",
       }}
       {...devProps("ImpactSection")}
     >
-      {/* Theme-aware glitch artifacts — powerglitch ::before/::after pseudo-elements */}
+      {/* Glitch artifacts always vanilla on dark bg */}
       <style>{`
         [data-impact-glitch]::before,
         [data-impact-glitch]::after {
-          color: #1c1a17 !important;
+          color: #faf8f5 !important;
         }
       `}</style>
       {/* Header */}

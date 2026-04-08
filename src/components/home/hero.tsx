@@ -187,7 +187,7 @@ export function Hero() {
               initial="hidden"
               animate={pageLoaded ? "visible" : undefined}
               transition={{ delay: 1.2 }}
-              className="text-base md:text-lg text-fg-secondary max-w-sm mb-10"
+              className="text-base md:text-lg text-fg-secondary max-w-sm mt-3 mb-10"
             >
               We focus on brand identity, content production, and digital
               products. Our edge is human-centered design and creative context

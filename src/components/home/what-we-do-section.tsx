@@ -163,6 +163,19 @@ export function OurExpertiseSection() {
     <section
       ref={ref}
       className="py-20 md:py-32"
+      style={{
+        backgroundColor: "var(--color-gray-50)",
+        // Force vanilla palette regardless of theme
+        ["--bg-primary" as string]: "var(--color-gray-50)",
+        ["--bg-secondary" as string]: "var(--color-gray-100)",
+        ["--bg-tertiary" as string]: "var(--color-gray-200)",
+        ["--fg-primary" as string]: "var(--color-gray-950)",
+        ["--fg-secondary" as string]: "var(--color-gray-600)",
+        ["--fg-tertiary" as string]: "var(--color-gray-500)",
+        ["--border-primary" as string]: "var(--color-gray-300)",
+        ["--border-secondary" as string]: "var(--color-gray-200)",
+        ["--fg-brand" as string]: "#fe5102",
+      }}
       {...devProps("OurExpertiseSection")}
     >
       <div className="container-wide">

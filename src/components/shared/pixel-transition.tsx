@@ -15,6 +15,8 @@ interface PixelTransitionProps {
   aspectRatio?: string;
   className?: string;
   style?: React.CSSProperties;
+  /** When provided, hover is disabled; animation fires whenever this key changes */
+  triggerKey?: string | null;
 }
 
 export function PixelTransition({
@@ -28,6 +30,7 @@ export function PixelTransition({
   aspectRatio = "100%",
   className = "",
   style = {},
+  triggerKey,
 }: PixelTransitionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixelGridRef = useRef<HTMLDivElement>(null);
@@ -115,6 +118,19 @@ export function PixelTransition({
     [animationStepDuration, animationStepDurationOut]
   );
 
+  // External trigger mode: fire animation whenever triggerKey changes
+  const prevTriggerKey = useRef(triggerKey);
+  useEffect(() => {
+    if (triggerKey === undefined) return; // not using trigger mode
+    if (prevTriggerKey.current !== triggerKey && prevTriggerKey.current !== undefined) {
+      // Fire a full in-then-out cycle
+      animatePixels(true);
+    }
+    prevTriggerKey.current = triggerKey;
+  }, [triggerKey, animatePixels]);
+
+  const useHover = triggerKey === undefined;
+
   const handleEnter = useCallback(() => {
     if (!isActive) animatePixels(true);
   }, [isActive, animatePixels]);
@@ -133,12 +149,12 @@ export function PixelTransition({
       ref={containerRef}
       className={`pixel-transition ${className}`}
       style={style}
-      onMouseEnter={!isTouchDevice ? handleEnter : undefined}
-      onMouseLeave={!isTouchDevice ? handleLeave : undefined}
-      onClick={isTouchDevice ? handleClick : undefined}
-      onFocus={!isTouchDevice ? handleEnter : undefined}
-      onBlur={!isTouchDevice ? handleLeave : undefined}
-      tabIndex={0}
+      onMouseEnter={useHover && !isTouchDevice ? handleEnter : undefined}
+      onMouseLeave={useHover && !isTouchDevice ? handleLeave : undefined}
+      onClick={useHover && isTouchDevice ? handleClick : undefined}
+      onFocus={useHover && !isTouchDevice ? handleEnter : undefined}
+      onBlur={useHover && !isTouchDevice ? handleLeave : undefined}
+      tabIndex={useHover ? 0 : undefined}
     >
       <div style={{ paddingTop: aspectRatio }} />
       <div className="pixel-transition__default" aria-hidden={isActive}>

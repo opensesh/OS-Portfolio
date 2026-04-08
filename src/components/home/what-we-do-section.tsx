@@ -202,7 +202,7 @@ export function OurExpertiseSection() {
                   key={item.id}
                   variants={fadeInUp}
                   className={cn(
-                    "border border-border-secondary",
+                    "border border-border-secondary rounded-lg overflow-hidden",
                     "transition-colors duration-200",
                     isExpanded && "border-border-primary bg-bg-secondary"
                   )}
@@ -224,7 +224,7 @@ export function OurExpertiseSection() {
                       ref={setIconRef(item.id)}
                       className={cn(
                         "flex-shrink-0 w-10 h-10 flex items-center justify-center",
-                        "border border-border-primary rounded-full",
+                        "border border-border-primary rounded-lg",
                         "transition-colors duration-200",
                         isExpanded && "bg-bg-brand-solid border-transparent"
                       )}
@@ -286,7 +286,8 @@ export function OurExpertiseSection() {
                           }
                           gridSize={10}
                           pixelColor="#FE5102"
-                          animationStepDuration={0.4}
+                          animationStepDuration={0.3}
+                          triggerKey={expandedId}
                           aspectRatio="75%"
                         />
                       </div>
@@ -333,7 +334,8 @@ export function OurExpertiseSection() {
                     }
                     gridSize={14}
                     pixelColor="#FE5102"
-                    animationStepDuration={0.4}
+                    animationStepDuration={0.3}
+                    triggerKey={expandedId}
                     aspectRatio="0"
                     className="h-full"
                   />

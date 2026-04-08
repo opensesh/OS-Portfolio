@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import * as THREE from "three";
 import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ActionButton } from "@/components/shared/action-button";
@@ -10,7 +9,6 @@ import { TextBlockReveal } from "@/components/shared/text-block-reveal";
 import { fadeInUp } from "@/lib/motion";
 import { useMousePosition } from "@/hooks/use-mouse-position";
 import { useCameraStream } from "@/hooks/use-camera-stream";
-import { useFaceReplacement } from "@/hooks/use-face-replacement";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
@@ -53,18 +51,7 @@ export function Hero() {
   const [isLive, setIsLive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const cameraStream = useCameraStream();
-  const faceReplacement = useFaceReplacement();
   const snapshotRequestRef = useRef<(() => void) | null>(null);
-  const liveTextureRef = useRef<THREE.Texture | null>(null);
-
-  // Keep liveTextureRef pointing to the right texture source
-  useEffect(() => {
-    if (faceReplacement.isProcessingRef.current && faceReplacement.processedTextureRef.current) {
-      liveTextureRef.current = faceReplacement.processedTextureRef.current;
-    } else {
-      liveTextureRef.current = cameraStream.textureRef.current;
-    }
-  });
 
   const handleGoLive = useCallback(async () => {
     setCameraError(null);
@@ -72,43 +59,19 @@ export function Hero() {
     if (result.success) {
       setIsLive(true);
       setActiveChannel(LIVE_CHANNEL_SLUG);
-      // Start face replacement if an asset is selected
-      if (faceReplacement.activeAsset && cameraStream.videoRef.current) {
-        await faceReplacement.start(cameraStream.videoRef.current);
-      }
     } else {
       setCameraError(result.error ?? "Camera access failed.");
     }
-  }, [cameraStream, faceReplacement]);
+  }, [cameraStream]);
 
   const handleStopLive = useCallback(() => {
-    faceReplacement.stop();
     cameraStream.stop();
     setIsLive(false);
-  }, [cameraStream, faceReplacement]);
+  }, [cameraStream]);
 
   const handleSnapshot = useCallback(() => {
     snapshotRequestRef.current?.();
   }, []);
-
-  const handleHeadAssetChange = useCallback(
-    async (assetId: string | null) => {
-      faceReplacement.setActiveAsset(assetId);
-      if (isLive && cameraStream.videoRef.current) {
-        if (assetId) {
-          // Start or continue face replacement processing
-          if (!faceReplacement.isProcessingRef.current) {
-            await faceReplacement.start(cameraStream.videoRef.current);
-          }
-        } else {
-          // "None" selected — stop face replacement, revert to raw camera
-          faceReplacement.stop();
-          liveTextureRef.current = cameraStream.textureRef.current;
-        }
-      }
-    },
-    [isLive, cameraStream, faceReplacement]
-  );
 
   const handleChannelChange = useCallback(
     (slug: string) => {
@@ -183,7 +146,7 @@ export function Hero() {
             scrollRef={scrollRef}
             mouseRef={mouseRef}
             activeChannel={activeChannel}
-            cameraTextureRef={liveTextureRef}
+            cameraTextureRef={cameraStream.textureRef}
             isLiveRef={cameraStream.isActiveRef}
             onSnapshotRequest={snapshotRequestRef}
             className="h-full w-full pointer-events-auto"
@@ -343,9 +306,6 @@ export function Hero() {
           onStopLive={handleStopLive}
           onSnapshot={handleSnapshot}
           cameraError={cameraError}
-          activeHeadAsset={faceReplacement.activeAsset}
-          onHeadAssetChange={handleHeadAssetChange}
-          isLoadingFaceModel={faceReplacement.isLoadingModel}
         />
 
       </div>

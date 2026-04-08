@@ -96,7 +96,7 @@ interface CRTTVSceneProps {
   scrollRef: React.RefObject<number | null>;
   mouseRef: React.RefObject<{ x: number; y: number } | null>;
   activeChannel: string;
-  cameraTextureRef?: React.RefObject<THREE.Texture | null>;
+  cameraTextureRef?: React.RefObject<THREE.VideoTexture | null>;
   isLiveRef?: React.RefObject<boolean>;
   onSnapshotRequest?: React.MutableRefObject<(() => void) | null>;
   className?: string;

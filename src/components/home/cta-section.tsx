@@ -36,7 +36,7 @@ export function CTASection() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <SectionLabel className="mb-4 text-brand-400" variant="brand">
+                <SectionLabel className="mb-4 text-brand-500" variant="brand">
                   Start a Project
                 </SectionLabel>
               </motion.div>
@@ -49,7 +49,7 @@ export function CTASection() {
               >
                 Let&apos;s build something
                 <br />
-                <span className="text-brand-400">remarkable</span>
+                <span className="text-brand-500">remarkable</span>
               </motion.h2>
 
               <motion.p
@@ -73,8 +73,8 @@ export function CTASection() {
                   href="mailto:hello@opensession.co"
                   className="inline-flex items-center gap-3 text-2xl md:text-3xl font-display font-bold group"
                 >
-                  <Mail01 className="w-6 h-6 text-brand-400" />
-                  <ScrambleText className="group-hover:text-brand-400 transition-colors duration-200">
+                  <Mail01 className="w-6 h-6 text-brand-500" />
+                  <ScrambleText className="group-hover:text-brand-500 transition-colors duration-200">
                     hello@opensession.co
                   </ScrambleText>
                   <ArrowUpRight className="w-5 h-5 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-200" />
@@ -113,7 +113,7 @@ export function CTASection() {
                   <div className="w-full h-full rounded-full border border-brand-500/30 bg-brand-500/5" />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-6xl font-display font-bold text-brand-400/20">
+                  <span className="text-6xl font-display font-bold text-brand-500/20">
                     OS
                   </span>
                 </div>

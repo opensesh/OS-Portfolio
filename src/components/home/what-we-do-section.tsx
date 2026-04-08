@@ -162,10 +162,10 @@ export function OurExpertiseSection() {
   return (
     <section
       ref={ref}
-      className="py-20 md:py-32"
+      className="py-28 md:py-40 min-h-screen flex flex-col justify-center"
       style={{
         backgroundColor: "var(--color-gray-50)",
-        // Force vanilla palette regardless of theme
+        // Force vanilla palette — cards get charcoal bg for contrast
         ["--bg-primary" as string]: "var(--color-gray-50)",
         ["--bg-secondary" as string]: "var(--color-gray-100)",
         ["--bg-tertiary" as string]: "var(--color-gray-200)",
@@ -180,7 +180,7 @@ export function OurExpertiseSection() {
     >
       <div className="container-wide">
         {/* Section Header */}
-        <div className="mb-12 md:mb-16">
+        <div className="mb-16 md:mb-20">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -205,7 +205,7 @@ export function OurExpertiseSection() {
             variants={staggerContainer}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="space-y-4"
+            className="space-y-5"
           >
             {whatWeDoItems.map((item) => {
               const isExpanded = expandedId === item.id;
@@ -215,9 +215,10 @@ export function OurExpertiseSection() {
                   key={item.id}
                   variants={fadeInUp}
                   className={cn(
-                    "border border-border-secondary rounded-lg overflow-hidden",
+                    "rounded-lg overflow-hidden",
                     "transition-colors duration-200",
-                    isExpanded && "border-border-primary bg-bg-secondary"
+                    "bg-warm-gray-950 text-warm-gray-50 border border-warm-gray-800",
+                    isExpanded && "border-warm-gray-700"
                   )}
                 >
                   {/* Header */}
@@ -230,14 +231,14 @@ export function OurExpertiseSection() {
                     )}
                     aria-expanded={isExpanded}
                   >
-                    <h3 className="text-heading text-xl md:text-2xl">
+                    <h3 className="text-heading text-xl md:text-2xl text-warm-gray-50">
                       {item.title}
                     </h3>
                     <div
                       ref={setIconRef(item.id)}
                       className={cn(
                         "flex-shrink-0 w-10 h-10 flex items-center justify-center",
-                        "border border-border-primary rounded-lg",
+                        "border border-warm-gray-700 rounded-lg",
                         "transition-colors duration-200",
                         isExpanded && "bg-bg-brand-solid border-transparent"
                       )}
@@ -245,7 +246,7 @@ export function OurExpertiseSection() {
                       {isExpanded ? (
                         <Minus className="w-4 h-4 text-white" />
                       ) : (
-                        <Plus className="w-4 h-4 text-fg-primary" />
+                        <Plus className="w-4 h-4 text-warm-gray-50" />
                       )}
                     </div>
                   </button>
@@ -260,7 +261,7 @@ export function OurExpertiseSection() {
                     }}
                   >
                     <div data-desc className="px-6 pb-6 md:px-8 md:pb-8">
-                      <p className="text-fg-secondary mb-6 max-w-2xl">
+                      <p className="text-warm-gray-400 mb-6 max-w-2xl">
                         {item.description}
                       </p>
                       <div className="flex flex-wrap gap-2">

@@ -32,7 +32,7 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {footerNavItems.company.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="text-sm inline-block text-fg-secondary hover:text-fg-primary transition-colors duration-200">
+                    <Link href={item.href} className="text-sm inline-block text-warm-gray-50/70 hover:text-warm-gray-50 transition-colors duration-200">
                       <TriplingText>{item.label}</TriplingText>
                     </Link>
                   </li>
@@ -48,7 +48,7 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {footerNavItems.theLab.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="text-sm inline-block text-fg-secondary hover:text-fg-primary transition-colors duration-200">
+                    <Link href={item.href} className="text-sm inline-block text-warm-gray-50/70 hover:text-warm-gray-50 transition-colors duration-200">
                       <TriplingText>{item.label}</TriplingText>
                     </Link>
                   </li>
@@ -74,7 +74,7 @@ export function Footer() {
                         "flex items-center justify-center",
                         "w-9 h-9 rounded-full",
                         "bg-bg-tertiary hover:bg-bg-brand-solid",
-                        "text-fg-secondary hover:text-white",
+                        "text-warm-gray-50/70 hover:text-white",
                         "transition-all duration-200"
                       )}
                       aria-label={link.label}
@@ -91,7 +91,7 @@ export function Footer() {
               <SectionLabel className="mb-4" animate={false} variant="brand">
                 Stay in the loop
               </SectionLabel>
-              <p className="text-xs text-fg-secondary mb-3">
+              <p className="text-xs text-warm-gray-50/70 mb-3">
                 Get updates on design, AI, and creative tools.
               </p>
               <form

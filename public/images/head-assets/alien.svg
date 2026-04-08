@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Head shape -->
+  <path d="M256 40 C140 40 80 160 100 280 C110 340 160 420 256 440 C352 420 402 340 412 280 C432 160 372 40 256 40Z" fill="#7fb069" stroke="#5a8a42" stroke-width="3"/>
+  <!-- Head highlight -->
+  <path d="M256 50 C180 50 130 130 140 220 C150 180 200 80 256 70 C300 80 340 140 350 180" fill="#8fc278" opacity="0.4"/>
+  <!-- Left eye socket -->
+  <ellipse cx="190" cy="230" rx="60" ry="40" fill="#1a1a1a" transform="rotate(-10 190 230)"/>
+  <!-- Right eye socket -->
+  <ellipse cx="322" cy="230" rx="60" ry="40" fill="#1a1a1a" transform="rotate(10 322 230)"/>
+  <!-- Left eye -->
+  <ellipse cx="190" cy="230" rx="50" ry="32" fill="#111" transform="rotate(-10 190 230)"/>
+  <!-- Right eye -->
+  <ellipse cx="322" cy="230" rx="50" ry="32" fill="#111" transform="rotate(10 322 230)"/>
+  <!-- Left eye shine -->
+  <ellipse cx="210" cy="220" rx="12" ry="8" fill="white" opacity="0.3" transform="rotate(-10 210 220)"/>
+  <!-- Right eye shine -->
+  <ellipse cx="342" cy="220" rx="12" ry="8" fill="white" opacity="0.3" transform="rotate(10 342 220)"/>
+  <!-- Nostrils -->
+  <circle cx="242" cy="320" r="4" fill="#4a7a32"/>
+  <circle cx="270" cy="320" r="4" fill="#4a7a32"/>
+  <!-- Mouth -->
+  <path d="M220 360 Q256 380 292 360" stroke="#4a7a32" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

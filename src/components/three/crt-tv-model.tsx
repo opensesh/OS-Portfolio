@@ -29,7 +29,7 @@ function createVideoEl(src: string, loop: boolean): HTMLVideoElement {
 interface CRTTVModelProps {
   mouseRef: React.RefObject<{ x: number; y: number } | null>;
   activeChannel: string;
-  cameraTextureRef?: React.RefObject<THREE.VideoTexture | null>;
+  cameraTextureRef?: React.RefObject<THREE.Texture | null>;
   isLiveRef?: React.RefObject<boolean>;
   onSnapshotRequest?: React.MutableRefObject<(() => void) | null>;
 }
@@ -354,12 +354,21 @@ export function CRTTVModel({
 
     onSnapshotRequest.current = () => {
       const crtMat = crtMatRef.current;
-      const camVideo = cameraTextureRef?.current?.image as HTMLVideoElement | undefined;
+      const texImage = cameraTextureRef?.current?.image as
+        | HTMLVideoElement
+        | HTMLCanvasElement
+        | undefined;
       if (!crtMat || !isLiveModeRef.current) return;
 
-      // Use the camera's native resolution to avoid stretching
-      const width = camVideo?.videoWidth || 1280;
-      const height = camVideo?.videoHeight || 720;
+      // Use the source's native resolution to avoid stretching
+      const width =
+        (texImage instanceof HTMLVideoElement
+          ? texImage.videoWidth
+          : texImage?.width) || 1280;
+      const height =
+        (texImage instanceof HTMLVideoElement
+          ? texImage.videoHeight
+          : texImage?.height) || 720;
       const renderTarget = new THREE.WebGLRenderTarget(width, height);
 
       // Create a simple scene with a fullscreen quad
@@ -474,10 +483,15 @@ export function CRTTVModel({
   useFrame((state, delta) => {
     if (!groupRef.current || !mouseRef.current) return;
 
-    // Update CRT material time when in live mode
+    // Update CRT material time + texture sync when in live mode
     const crtMat = crtMatRef.current;
     if (crtMat && isLiveModeRef.current) {
       crtMat.uTime = state.clock.elapsedTime;
+      // Sync texture ref (supports hot-swap between VideoTexture/CanvasTexture)
+      if (cameraTextureRef?.current && crtMat.uTexture !== cameraTextureRef.current) {
+        crtMat.uTexture = cameraTextureRef.current;
+        crtMat.needsUpdate = true;
+      }
     }
 
     const factor = 1 - Math.exp(-MOUSE_DAMPING * delta);

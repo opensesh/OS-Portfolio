@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Bowl -->
+  <ellipse cx="256" cy="280" rx="180" ry="170" fill="#d4f1f9" fill-opacity="0.35" stroke="#87ceeb" stroke-width="3"/>
+  <!-- Water -->
+  <ellipse cx="256" cy="300" rx="165" ry="140" fill="#4fc3f7" fill-opacity="0.3"/>
+  <!-- Water surface -->
+  <path d="M100 240 Q150 230 200 245 Q256 260 312 245 Q362 230 412 240" stroke="#81d4fa" stroke-width="2" fill="none" opacity="0.6"/>
+  <!-- Fish body -->
+  <ellipse cx="280" cy="310" rx="35" ry="18" fill="#ff6f00" transform="rotate(-10 280 310)"/>
+  <!-- Fish tail -->
+  <path d="M245 310 L220 290 L220 330 Z" fill="#ff8f00"/>
+  <!-- Fish eye -->
+  <circle cx="300" cy="305" r="5" fill="white"/>
+  <circle cx="302" cy="304" r="2.5" fill="#1a1a1a"/>
+  <!-- Fish mouth -->
+  <circle cx="314" cy="310" r="3" fill="#ff8f00" stroke="#e65100" stroke-width="1"/>
+  <!-- Bubbles -->
+  <circle cx="320" cy="270" r="6" fill="none" stroke="#b3e5fc" stroke-width="1.5" opacity="0.7"/>
+  <circle cx="310" cy="250" r="4" fill="none" stroke="#b3e5fc" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="330" cy="240" r="3" fill="none" stroke="#b3e5fc" stroke-width="1" opacity="0.4"/>
+  <!-- Bowl rim -->
+  <ellipse cx="256" cy="140" rx="120" ry="20" fill="none" stroke="#87ceeb" stroke-width="3"/>
+  <!-- Bowl base -->
+  <ellipse cx="256" cy="430" rx="80" ry="15" fill="#b0bec5" fill-opacity="0.5" stroke="#90a4ae" stroke-width="2"/>
+  <!-- Light reflection -->
+  <path d="M160 200 Q180 180 200 200" stroke="white" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+  <!-- Gravel -->
+  <circle cx="200" cy="420" r="8" fill="#8d6e63" opacity="0.5"/>
+  <circle cx="230" cy="425" r="6" fill="#a1887f" opacity="0.5"/>
+  <circle cx="260" cy="422" r="7" fill="#795548" opacity="0.5"/>
+  <circle cx="290" cy="425" r="6" fill="#8d6e63" opacity="0.5"/>
+  <circle cx="315" cy="420" r="8" fill="#a1887f" opacity="0.5"/>
+</svg>

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { wordContainer, wordReveal, fadeInUp } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
 
-const headline = "We're a small team with big ideas and a passion for great design.";
+const headline = "We're a Small Team With Big Ideas and a Passion for Great Design.";
 const words = headline.split(" ");
 
 export function AboutHero() {

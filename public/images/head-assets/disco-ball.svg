@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- String -->
+  <line x1="256" y1="0" x2="256" y2="80" stroke="#888" stroke-width="2"/>
+  <!-- Ball base -->
+  <circle cx="256" cy="260" r="180" fill="#c0c0c0" stroke="#999" stroke-width="2"/>
+  <!-- Facets - horizontal bands -->
+  <ellipse cx="256" cy="140" rx="140" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="256" cy="180" rx="165" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="256" cy="220" rx="178" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="256" cy="260" rx="180" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="256" cy="300" rx="178" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="256" cy="340" rx="165" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="256" cy="380" rx="140" ry="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+  <!-- Vertical lines -->
+  <path d="M256 80 L256 440" stroke="#ddd" stroke-width="1" opacity="0.4"/>
+  <path d="M176 100 C176 100 140 260 176 420" stroke="#ddd" stroke-width="1" opacity="0.4"/>
+  <path d="M336 100 C336 100 372 260 336 420" stroke="#ddd" stroke-width="1" opacity="0.4"/>
+  <path d="M116 140 C100 260 116 380 116 380" stroke="#ddd" stroke-width="1" opacity="0.4"/>
+  <path d="M396 140 C412 260 396 380 396 380" stroke="#ddd" stroke-width="1" opacity="0.4"/>
+  <!-- Highlight tiles -->
+  <rect x="200" y="170" width="24" height="18" rx="2" fill="white" opacity="0.5" transform="rotate(-5 212 179)"/>
+  <rect x="240" y="210" width="24" height="18" rx="2" fill="white" opacity="0.4" transform="rotate(3 252 219)"/>
+  <rect x="300" y="190" width="24" height="18" rx="2" fill="white" opacity="0.35"/>
+  <rect x="170" y="250" width="24" height="18" rx="2" fill="white" opacity="0.3" transform="rotate(-8 182 259)"/>
+  <rect x="310" y="270" width="24" height="18" rx="2" fill="white" opacity="0.45" transform="rotate(5 322 279)"/>
+  <rect x="220" y="300" width="24" height="18" rx="2" fill="white" opacity="0.25"/>
+  <!-- Colored reflections -->
+  <rect x="280" y="150" width="20" height="16" rx="2" fill="#fe5102" opacity="0.3"/>
+  <rect x="160" y="300" width="20" height="16" rx="2" fill="#4fc3f7" opacity="0.25"/>
+  <rect x="330" y="320" width="20" height="16" rx="2" fill="#e040fb" opacity="0.2"/>
+  <!-- Main highlight -->
+  <ellipse cx="210" cy="190" rx="40" ry="30" fill="white" opacity="0.15"/>
+  <!-- Mount -->
+  <circle cx="256" cy="80" r="10" fill="#999" stroke="#777" stroke-width="2"/>
+</svg>

@@ -14,6 +14,7 @@ import { XClose } from "@untitledui-pro/icons/line";
 import { usePageLoaded } from "@/hooks/use-page-loaded";
 import { devProps } from "@/utils/dev-props";
 import { TV_CHANNELS, DEFAULT_CHANNEL, LIVE_CHANNEL_SLUG } from "@/lib/tv-channels";
+import { HeadAssetPicker } from "@/components/home/head-asset-picker";
 
 const OFFBIT = "'OffBit', 'SF Mono', monospace";
 const IDLE_CLOSE_DESKTOP_MS = 2500;
@@ -59,6 +60,9 @@ interface TVChannelMenuProps {
   onStopLive?: () => void;
   onSnapshot?: () => void;
   cameraError?: string | null;
+  activeHeadAsset?: string | null;
+  onHeadAssetChange?: (assetId: string | null) => void;
+  isLoadingFaceModel?: boolean;
 }
 
 export function TVChannelMenu({
@@ -70,6 +74,9 @@ export function TVChannelMenu({
   onStopLive,
   onSnapshot,
   cameraError,
+  activeHeadAsset,
+  onHeadAssetChange,
+  isLoadingFaceModel,
 }: TVChannelMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeChannel, setActiveChannel] = useState(DEFAULT_CHANNEL);
@@ -339,6 +346,15 @@ export function TVChannelMenu({
                   })}
                 </div>
               </motion.div>
+
+              {/* Head asset picker — only when live */}
+              {isLive && onHeadAssetChange && (
+                <HeadAssetPicker
+                  activeAsset={activeHeadAsset ?? null}
+                  onAssetChange={onHeadAssetChange}
+                  isLoading={isLoadingFaceModel}
+                />
+              )}
 
               {/* Footer */}
               <div className="border-t border-fg-primary/8 px-2 py-2">

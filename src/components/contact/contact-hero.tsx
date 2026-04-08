@@ -25,7 +25,7 @@ export function ContactHero() {
               className="text-display text-4xl md:text-5xl lg:text-6xl tracking-tight mb-6"
               trigger="scroll"
             >
-              {"Let's talk"}
+              {"Let's Talk"}
             </TextBlockReveal>
 
             <ScrollReveal className="mb-10">
@@ -70,7 +70,7 @@ export function ContactHero() {
           {/* Right Column — Form */}
           <div>
             <ScrollReveal>
-              <h2 className="text-heading text-2xl mb-8">Send a message</h2>
+              <h2 className="text-heading text-2xl mb-8">Send a Message</h2>
             </ScrollReveal>
 
             <ScrollReveal delay={0.15}>

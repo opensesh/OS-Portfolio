@@ -119,7 +119,7 @@ export function WhySection() {
             trigger="scroll"
             className="text-display text-3xl md:text-4xl lg:text-5xl max-w-3xl mx-auto"
           >
-            The best of both worlds
+            The Best of Both Worlds
           </TextBlockReveal>
           <motion.p
             initial={{ opacity: 0, y: 10 }}

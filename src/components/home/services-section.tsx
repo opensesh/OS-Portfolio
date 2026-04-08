@@ -37,7 +37,7 @@ export function ServicesSection() {
             trigger="scroll"
             className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
           >
-            What we do
+            What We Do
           </TextBlockReveal>
         </div>
 

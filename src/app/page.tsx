@@ -9,8 +9,8 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <ImpactSection />
       <PerspectiveSection />
+      <ImpactSection />
       <OurExpertiseSection />
       <LogoMarquee />
       <FeaturedWork />

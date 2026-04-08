@@ -365,7 +365,20 @@ export function ImpactSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-20 md:py-32 bg-bg-primary"
+      className="py-20 md:py-32"
+      style={{
+        backgroundColor: "var(--color-gray-50)",
+        color: "var(--color-gray-950)",
+        // Force vanilla palette regardless of theme
+        ["--bg-primary" as string]: "var(--color-gray-50)",
+        ["--fg-primary" as string]: "var(--color-gray-950)",
+        ["--fg-secondary" as string]: "var(--color-gray-600)",
+        ["--fg-tertiary" as string]: "var(--color-gray-500)",
+        ["--fg-inverse" as string]: "var(--color-gray-950)",
+        ["--border-primary" as string]: "var(--color-gray-300)",
+        ["--border-secondary" as string]: "var(--color-gray-200)",
+        ["--fg-brand" as string]: "#fe5102",
+      }}
       {...devProps("ImpactSection")}
     >
       {/* Theme-aware glitch artifacts — powerglitch ::before/::after pseudo-elements */}
@@ -373,10 +386,6 @@ export function ImpactSection() {
         [data-impact-glitch]::before,
         [data-impact-glitch]::after {
           color: #1c1a17 !important;
-        }
-        .dark [data-impact-glitch]::before,
-        .dark [data-impact-glitch]::after {
-          color: #faf8f5 !important;
         }
       `}</style>
       {/* Header */}

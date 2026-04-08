@@ -16,7 +16,7 @@ const labels: Record<MarqueeMode, string> = {
 };
 
 export function LogoMarquee() {
-  const [mode, setMode] = useState<MarqueeMode>("clients");
+  const [mode, setMode] = useState<MarqueeMode>("tools");
   const items = mode === "clients" ? clients : tools;
   const duplicated = [...items, ...items];
 
@@ -29,7 +29,7 @@ export function LogoMarquee() {
       {/* Toggle */}
       <div className="container-main mb-6">
         <div className="flex items-center justify-center gap-1">
-          {(["clients", "tools"] as const).map((tab) => (
+          {(["tools", "clients"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setMode(tab)}

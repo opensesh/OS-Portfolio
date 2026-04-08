@@ -93,7 +93,7 @@ export function FAQAccordion({
                   "transition-colors duration-200",
                   isExpanded ? "text-fg-brand" : "text-fg-primary group-hover:text-fg-brand"
                 )}
-                duration={300}
+                duration={700}
               >
                 {item.question}
               </ScrambleText>

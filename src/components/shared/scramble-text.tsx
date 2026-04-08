@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { devProps } from "@/utils/dev-props";
 
-const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#________";
+const SCRAMBLE_CHARS = "█▓▒░▮▯▰▱▣▤▥▦▧▨";
 
 interface ScrambleTextProps {
   children: string;
@@ -35,9 +35,13 @@ export function ScrambleText({
     const textLength = text.length;
     const startTime = Date.now();
 
+    const easeInOut = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
     const animate = () => {
       const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
+      const linear = Math.min(elapsed / duration, 1);
+      const progress = easeInOut(linear);
       const targetRevealed = Math.floor(progress * textLength);
 
       let result = "";

@@ -10,8 +10,8 @@ export default function Home() {
     <>
       <Hero />
       <PerspectiveSection />
-      <ImpactSection />
       <OurExpertiseSection />
+      <ImpactSection />
       <LogoMarquee />
       <FeaturedWork />
       <FAQSection />

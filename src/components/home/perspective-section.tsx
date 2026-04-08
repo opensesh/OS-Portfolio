@@ -201,14 +201,14 @@ export function PerspectiveSection() {
             transition={{ duration: 0.5 }}
             className="section-label mb-4"
           >
-            Our Advantage
+            Our World
           </motion.p>
           <TextBlockReveal
             as="h2"
             trigger="scroll"
             className="text-display text-3xl md:text-4xl lg:text-5xl max-w-2xl"
           >
-            {"Merging Creative\nDomains"}
+            {"We Combine Creative\nDomains"}
           </TextBlockReveal>
         </div>
 

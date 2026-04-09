@@ -40,7 +40,7 @@ export function FAQSection() {
               Have a different question? Reach out to us at{" "}
               <a
                 href="mailto:hello@opensession.co"
-                className="text-fg-brand hover:underline"
+                className="text-bg-brand-solid hover:underline"
               >
                 hello@opensession.co
               </a>

@@ -457,3 +457,90 @@ body {
 .group:hover .action-button-glisten {
   animation: text-glisten 800ms var(--ease-power4-in-out) forwards;
 }
+
+/* =============================================================================
+   Text Glitch Effect — clip-path slice with Aperol/Vanilla color offset
+   ============================================================================= */
+
+.glitch-on-hover {
+  position: relative;
+}
+
+.glitch-on-hover::before,
+.glitch-on-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.glitch-on-hover::before {
+  color: #fe5102;
+}
+
+.glitch-on-hover::after {
+  color: #faf8f5;
+}
+
+/* Activate on group hover */
+.group:hover .glitch-on-hover::before {
+  opacity: 0.6;
+  animation: glitch-slice-top 600ms steps(1) infinite;
+}
+
+.group:hover .glitch-on-hover::after {
+  opacity: 0.4;
+  animation: glitch-slice-bottom 600ms steps(1) infinite;
+}
+
+@keyframes glitch-slice-top {
+  0%, 20%, 36%, 55%, 70%, 100% {
+    clip-path: inset(0 0 100% 0);
+    transform: translate(0);
+  }
+  22% {
+    clip-path: inset(10% 0 70% 0);
+    transform: translate(-3px, 0);
+  }
+  24% {
+    clip-path: inset(50% 0 20% 0);
+    transform: translate(2px, 0);
+  }
+  57% {
+    clip-path: inset(20% 0 60% 0);
+    transform: translate(-2px, 0);
+  }
+  72% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(3px, 0);
+  }
+  74% {
+    clip-path: inset(30% 0 50% 0);
+    transform: translate(-1px, 0);
+  }
+}
+
+@keyframes glitch-slice-bottom {
+  0%, 15%, 32%, 50%, 65%, 85%, 100% {
+    clip-path: inset(0 0 100% 0);
+    transform: translate(0);
+  }
+  17% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(3px, 0);
+  }
+  34% {
+    clip-path: inset(5% 0 80% 0);
+    transform: translate(-2px, 0);
+  }
+  67% {
+    clip-path: inset(40% 0 30% 0);
+    transform: translate(2px, 0);
+  }
+  87% {
+    clip-path: inset(15% 0 65% 0);
+    transform: translate(-3px, 0);
+  }
+}

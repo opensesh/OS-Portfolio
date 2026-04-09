@@ -106,16 +106,18 @@ export function Footer() {
                   className={cn(
                     "flex-1 bg-transparent border-0 border-b border-border-secondary",
                     "py-2 text-sm text-fg-primary placeholder:text-fg-tertiary",
-                    "focus:outline-none focus:border-b-2 focus:border-fg-brand",
+                    "focus:outline-none focus:border-b-2 focus:border-border-brand",
                     "transition-colors duration-200"
                   )}
                 />
                 <button
                   type="submit"
                   className={cn(
-                    "pb-2 text-sm font-medium whitespace-nowrap",
-                    "text-fg-brand hover:text-fg-primary",
-                    "transition-colors duration-200"
+                    "px-5 py-2 text-xs font-medium whitespace-nowrap",
+                    "uppercase tracking-normal rounded-[6px]",
+                    "text-bg-brand-solid border border-border-brand",
+                    "hover:bg-bg-brand-solid hover:text-fg-on-brand",
+                    "transition-all duration-200"
                   )}
                 >
                   Subscribe

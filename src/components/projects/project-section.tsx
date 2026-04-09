@@ -39,18 +39,18 @@ export function ProjectSectionBlock({
         </span>
       </motion.div>
 
-      {/* Headline — bold italic display */}
+      {/* Headline */}
       <motion.h2
         variants={fadeInUp}
-        className="text-display text-2xl md:text-3xl lg:text-4xl italic max-w-full md:max-w-[65%]"
+        className="text-display text-2xl md:text-[32px] leading-[1.2] tracking-tight"
       >
         {section.headline}
       </motion.h2>
 
-      {/* Body — constrained width */}
+      {/* Body */}
       <motion.p
         variants={fadeInUp}
-        className="text-fg-secondary text-base md:text-lg leading-relaxed max-w-full md:max-w-[60%]"
+        className="text-fg-secondary text-base leading-[1.25]"
       >
         {section.body}
       </motion.p>

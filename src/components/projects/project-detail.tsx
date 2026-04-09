@@ -3,14 +3,11 @@
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { Project, ProjectImage } from "@/types/project";
-import { Button } from "@/components/shared/button";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
-import { ProjectSectionBlock } from "./project-section";
-import { ProjectTestimonialBlock } from "./project-testimonial";
 import { ProjectResults } from "./project-results";
 import { ProjectCard } from "./project-card";
 
@@ -20,20 +17,18 @@ interface ProjectDetailProps {
 }
 
 // ---------------------------------------------------------------------------
-// Right-column image gallery – renders all images in a mixed layout
+// Right-column image gallery
 // ---------------------------------------------------------------------------
 
 function ProjectImageGallery({ images }: { images: ProjectImage[] }) {
   if (images.length === 0) return null;
 
-  // Build a layout sequence: full, full, pair, full, full+pair, ...
   const items: React.ReactNode[] = [];
   let i = 0;
 
   while (i < images.length) {
     const remaining = images.length - i;
 
-    // Every 3rd slot, try to render a pair (2-up) if we have ≥ 2
     if (items.length % 3 === 2 && remaining >= 2) {
       items.push(
         <div key={`pair-${i}`} className="grid grid-cols-2 gap-3">
@@ -59,7 +54,6 @@ function ProjectImageGallery({ images }: { images: ProjectImage[] }) {
       );
       i += 2;
     } else {
-      // Full-width image
       items.push(
         <div
           key={`full-${i}`}
@@ -82,6 +76,62 @@ function ProjectImageGallery({ images }: { images: ProjectImage[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Scroll-driven section panel — fades in and out based on scroll range
+// ---------------------------------------------------------------------------
+
+function ScrollSection({
+  section,
+  sectionNumber,
+  scrollYProgress,
+  rangeIn,
+  rangeOut,
+}: {
+  section: { heading: string; headline: string; body: string };
+  sectionNumber: number;
+  scrollYProgress: MotionValue<number>;
+  rangeIn: [number, number];
+  rangeOut: [number, number];
+}) {
+  const opacity = useTransform(
+    scrollYProgress,
+    [rangeIn[0], rangeIn[1], rangeOut[0], rangeOut[1]],
+    [0, 1, 1, 0]
+  );
+  const y = useTransform(
+    scrollYProgress,
+    [rangeIn[0], rangeIn[1], rangeOut[0], rangeOut[1]],
+    [30, 0, 0, -20]
+  );
+
+  return (
+    <motion.div
+      style={{ opacity, y }}
+      className="absolute inset-x-0 top-0"
+    >
+      {/* Section label row */}
+      <div className="flex items-center justify-between mb-6">
+        <span className="font-accent text-sm uppercase tracking-wider text-fg-tertiary">
+          / {section.heading}
+        </span>
+        <span className="font-accent text-sm uppercase tracking-wider text-fg-tertiary">
+          ({String(sectionNumber).padStart(2, "0")})
+        </span>
+      </div>
+
+      {/* Headline */}
+      <h2 className="text-display text-2xl md:text-[32px] leading-[1.2] tracking-tight mb-6">
+        {section.headline}
+      </h2>
+
+      {/* Body */}
+      <p className="text-fg-secondary text-base leading-[1.25]">
+        {section.body}
+      </p>
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -89,18 +139,29 @@ export function ProjectDetail({
   project,
   latestProjects,
 }: ProjectDetailProps) {
-  const introRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Track when the intro section scrolls out of view
+  // Track scroll progress of the two-column container
   const { scrollYProgress } = useScroll({
-    target: introRef,
-    offset: ["start start", "end start"],
+    target: containerRef,
+    offset: ["start start", "end end"],
   });
 
-  // Fade out intro (description + tags) as user scrolls
-  const introOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const sectionCount = project.sections.length;
 
-  // All images for the right-column gallery
+  // Scroll ranges — divide the scroll into: intro + N sections
+  // Intro occupies the first segment, then each section gets an equal slice
+  const totalSegments = sectionCount + 1; // +1 for intro
+  const segmentSize = 1 / totalSegments;
+
+  // Intro: visible at start, fades out during first segment
+  const introOpacity = useTransform(
+    scrollYProgress,
+    [0, segmentSize * 0.6, segmentSize],
+    [1, 1, 0]
+  );
+
+  // All images for gallery
   const allImages = project.images.filter(
     (img) =>
       img.context === "hero" ||
@@ -108,7 +169,7 @@ export function ProjectDetail({
       img.context === "mockup"
   );
 
-  // Metadata row items
+  // Metadata row
   const meta = [
     project.services.length > 0 ? project.services.join(", ") : null,
     project.client,
@@ -116,31 +177,24 @@ export function ProjectDetail({
     project.year,
   ].filter(Boolean);
 
-  const sectionKey = (heading: string): string => {
-    const lower = heading.toLowerCase();
-    if (lower.includes("challenge")) return "challenge";
-    if (lower.includes("solution")) return "solution";
-    if (lower.includes("impact")) return "impact";
-    return lower.replace(/[^a-z0-9]/g, "-");
-  };
-
   return (
     <article {...devProps("ProjectDetail")}>
-      {/* ============================================================
-          TWO-COLUMN LAYOUT (desktop) / SINGLE COLUMN (mobile)
-          ============================================================ */}
-      <div className="px-6 md:px-10 lg:px-20 pt-8 md:pt-12">
-        <div className="flex flex-col lg:flex-row gap-10">
-          {/* --------------------------------------------------------
-              LEFT COLUMN – text content
-              -------------------------------------------------------- */}
-          <div className="flex-1 lg:min-w-0">
-            {/* Sticky header: breadcrumb + title + button */}
-            <div className="lg:sticky lg:top-24 z-10">
+      {/* ==============================================================
+          TWO-COLUMN LAYOUT — left pane is sticky, right scrolls
+          ============================================================== */}
+      <div ref={containerRef} className="container-main">
+        <div className="flex flex-col lg:flex-row gap-10 pt-8 md:pt-12">
+          {/* ------------------------------------------------------------
+              LEFT COLUMN — sticky, viewport-height pane
+              ------------------------------------------------------------ */}
+          <div className="flex-1 lg:min-w-0 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:self-start">
+            <div className="flex flex-col h-full">
+              {/* Fixed header: breadcrumb + title + button */}
               <motion.div
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
+                className="shrink-0"
               >
                 {/* Back link */}
                 <motion.div variants={fadeInUp} className="mb-6">
@@ -161,15 +215,14 @@ export function ProjectDetail({
                   {project.title}
                 </motion.h1>
 
-                {/* Intro content that fades on scroll (description + tags) */}
+                {/* Intro content — fades out on scroll */}
                 <motion.div
-                  ref={introRef}
                   style={{ opacity: introOpacity }}
-                  className="mt-6"
+                  className="mt-6 lg:hidden-when-faded"
                 >
                   <motion.p
                     variants={fadeInUp}
-                    className="text-fg-secondary text-base leading-[1.25] max-w-lg mb-6"
+                    className="text-fg-secondary text-base leading-[1.25] mb-6"
                   >
                     {project.description}
                   </motion.p>
@@ -177,7 +230,7 @@ export function ProjectDetail({
                   {/* Tags / metadata row */}
                   <motion.div
                     variants={fadeInUp}
-                    className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-6"
+                    className="flex flex-wrap items-center gap-x-2 gap-y-1"
                   >
                     {meta.map((item, i) => (
                       <span key={i} className="flex items-center gap-2">
@@ -192,45 +245,76 @@ export function ProjectDetail({
                   </motion.div>
                 </motion.div>
 
-                {/* CTA button – always visible */}
+                {/* CTA button — always visible */}
                 {project.buttonText && project.buttonHref && (
-                  <motion.div variants={fadeInUp} className="mt-4">
-                    <Button href={project.buttonHref} variant="primary" external>
+                  <motion.div variants={fadeInUp} className="mt-6">
+                    <a
+                      href={project.buttonHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center px-6 py-2.5 rounded-[--radius-cta] bg-bg-brand-solid text-white font-medium transition-colors duration-200 hover:bg-transparent hover:text-fg-brand border border-transparent hover:border-border-brand"
+                    >
                       {project.buttonText}
-                    </Button>
+                    </a>
                   </motion.div>
                 )}
               </motion.div>
-            </div>
 
-            {/* Narrative sections – scroll naturally below sticky header */}
-            <div className="mt-24 lg:mt-32 space-y-16 lg:space-y-24">
-              {project.sections.map((section, index) => (
-                <ProjectSectionBlock
-                  key={section.heading}
-                  section={section}
-                  sectionNumber={index + 1}
-                  images={[]}
-                />
-              ))}
+              {/* Scroll-driven section area — sections fade in/out in place */}
+              <div className="relative flex-1 mt-10 hidden lg:block">
+                {project.sections.map((section, index) => {
+                  const segStart = segmentSize * (index + 1);
+                  const segEnd = segmentSize * (index + 2);
+                  const fadeInRange: [number, number] = [
+                    segStart - segmentSize * 0.15,
+                    segStart + segmentSize * 0.15,
+                  ];
+                  const fadeOutRange: [number, number] =
+                    index < sectionCount - 1
+                      ? [segEnd - segmentSize * 0.3, segEnd]
+                      : [1, 1]; // last section stays visible
 
-              {/* Testimonials */}
-              {project.testimonials && project.testimonials.length > 0 && (
-                <ProjectTestimonialBlock testimonials={project.testimonials} />
-              )}
+                  return (
+                    <ScrollSection
+                      key={section.heading}
+                      section={section}
+                      sectionNumber={index + 1}
+                      scrollYProgress={scrollYProgress}
+                      rangeIn={fadeInRange}
+                      rangeOut={fadeOutRange}
+                    />
+                  );
+                })}
+              </div>
 
-              {/* Results */}
-              {project.results && project.results.length > 0 && (
-                <ProjectResults results={project.results} />
-              )}
+              {/* Mobile fallback — sections render normally */}
+              <div className="mt-12 space-y-16 lg:hidden">
+                {project.sections.map((section, index) => (
+                  <div key={section.heading}>
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="font-accent text-sm uppercase tracking-wider text-fg-tertiary">
+                        / {section.heading}
+                      </span>
+                      <span className="font-accent text-sm uppercase tracking-wider text-fg-tertiary">
+                        ({String(index + 1).padStart(2, "0")})
+                      </span>
+                    </div>
+                    <h2 className="text-display text-2xl md:text-[32px] leading-[1.2] tracking-tight mb-6">
+                      {section.headline}
+                    </h2>
+                    <p className="text-fg-secondary text-base leading-[1.25]">
+                      {section.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* --------------------------------------------------------
-              RIGHT COLUMN – image gallery (desktop only inline,
-              mobile shows below text)
-              -------------------------------------------------------- */}
-          <div className="lg:w-[56%] lg:shrink-0 flex flex-col gap-10">
+          {/* ------------------------------------------------------------
+              RIGHT COLUMN — scrolling image gallery + results
+              ------------------------------------------------------------ */}
+          <div className="lg:w-[56%] lg:shrink-0">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -238,14 +322,19 @@ export function ProjectDetail({
               className="flex flex-col gap-10"
             >
               <ProjectImageGallery images={allImages} />
+
+              {/* Results card — last item in the gallery column */}
+              {project.results && project.results.length > 0 && (
+                <ProjectResults results={project.results} />
+              )}
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* ============================================================
-          LATEST PROJECTS – full width below
-          ============================================================ */}
+      {/* ==============================================================
+          LATEST PROJECTS — full width below
+          ============================================================== */}
       <section className="border-t border-border-secondary mt-16 lg:mt-24 py-16 md:py-24">
         <div className="container-main">
           <div className="flex items-end justify-between mb-10 md:mb-14">

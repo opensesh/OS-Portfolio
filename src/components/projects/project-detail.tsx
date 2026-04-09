@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
@@ -61,7 +61,7 @@ function FullImage({ image }: { image: ProjectImage }) {
 }
 
 // ---------------------------------------------------------------------------
-// Section text block (mobile)
+// Section text (mobile)
 // ---------------------------------------------------------------------------
 
 function SectionText({ section, sectionNumber }: { section: ProjectSection; sectionNumber: number }) {
@@ -110,11 +110,69 @@ function ScrollSection({
 }
 
 // ---------------------------------------------------------------------------
+// JS-driven pinning hook — replaces CSS sticky which breaks in flex layouts
+// Computes position: fixed / absolute based on scroll bounds.
+// ---------------------------------------------------------------------------
+
+type PinState = "before" | "fixed" | "after";
+
+function usePinnedLeft(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  headerHeight = 80
+) {
+  const [state, setState] = useState<PinState>("fixed");
+  const [dims, setDims] = useState({ left: 0, width: 0 });
+
+  const measure = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const paneHeight = window.innerHeight - headerHeight;
+
+    // Measure the left offset and width from the container's padding
+    const cs = getComputedStyle(el);
+    const pl = parseFloat(cs.paddingLeft) || 0;
+    const containerLeft = rect.left + pl;
+    const containerInnerWidth = el.clientWidth - pl - (parseFloat(cs.paddingRight) || 0);
+    const leftWidth = containerInnerWidth * 0.38; // 38% of inner width
+
+    setDims({ left: containerLeft, width: leftWidth });
+
+    // Container hasn't scrolled into view yet
+    if (rect.top > headerHeight) {
+      setState("before");
+    }
+    // Container bottom is above where the fixed pane ends — pin to bottom
+    else if (rect.bottom <= paneHeight + headerHeight) {
+      setState("after");
+    }
+    // Normal fixed state
+    else {
+      setState("fixed");
+    }
+  }, [containerRef, headerHeight]);
+
+  useEffect(() => {
+    measure();
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [measure]);
+
+  return { state, dims };
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
 export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { state: pinState, dims } = usePinnedLeft(containerRef);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -148,94 +206,116 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
     project.year,
   ].filter(Boolean);
 
+  // Left pane positioning styles
+  const leftPaneStyle: React.CSSProperties =
+    pinState === "fixed"
+      ? {
+          position: "fixed",
+          top: 80,
+          left: dims.left,
+          width: dims.width,
+          height: "calc(100vh - 5rem)",
+        }
+      : pinState === "after"
+        ? {
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "38%",
+            height: "calc(100vh - 5rem)",
+          }
+        : {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "38%",
+            height: "calc(100vh - 5rem)",
+          };
+
+  // Left pane content (shared between desktop states)
+  const leftPaneContent = (
+    <div className="flex flex-col h-full">
+      <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="shrink-0">
+        <motion.div variants={fadeInUp} className="mb-6">
+          <Link href="/projects" className="inline-flex items-center gap-2 text-fg-secondary hover:text-fg-primary transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            All Projects
+          </Link>
+        </motion.div>
+        <motion.h1 variants={fadeInUp} className="text-display text-[60px] leading-[1.1] tracking-tight">
+          {project.title}
+        </motion.h1>
+      </motion.div>
+
+      {/* Collapsing intro */}
+      <motion.div
+        style={{ opacity: introOpacity, maxHeight: introMaxHeight, marginBottom: introMarginBottom }}
+        className="overflow-hidden mt-6 shrink-0"
+      >
+        <p className="text-fg-secondary text-base leading-relaxed mb-4">{project.description}</p>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          {meta.map((item, i) => (
+            <span key={i} className="flex items-center gap-2">
+              {i > 0 && <span className="text-fg-tertiary">/</span>}
+              <span className="font-accent text-sm uppercase tracking-wider text-fg-tertiary">{item}</span>
+            </span>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* CTA button */}
+      {project.buttonText && project.buttonHref && (
+        <div className="shrink-0 mt-2">
+          <a
+            href={project.buttonHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-6 py-2.5 rounded-[--radius-cta] bg-bg-brand-solid text-white font-medium transition-colors duration-200 hover:bg-transparent hover:text-fg-brand border border-transparent hover:border-border-brand"
+          >
+            {project.buttonText}
+          </a>
+        </div>
+      )}
+
+      {/* Scroll-driven sections */}
+      <div className="relative flex-1 mt-10">
+        {project.sections.map((section, index) => {
+          const segStart = segmentSize * (index + 1);
+          const segEnd = segmentSize * (index + 2);
+          const fadeIn: [number, number] = [segStart - segmentSize * 0.15, segStart + segmentSize * 0.15];
+          const fadeOut: [number, number] = index < sectionCount - 1 ? [segEnd - segmentSize * 0.25, segEnd] : [1, 1];
+          return (
+            <ScrollSection
+              key={section.heading}
+              section={section}
+              sectionNumber={index + 1}
+              scrollYProgress={scrollYProgress}
+              rangeIn={fadeIn}
+              rangeOut={fadeOut}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <article {...devProps("ProjectDetail")}>
       {/* ==============================================================
-          DESKTOP: Two-column — sticky left, scrolling right
-          The containerRef wraps both columns. Its height is driven by
-          the right column (images). The left column uses position:sticky
-          to stay in viewport for the full scroll.
+          DESKTOP: Two-column — JS-pinned left, scrolling right
           ============================================================== */}
       <div
         ref={containerRef}
-        className="hidden lg:flex gap-10 items-start pt-12"
+        className="hidden lg:block relative pt-12"
         style={{ maxWidth: 1920, marginInline: "auto", paddingInline: "6%" }}
       >
-        {/* LEFT COLUMN — sticky to viewport */}
-        <div
-          className="w-[38%] shrink-0 sticky top-20"
-          style={{ height: "calc(100vh - 5rem)" }}
-        >
-          <div className="flex flex-col h-full">
-            <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="shrink-0">
-              {/* Breadcrumb */}
-              <motion.div variants={fadeInUp} className="mb-6">
-                <Link href="/projects" className="inline-flex items-center gap-2 text-fg-secondary hover:text-fg-primary transition-colors">
-                  <ArrowLeft className="w-4 h-4" />
-                  All Projects
-                </Link>
-              </motion.div>
-
-              {/* Title */}
-              <motion.h1 variants={fadeInUp} className="text-display text-[60px] leading-[1.1] tracking-tight">
-                {project.title}
-              </motion.h1>
-            </motion.div>
-
-            {/* Collapsing intro */}
-            <motion.div
-              style={{ opacity: introOpacity, maxHeight: introMaxHeight, marginBottom: introMarginBottom }}
-              className="overflow-hidden mt-6 shrink-0"
-            >
-              <p className="text-fg-secondary text-base leading-relaxed mb-4">{project.description}</p>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                {meta.map((item, i) => (
-                  <span key={i} className="flex items-center gap-2">
-                    {i > 0 && <span className="text-fg-tertiary">/</span>}
-                    <span className="font-accent text-sm uppercase tracking-wider text-fg-tertiary">{item}</span>
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* CTA button */}
-            {project.buttonText && project.buttonHref && (
-              <div className="shrink-0 mt-2">
-                <a
-                  href={project.buttonHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-[--radius-cta] bg-bg-brand-solid text-white font-medium transition-colors duration-200 hover:bg-transparent hover:text-fg-brand border border-transparent hover:border-border-brand"
-                >
-                  {project.buttonText}
-                </a>
-              </div>
-            )}
-
-            {/* Scroll-driven section area */}
-            <div className="relative flex-1 mt-10">
-              {project.sections.map((section, index) => {
-                const segStart = segmentSize * (index + 1);
-                const segEnd = segmentSize * (index + 2);
-                const fadeIn: [number, number] = [segStart - segmentSize * 0.15, segStart + segmentSize * 0.15];
-                const fadeOut: [number, number] = index < sectionCount - 1 ? [segEnd - segmentSize * 0.25, segEnd] : [1, 1];
-                return (
-                  <ScrollSection
-                    key={section.heading}
-                    section={section}
-                    sectionNumber={index + 1}
-                    scrollYProgress={scrollYProgress}
-                    rangeIn={fadeIn}
-                    rangeOut={fadeOut}
-                  />
-                );
-              })}
-            </div>
-          </div>
+        {/* Left pane — JS-driven fixed/absolute positioning */}
+        <div style={leftPaneStyle}>
+          {leftPaneContent}
         </div>
 
-        {/* RIGHT COLUMN — scrolls naturally, drives page height */}
-        <div className="flex-1 min-w-0">
+        {/* Right column — scrolls naturally, offset by left pane width */}
+        <div className="ml-[calc(38%+2.5rem)]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -276,15 +356,12 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
                 All Projects
               </Link>
             </motion.div>
-
             <motion.h1 variants={fadeInUp} className="text-display text-4xl md:text-5xl tracking-tight mb-6">
               {project.title}
             </motion.h1>
-
             <motion.p variants={fadeInUp} className="text-fg-secondary text-base leading-relaxed mb-4">
               {project.description}
             </motion.p>
-
             <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-6">
               {meta.map((item, i) => (
                 <span key={i} className="flex items-center gap-2">
@@ -293,7 +370,6 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
                 </span>
               ))}
             </motion.div>
-
             {project.buttonText && project.buttonHref && (
               <motion.div variants={fadeInUp} className="mb-10">
                 <a
@@ -324,7 +400,6 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
                 </div>
               );
             })}
-
             {extraImages.length > 0 && (
               <div className="space-y-4">
                 {extraImages.map((img) => (
@@ -334,7 +409,6 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
                 ))}
               </div>
             )}
-
             {project.results && project.results.length > 0 && <ProjectResults results={project.results} />}
           </div>
         </div>

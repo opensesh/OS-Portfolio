@@ -8,7 +8,6 @@ import { ArrowLeft, ArrowRight } from "@untitledui-pro/icons/line";
 import { Project, ProjectImage, ProjectSection } from "@/types/project";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { devProps } from "@/utils/dev-props";
-import { ProjectResults } from "./project-results";
 import { ProjectCard } from "./project-card";
 
 interface ProjectDetailProps {
@@ -64,7 +63,7 @@ function FullImage({ image }: { image: ProjectImage }) {
 // Section text (mobile)
 // ---------------------------------------------------------------------------
 
-function SectionText({ section, sectionNumber }: { section: ProjectSection; sectionNumber: number }) {
+function SectionText({ section, sectionNumber, results }: { section: ProjectSection; sectionNumber: number; results?: string[] }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -73,6 +72,18 @@ function SectionText({ section, sectionNumber }: { section: ProjectSection; sect
       </div>
       <h2 className="text-display text-2xl md:text-[32px] leading-[1.2] tracking-tight mb-6">{section.headline}</h2>
       <p className="text-fg-secondary text-base leading-relaxed">{section.body}</p>
+      {results && results.length > 0 && (
+        <ul className="mt-6 space-y-2">
+          {results.map((r, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-5 h-5 bg-bg-brand-solid rounded flex items-center justify-center mt-0.5">
+                <span className="text-white text-[10px] font-bold">{i + 1}</span>
+              </span>
+              <span className="text-fg-secondary text-sm leading-relaxed">{r}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -87,12 +98,14 @@ function ScrollSection({
   scrollYProgress,
   rangeIn,
   rangeOut,
+  results,
 }: {
   section: ProjectSection;
   sectionNumber: number;
   scrollYProgress: MotionValue<number>;
   rangeIn: [number, number];
   rangeOut: [number, number];
+  results?: string[];
 }) {
   const opacity = useTransform(scrollYProgress, [rangeIn[0], rangeIn[1], rangeOut[0], rangeOut[1]], [0, 1, 1, 0]);
   const y = useTransform(scrollYProgress, [rangeIn[0], rangeIn[1], rangeOut[0], rangeOut[1]], [24, 0, 0, -16]);
@@ -105,6 +118,18 @@ function ScrollSection({
       </div>
       <h2 className="text-display text-2xl md:text-[32px] leading-[1.2] tracking-tight mb-6">{section.headline}</h2>
       <p className="text-fg-secondary text-base leading-relaxed">{section.body}</p>
+      {results && results.length > 0 && (
+        <ul className="mt-6 space-y-2">
+          {results.map((r, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-5 h-5 bg-bg-brand-solid rounded flex items-center justify-center mt-0.5">
+                <span className="text-white text-[10px] font-bold">{i + 1}</span>
+              </span>
+              <span className="text-fg-secondary text-sm leading-relaxed">{r}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </motion.div>
   );
 }
@@ -284,6 +309,7 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
           const segEnd = segmentSize * (index + 2);
           const fadeIn: [number, number] = [segStart - segmentSize * 0.15, segStart + segmentSize * 0.15];
           const fadeOut: [number, number] = index < sectionCount - 1 ? [segEnd - segmentSize * 0.25, segEnd] : [1, 1];
+          const isLast = index === sectionCount - 1;
           return (
             <ScrollSection
               key={section.heading}
@@ -292,6 +318,7 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
               scrollYProgress={scrollYProgress}
               rangeIn={fadeIn}
               rangeOut={fadeOut}
+              results={isLast ? project.results : undefined}
             />
           );
         })}
@@ -338,8 +365,6 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
             {extraImages.map((img) => (
               <FullImage key={img.src} image={img} />
             ))}
-
-            {project.results && project.results.length > 0 && <ProjectResults results={project.results} />}
           </motion.div>
         </div>
       </div>
@@ -348,7 +373,7 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
           MOBILE: Interleaved images + text
           ============================================================== */}
       <div className="lg:hidden">
-        <div className="container-main pt-8 md:pt-12">
+        <div className="container-main pt-16 md:pt-20">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
             <motion.div variants={fadeInUp} className="mb-6">
               <Link href="/projects" className="inline-flex items-center gap-2 text-fg-secondary hover:text-fg-primary transition-colors">
@@ -396,7 +421,11 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
               return (
                 <div key={section.heading} className="space-y-10">
                   {imgs.length > 0 && <ImagePair images={imgs.slice(0, 2)} />}
-                  <SectionText section={section} sectionNumber={index + 1} />
+                  <SectionText
+                    section={section}
+                    sectionNumber={index + 1}
+                    results={index === project.sections.length - 1 ? project.results : undefined}
+                  />
                 </div>
               );
             })}
@@ -409,7 +438,6 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
                 ))}
               </div>
             )}
-            {project.results && project.results.length > 0 && <ProjectResults results={project.results} />}
           </div>
         </div>
       </div>

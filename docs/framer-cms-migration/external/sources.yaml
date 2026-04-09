@@ -1,0 +1,293 @@
+---
+# Sources Attribution
+# Framer CMS Migration PRD — External Research
+# Compiled: April 2026
+
+meta:
+  project: framer-cms-migration
+  compiled_date: "2026-04-09"
+  researcher: Claude Sonnet 4.6 (claude-sonnet-4-6)
+
+sources:
+
+  # ─── Next.js Official ──────────────────────────────────────────────
+
+  - id: nextjs-16-release
+    title: "Next.js 16 Release Blog"
+    url: "https://nextjs.org/blog/next-16"
+    publisher: Vercel
+    published: "2025-10-21"
+    accessed: "2026-04-09"
+    type: official-docs
+    topics: [nextjs-16, turbopack, cache-components, proxy-ts, react-19.2]
+
+  - id: nextjs-16-1-release
+    title: "Next.js 16.1 Release Blog"
+    url: "https://nextjs.org/blog/next-16-1"
+    publisher: Vercel
+    published: "2025-12"
+    accessed: "2026-04-09"
+    type: official-docs
+    topics: [nextjs-16, turbopack-filesystem-caching, next-upgrade-cli]
+
+  - id: nextjs-16-2-release
+    title: "Next.js 16.2 Release Blog"
+    url: "https://nextjs.org/blog/next-16-2"
+    publisher: Vercel
+    published: "2026-03-18"
+    accessed: "2026-04-09"
+    type: official-docs
+    topics: [nextjs-16, performance, adapters, imageresponse, turbopack]
+
+  - id: nextjs-upgrade-v16
+    title: "Upgrading: Version 16"
+    url: "https://nextjs.org/docs/app/guides/upgrading/version-16"
+    publisher: Vercel
+    type: official-docs
+    topics: [nextjs-16, breaking-changes, migration]
+
+  - id: nextjs-generate-static-params
+    title: "Functions: generateStaticParams"
+    url: "https://nextjs.org/docs/app/api-reference/functions/generate-static-params"
+    publisher: Vercel
+    type: official-docs
+    topics: [ssg, static-generation, app-router]
+
+  - id: nextjs-generate-metadata
+    title: "Functions: generateMetadata"
+    url: "https://nextjs.org/docs/app/api-reference/functions/generate-metadata"
+    publisher: Vercel
+    type: official-docs
+    topics: [seo, metadata, open-graph]
+
+  - id: nextjs-image-component
+    title: "Components: Image Component"
+    url: "https://nextjs.org/docs/app/api-reference/components/image"
+    publisher: Vercel
+    type: official-docs
+    topics: [image-optimization, next-image]
+
+  - id: nextjs-image-optimization-guide
+    title: "Getting Started: Image Optimization"
+    url: "https://nextjs.org/docs/app/getting-started/images"
+    publisher: Vercel
+    type: official-docs
+    topics: [image-optimization]
+
+  - id: nextjs-mdx-guide
+    title: "Guides: MDX"
+    url: "https://nextjs.org/docs/app/guides/mdx"
+    publisher: Vercel
+    type: official-docs
+    topics: [mdx, next-mdx-remote, at-next-mdx]
+
+  - id: nextjs-metadata-og
+    title: "Getting Started: Metadata and OG images"
+    url: "https://nextjs.org/docs/app/getting-started/metadata-and-og-images"
+    publisher: Vercel
+    type: official-docs
+    topics: [seo, metadata, og-images]
+
+  - id: nextjs-isr
+    title: "Guides: Incremental Static Regeneration"
+    url: "https://nextjs.org/docs/app/guides/incremental-static-regeneration"
+    publisher: Vercel
+    type: official-docs
+    topics: [isr, caching]
+
+  # ─── MDX / next-mdx-remote ─────────────────────────────────────────
+
+  - id: next-mdx-remote-github
+    title: "next-mdx-remote GitHub"
+    url: "https://github.com/hashicorp/next-mdx-remote"
+    publisher: HashiCorp
+    accessed: "2026-04-09"
+    type: github
+    status: archived
+    archive_date: "2026-04-09"
+    topics: [mdx, next-mdx-remote, rsc]
+    note: "Archived on the same day research was compiled. No further maintenance."
+
+  - id: next-mdx-remote-client-github
+    title: "next-mdx-remote-client GitHub"
+    url: "https://github.com/ipikuka/next-mdx-remote-client"
+    publisher: ipikuka
+    accessed: "2026-04-09"
+    type: github
+    status: active
+    topics: [mdx, next-mdx-remote, rsc, fork]
+
+  - id: next-mdx-remote-rsc-vs-next-mdx
+    title: "next-mdx-remote/rsc vs @next/mdx in Next.js 15"
+    url: "https://blixamo.com/blog/next-mdx-remote-rsc-vs-next-mdx-nextjs-15"
+    publisher: Blixamo
+    type: blog
+    topics: [mdx, next-mdx-remote, at-next-mdx, comparison]
+
+  - id: mdx-comparison-dev-to
+    title: "Quick Comparison of MDX Integration Strategies with Next.js"
+    url: "https://dev.to/tylerlwsmith/quick-comparison-of-mdx-integration-strategies-with-next-js-1kcm"
+    publisher: DEV Community (Tyler L. W. Smith)
+    type: blog
+    topics: [mdx, mdx-bundler, comparison]
+
+  - id: next-mdx-remote-alternatives-discussion
+    title: "next-mdx-remote Alternatives — GitHub Discussion"
+    url: "https://github.com/hashicorp/next-mdx-remote/discussions/438"
+    publisher: GitHub / HashiCorp
+    type: community
+    topics: [mdx, alternatives]
+
+  - id: turbopack-next-mdx-remote-issue
+    title: "Turbopack compatibility issue with next-mdx-remote"
+    url: "https://github.com/vercel/next.js/issues/64525"
+    publisher: Vercel (GitHub Issues)
+    type: github-issue
+    status: open
+    topics: [turbopack, next-mdx-remote, compatibility]
+
+  - id: rsc-mode-next-mdx-remote-issue
+    title: "Cannot use RSC mode with Next.js 15.2.x + next-mdx-remote 5.0.0"
+    url: "https://github.com/hashicorp/next-mdx-remote/issues/488"
+    publisher: GitHub / HashiCorp
+    type: github-issue
+    topics: [rsc, next-mdx-remote, nextjs-15]
+
+  # ─── Framer CMS / Migration ────────────────────────────────────────
+
+  - id: framer-porting-data
+    title: "Framer Help: Porting your data from Framer"
+    url: "https://www.framer.com/help/articles/porting-your-data-from-framer/"
+    publisher: Framer
+    type: official-docs
+    topics: [framer, cms-export, migration]
+
+  - id: framer-cms-export-plugin
+    title: "CMS Export Plugin — Framer Marketplace"
+    url: "https://www.framer.com/marketplace/plugins/cms-export/"
+    publisher: Framer
+    type: official-docs
+    topics: [framer, cms-export]
+
+  - id: framer-to-static-browsercat
+    title: "Migrate Your Framer Site to a Static Site"
+    url: "https://www.browsercat.com/post/migrate-framer-to-static"
+    publisher: BrowserCat
+    type: blog
+    topics: [framer, migration, static-site]
+
+  # ─── Tailwind CSS v4 ───────────────────────────────────────────────
+
+  - id: tailwind-v4-upgrade-guide
+    title: "Tailwind CSS Upgrade Guide"
+    url: "https://tailwindcss.com/docs/upgrade-guide"
+    publisher: Tailwind Labs
+    type: official-docs
+    topics: [tailwind-v4, migration, breaking-changes]
+
+  - id: tailwind-v4-migration-dev-to
+    title: "Tailwind CSS v4 Migration Guide (2026)"
+    url: "https://dev.to/pockit_tools/tailwind-css-v4-migration-guide-everything-that-changed-and-how-to-upgrade-2026-5d4"
+    publisher: DEV Community
+    type: blog
+    topics: [tailwind-v4, migration]
+
+  - id: tailwind-v4-css-first-medium
+    title: "Tailwind v4 Migration: From JavaScript Config to CSS-First in 2025"
+    url: "https://medium.com/better-dev-nextjs-react/tailwind-v4-migration-from-javascript-config-to-css-first-in-2025-ff3f59b215ca"
+    publisher: Medium / Better Dev
+    type: blog
+    topics: [tailwind-v4, css-first, migration]
+
+  # ─── Framer Motion ─────────────────────────────────────────────────
+
+  - id: framer-motion-v12-vs-react-spring
+    title: "Animating React UIs in 2025: Framer Motion 12 vs. React Spring 10"
+    url: "https://hookedonui.com/animating-react-uis-in-2025-framer-motion-12-vs-react-spring-10/"
+    publisher: Hooked On UI
+    type: blog
+    topics: [framer-motion, react-spring, animation, bundle-size]
+
+  - id: framer-motion-advanced-2025
+    title: "Mastering Framer Motion: Advanced Animation Techniques for 2025"
+    url: "https://www.luxisdesign.io/blog/mastering-framer-motion-advanced-animation-techniques-for-2025"
+    publisher: Luxis Design
+    type: blog
+    topics: [framer-motion, animation, portfolio]
+
+  # ─── Image Optimization ────────────────────────────────────────────
+
+  - id: debugbear-nextjs-image
+    title: "Next.js Image Optimization: The next/image Component"
+    url: "https://www.debugbear.com/blog/nextjs-image-optimization"
+    publisher: DebugBear
+    type: blog
+    topics: [image-optimization, next-image, core-web-vitals]
+
+  - id: nextjs-perf-guide-2025
+    title: "Next.js Performance Optimization: A Complete 2025 Guide"
+    url: "https://justinmalinow.com/blog/nextjs-performance-optimization-guide"
+    publisher: Justin Malinow
+    type: blog
+    topics: [performance, image-optimization, core-web-vitals]
+
+  - id: image-optimization-2025-frontendtools
+    title: "Image Optimization 2025: WebP, AVIF & Best Practices Guide"
+    url: "https://www.frontendtools.tech/blog/modern-image-optimization-techniques-2025"
+    publisher: FrontendTools
+    type: blog
+    topics: [avif, webp, image-optimization]
+
+  # ─── SEO ────────────────────────────────────────────────────────────
+
+  - id: nextjs-seo-guide-digital-applied
+    title: "Next.js 15 SEO: Complete Guide to Metadata & Optimization"
+    url: "https://www.digitalapplied.com/blog/nextjs-seo-guide"
+    publisher: Digital Applied
+    type: blog
+    topics: [seo, metadata, og-images]
+
+  - id: nextjs-seo-strapi
+    title: "The Complete Next.js SEO Guide for Building Crawlable Apps"
+    url: "https://strapi.io/blog/nextjs-seo"
+    publisher: Strapi
+    type: blog
+    topics: [seo, sitemap, structured-data]
+
+  - id: seo-nextjs-2025-slatebytes
+    title: "Next.js SEO in 2025: Best Practices, Meta Tags, and Performance"
+    url: "https://www.slatebytes.com/articles/next-js-seo-in-2025-best-practices-meta-tags-and-performance-optimization-for-high-google-rankings"
+    publisher: SlateByes
+    type: blog
+    topics: [seo, core-web-vitals, nextjs-15, nextjs-16]
+
+  - id: structured-data-nextjs
+    title: "Complete Next.js SEO Guide: From Zero to Hero"
+    url: "https://www.adeelhere.com/blog/2025-12-09-complete-nextjs-seo-guide-from-zero-to-hero"
+    publisher: Adeel Imran
+    published: "2025-12-09"
+    type: blog
+    topics: [seo, structured-data, json-ld]
+
+  # ─── File-Based CMS / Content Architecture ─────────────────────────
+
+  - id: nextjs-cms-hygraph
+    title: "10 best CMSs for Next.js in 2026"
+    url: "https://hygraph.com/blog/nextjs-cms"
+    publisher: Hygraph
+    type: blog
+    topics: [cms, headless-cms, file-based-cms]
+
+  - id: searchparams-static-generation
+    title: "Next.js searchParams Disables Static Generation — Architectural Fix"
+    url: "https://www.buildwithmatija.com/blog/nextjs-searchparams-static-generation-fix"
+    publisher: Build with Matija
+    type: blog
+    topics: [ssg, searchparams, static-generation]
+
+  - id: cms-migration-guide-flow
+    title: "CMS Migration: The Ultimate Guide and Checklist (2025)"
+    url: "https://www.flow.ninja/blog/cms-migration-guide"
+    publisher: Flow.ninja
+    type: blog
+    topics: [cms-migration, content-migration]

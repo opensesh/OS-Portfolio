@@ -146,7 +146,7 @@ function usePinnedLeft(
   headerHeight = 80
 ) {
   const [state, setState] = useState<PinState>("fixed");
-  const [dims, setDims] = useState({ left: 0, width: 0 });
+  const [dims, setDims] = useState({ left: 0, width: 0, paddingLeft: 0 });
 
   const measure = useCallback(() => {
     const el = containerRef.current;
@@ -162,7 +162,7 @@ function usePinnedLeft(
     const containerInnerWidth = el.clientWidth - pl - (parseFloat(cs.paddingRight) || 0);
     const leftWidth = containerInnerWidth * 0.38; // 38% of inner width
 
-    setDims({ left: containerLeft, width: leftWidth });
+    setDims({ left: containerLeft, width: leftWidth, paddingLeft: pl });
 
     // Container hasn't scrolled into view yet
     if (rect.top > headerHeight) {
@@ -231,7 +231,7 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
     project.year,
   ].filter(Boolean);
 
-  // Left pane positioning styles
+  // Left pane positioning styles — use measured pixel values for all states
   const leftPaneStyle: React.CSSProperties =
     pinState === "fixed"
       ? {
@@ -245,15 +245,15 @@ export function ProjectDetail({ project, latestProjects }: ProjectDetailProps) {
         ? {
             position: "absolute",
             bottom: 0,
-            left: 0,
-            width: "38%",
+            left: dims.paddingLeft,
+            width: dims.width,
             height: "calc(100vh - 5rem)",
           }
         : {
             position: "absolute",
             top: 0,
-            left: 0,
-            width: "38%",
+            left: dims.paddingLeft,
+            width: dims.width,
             height: "calc(100vh - 5rem)",
           };
 

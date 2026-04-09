@@ -1,0 +1,38 @@
+{
+  "prd_slug": "framer-cms-migration",
+  "prd_id": "002",
+  "research_date": "2026-04-09",
+  "research_mode": "prd-scoped",
+  "status": "complete",
+  "phases": {
+    "internal": {
+      "status": "complete",
+      "files": [
+        "internal/patterns.md",
+        "internal/errors.md",
+        "internal/dependencies.md",
+        "internal/structure.md",
+        "internal/findings.md"
+      ],
+      "patterns_discovered": 7,
+      "errors_identified": 7,
+      "dependencies_mapped": 20
+    },
+    "external": {
+      "status": "complete",
+      "files": [
+        "external/best-practices.md",
+        "external/libraries.md",
+        "external/references.md",
+        "external/sources.yaml",
+        "external/findings.md"
+      ],
+      "best_practices": 6,
+      "libraries_evaluated": 5,
+      "references_collected": 60
+    }
+  },
+  "summary_file": "summary.md",
+  "legacy_findings": "findings.md",
+  "context": "Post-execution research conducted after all 20 tasks complete. Documents final migration state and identifies optimization opportunities."
+}

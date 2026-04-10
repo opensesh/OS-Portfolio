@@ -23,12 +23,12 @@ When the `--test` flag is passed, run a lightweight pass/fail verification inste
 
 Run these 4 tests:
 
-| Test                         | Description                                       |
-| ---------------------------- | ------------------------------------------------- |
-| **1. File Presence**         | Verify all required files exist per MANIFEST.json |
-| **2. Template Parsing**      | Ensure templates have valid markdown structure    |
-| **3. GitHub CLI Auth**       | Verify `gh auth status` succeeds                  |
-| **4. CLAUDE.md Integration** | Verify KARIMO section and config files exist      |
+| Test | Description |
+|------|-------------|
+| **1. File Presence** | Verify all required files exist per MANIFEST.json |
+| **2. Template Parsing** | Ensure templates have valid markdown structure |
+| **3. GitHub CLI Auth** | Verify `gh auth status` succeeds |
+| **4. CLAUDE.md Integration** | Verify KARIMO section and config files exist |
 
 ### Output Format
 
@@ -41,10 +41,10 @@ Test 1: File Presence
 ─────────────────────
 
   ✅ Manifest    Present (.karimo/MANIFEST.json)
-  ✅ Agents      17/17 present (from manifest)
-  ✅ Commands    10/10 present (from manifest)
+  ✅ Agents      22/22 present (from manifest)
+  ✅ Commands    11/11 present (from manifest)
   ✅ Skills      7/7 present (from manifest)
-  ✅ Templates   17/17 present (from manifest)
+  ✅ Templates   18/18 present (from manifest)
 
 Test 2: Template Parsing
 ────────────────────────
@@ -61,7 +61,7 @@ Test 4: CLAUDE.md Integration
 
   ✅ KARIMO section        Present in CLAUDE.md (with markers)
   ✅ learnings/            Present in .karimo/ (categorized directories)
-  ✅ KARIMO_RULES.md       Present in .claude/
+  ✅ KARIMO_RULES.md       Present in .claude/plugins/karimo/
   ✅ prds/ directory       Exists
 
 Summary
@@ -95,7 +95,6 @@ Run seven diagnostic checks and display results with clear status indicators.
 Check if the installed KARIMO version is current by fetching the latest release from GitHub.
 
 **Steps:**
-
 1. Read `.karimo/VERSION` from the project root
 2. Fetch latest version from GitHub releases API
 3. Compare installed version against latest release
@@ -121,7 +120,6 @@ Check 0: Version Status
 ```
 
 **Bash commands:**
-
 ```bash
 # Read installed version
 INSTALLED=$(cat .karimo/VERSION 2>/dev/null | tr -d '[:space:]')
@@ -146,11 +144,11 @@ fi
 
 Verify required tools are available:
 
-| Check           | Command                       | Status                                            |
-| --------------- | ----------------------------- | ------------------------------------------------- |
-| Claude Code     | `which claude`                | ✅ Installed / ❌ Not found                       |
-| GitHub CLI      | `gh auth status`              | ✅ Authenticated / ❌ Not authenticated           |
-| Git             | `git --version`               | ✅ 2.5+ (worktree support) / ⚠️ Older version     |
+| Check | Command | Status |
+|-------|---------|--------|
+| Claude Code | `which claude` | ✅ Installed / ❌ Not found |
+| GitHub CLI | `gh auth status` | ✅ Authenticated / ❌ Not authenticated |
+| Git | `git --version` | ✅ 2.5+ (worktree support) / ⚠️ Older version |
 | Review Provider | `config.yaml review_provider` | ✅ Configured / ℹ️ Not set (optional for Phase 2) |
 
 **1c: Git Version Check**
@@ -168,7 +166,6 @@ fi
 ```
 
 If Git version is < 2.5, show warning with upgrade recommendation:
-
 - `⚠️ Git 2.4.0 — Worktrees require Git 2.5+. Upgrade before running /karimo:run.`
 
 **Example output:**
@@ -336,10 +333,11 @@ fi
 **Step 2b: Read expected counts from manifest**
 
 ```bash
-# Helper function for manifest parsing (jq-free)
+# Helper function for manifest parsing (jq-free, skips deprecated section)
+# Uses 2-space indent to find root-level arrays (not nested in deprecated)
 manifest_count() {
   local key="$1"
-  sed -n "/\"$key\"/,/]/p" .karimo/MANIFEST.json | grep '"' | grep -v "\"$key\"" | wc -l | tr -d ' '
+  sed -n "/^  \"$key\":/,/^  ]/p" .karimo/MANIFEST.json | grep '"' | grep -v "\"$key\"" | wc -l | tr -d ' '
 }
 
 EXPECTED_AGENTS=$(manifest_count "agents")
@@ -351,32 +349,42 @@ EXPECTED_TEMPLATES=$(manifest_count "templates")
 **Step 2c: Count actual files and compare**
 
 ```bash
-ACTUAL_AGENTS=$(ls .claude/agents/*.md 2>/dev/null | wc -l)
-ACTUAL_COMMANDS=$(ls .claude/commands/*.md 2>/dev/null | wc -l)
-ACTUAL_SKILLS=$(ls .claude/skills/*.md 2>/dev/null | wc -l)
+ACTUAL_AGENTS=$(ls .claude/plugins/karimo/agents/*.md 2>/dev/null | wc -l)
+ACTUAL_COMMANDS=$(ls .claude/plugins/karimo/commands/*.md 2>/dev/null | wc -l)
+ACTUAL_SKILLS=$(ls .claude/plugins/karimo/skills/*.md 2>/dev/null | wc -l)
 ACTUAL_TEMPLATES=$(ls .karimo/templates/*.md 2>/dev/null | wc -l)
 ```
 
 **Step 2d: Verify each manifest file exists**
 
 ```bash
-# Helper function to list manifest items (jq-free)
+# Helper function to list manifest items (jq-free, skips deprecated section)
+# Uses 2-space indent to find root-level arrays (not nested in deprecated)
 manifest_list() {
   local key="$1"
-  sed -n "/\"$key\"/,/]/p" .karimo/MANIFEST.json | grep '"' | grep -v "\"$key\"" | sed 's/.*"\([^"]*\)".*/\1/'
+  sed -n "/^  \"$key\":/,/^  ]/p" .karimo/MANIFEST.json | grep '"' | grep -v "\"$key\"" | sed 's/.*"\([^"]*\)".*/\1/'
 }
 
-# Check each agent from manifest
+# Check each file from manifest (handles plugins/karimo/ prefix in entries)
 for agent in $(manifest_list "agents"); do
-  [ -f ".claude/agents/$agent" ] || echo "Missing: $agent"
+  [ -f ".claude/$agent" ] || echo "Missing: .claude/$agent"
 done
 
-# Similar for commands, skills, templates
+for command in $(manifest_list "commands"); do
+  [ -f ".claude/$command" ] || echo "Missing: .claude/$command"
+done
+
+for skill in $(manifest_list "skills"); do
+  [ -f ".claude/$skill" ] || echo "Missing: .claude/$skill"
+done
+
+for template in $(manifest_list "templates"); do
+  [ -f ".karimo/templates/$template" ] || echo "Missing: .karimo/templates/$template"
+done
 ```
 
 **Other checks:**
-
-- `.claude/KARIMO_RULES.md` exists
+- `.claude/plugins/karimo/KARIMO_RULES.md` exists
 - `CLAUDE.md` contains KARIMO section (check for `<!-- KARIMO:START` markers, fall back to `## KARIMO`)
 - `.karimo/learnings/` directory exists with category subdirectories
 - `.gitignore` contains `.worktrees/`
@@ -388,22 +396,21 @@ Check 2: Installation Integrity
 ───────────────────────────────
 
   ✅ Manifest        Present (.karimo/MANIFEST.json)
-  ✅ Agents          13/13 present (from manifest)
-  ✅ Commands        10/10 present (from manifest)
-  ✅ Skills          5/5 present (from manifest)
+  ✅ Agents          22/22 present (from manifest)
+  ✅ Commands        11/11 present (from manifest)
+  ✅ Skills          7/7 present (from manifest)
   ✅ Rules           KARIMO_RULES.md present
   ✅ Learnings       .karimo/learnings/ present (categorized)
-  ✅ Templates       9/9 present (from manifest)
-  ✅ Workflows       5/5 present (1 required, 4 optional)
+  ✅ Templates       18/18 present (from manifest)
   ✅ CLAUDE.md       KARIMO section present (with markers)
   ✅ .gitignore      .worktrees/ entry present
 
   Or if issues found:
 
-  ⚠️  Agents          12/13 present
-      Missing: karimo-documenter-opus.md
-  ❌ Commands        8/10 present
-      Missing: doctor.md, test.md
+  ⚠️  Agents          21/22 present
+      Missing: karimo/documenter-opus.md
+  ❌ Commands        9/11 present
+      Missing: karimo/doctor.md, karimo/help.md
 ```
 
 ### Check 2.5: Deprecated Files
@@ -422,7 +429,6 @@ DEPRECATED_FOUND=0
 ```
 
 **Deprecated command mapping:**
-
 - `karimo-cd-config.md` → Use `/karimo:configure --cd` instead
 - `karimo-execute.md` → Use `/karimo:run` instead
 - `karimo-orchestrate.md` → Use `/karimo:run` instead
@@ -495,7 +501,7 @@ fi
 [ -d ".karimo/learnings" ] && echo "✅ learnings/" || echo "❌ learnings/ missing"
 
 # Check rules file
-[ -f ".claude/KARIMO_RULES.md" ] && echo "✅ KARIMO_RULES.md" || echo "❌ KARIMO_RULES.md missing"
+[ -f ".claude/plugins/karimo/KARIMO_RULES.md" ] && echo "✅ KARIMO_RULES.md" || echo "❌ KARIMO_RULES.md missing"
 
 # Check config file (created by /karimo:configure)
 [ -f ".karimo/config.yaml" ] && echo "✅ config.yaml" || echo "⚠️ config.yaml missing (run /karimo:configure)"
@@ -542,7 +548,6 @@ Check 3: Configuration Validation
 Compare `.karimo/config.yaml` values against actual project state:
 
 1. **Package manager drift** — Compare configured package_manager vs actual lock files:
-
    ```bash
    # Check for lock files
    ls pnpm-lock.yaml yarn.lock package-lock.json bun.lockb 2>/dev/null
@@ -605,17 +610,14 @@ Check 3: Configuration Validation
 Verify configuration values are valid and match the project.
 
 **Command cross-reference:**
-
 - Check if configured commands exist in `package.json` scripts (for Node.js projects)
 - Or equivalent for other runtimes
 
 **Boundary pattern matching:**
-
 - Verify glob patterns in Never Touch / Require Review match actual files
 - Warn if patterns match no files (might be stale)
 
 **Cost sanity checks:**
-
 - Warn if no Never Touch patterns defined
 - Warn if no Require Review patterns defined
 
@@ -678,13 +680,11 @@ fi
    ```
 
 2. **Validate gh CLI authenticated:**
-
    ```bash
    gh auth status 2>/dev/null || { echo "❌ gh CLI not authenticated. Run: gh auth login"; }
    ```
 
 3. **Validate project scope:**
-
    ```bash
    SCOPES=$(gh auth status 2>&1)
    if ! echo "$SCOPES" | grep -q "project"; then
@@ -703,13 +703,11 @@ fi
 **If `mode: fast-track`:**
 
 1. **Validate git repository:**
-
    ```bash
    [ -d .git ] || { echo "❌ Not a git repository. Run: git init"; }
    ```
 
 2. **If passes:**
-
    ```
    ✅ Fast Track Mode ready
       Git repository: initialized
@@ -761,13 +759,11 @@ Check 5: Execution Mode Validation
 Assess current adoption phase and PRD status.
 
 **Phase detection:**
-
 - **Phase 1:** Config exists, agents installed, commands work
 - **Phase 2:** Review provider configured (Greptile workflow OR Code Review)
 - **Phase 3:** GitHub-native monitoring (no additional setup)
 
 **Review provider detection:**
-
 ```bash
 # Read from config.yaml
 REVIEW_PROVIDER=$(grep "^review_provider:" .karimo/config.yaml 2>/dev/null | awk '{print $2}')
@@ -792,7 +788,6 @@ fi
 ```
 
 **PRD inventory:**
-
 - Count PRDs in `.karimo/prds/`
 - Summarize statuses: draft, ready, approved, active, complete
 
@@ -957,7 +952,6 @@ fi
 ```
 
 **Detection logic:**
-
 1. **Orphan Type 1 (Deleted PRD):** Branch exists but `.karimo/prds/{prd-slug}/` doesn't
 2. **Orphan Type 2 (Stale):** Branch exists but no open PR found via `gh pr list`
 
@@ -1045,12 +1039,12 @@ Use KARIMO box-style header:
 
 ### Status Icons
 
-| Icon | Meaning                 |
-| ---- | ----------------------- |
-| ✅   | Check passed            |
-| ⚠️   | Warning (non-blocking)  |
-| ❌   | Error (needs attention) |
-| ℹ️   | Informational           |
+| Icon | Meaning |
+|------|---------|
+| ✅ | Check passed |
+| ⚠️ | Warning (non-blocking) |
+| ❌ | Error (needs attention) |
+| ℹ️ | Informational |
 
 ### Summary
 
@@ -1070,27 +1064,27 @@ Summary
 
 **Recommendation mapping:**
 
-| Issue Type                     | Recommendation                                           |
-| ------------------------------ | -------------------------------------------------------- |
-| Version drift                  | Run `update.sh` from KARIMO source                       |
-| Missing KARIMO section         | `/karimo:configure`                                      |
-| Configuration drift            | `/karimo:configure`                                      |
-| Placeholder values             | `/karimo:configure`                                      |
-| Missing GitHub config          | `/karimo:configure`                                      |
-| GitHub MCP not configured      | Configure GitHub MCP server or switch to fast-track mode |
-| Project access denied          | `gh auth refresh -s project`                             |
-| Missing project scope          | `gh auth refresh -s project`                             |
-| Missing files                  | Re-run installer                                         |
-| PRD creation                   | `/karimo:plan`                                           |
-| Stale running tasks            | Re-run `/karimo:run --prd {slug}`                        |
-| Orphaned worktrees             | `git worktree remove <path>`                             |
-| Ghost branches                 | Re-run `/karimo:run --prd {slug}`                        |
-| Status-PR mismatch             | Re-run `/karimo:run --prd {slug}`                        |
-| Pending cleanup                | Re-run `/karimo:run --prd {slug}`                        |
-| Orphaned assets                | Remove manually: `rm <filepath>`                         |
-| Broken asset references        | Re-download asset or remove from manifest                |
-| Asset size mismatch            | Re-download asset                                        |
-| Greptile rules missing/generic | `/karimo:configure --greptile`                           |
+| Issue Type | Recommendation |
+|------------|----------------|
+| Version drift | Run `update.sh` from KARIMO source |
+| Missing KARIMO section | `/karimo:configure` |
+| Configuration drift | `/karimo:configure` |
+| Placeholder values | `/karimo:configure` |
+| Missing GitHub config | `/karimo:configure` |
+| GitHub MCP not configured | Configure GitHub MCP server or switch to fast-track mode |
+| Project access denied | `gh auth refresh -s project` |
+| Missing project scope | `gh auth refresh -s project` |
+| Missing files | Re-run installer |
+| PRD creation | `/karimo:plan` |
+| Stale running tasks | Re-run `/karimo:run --prd {slug}` |
+| Orphaned worktrees | `git worktree remove <path>` |
+| Ghost branches | Re-run `/karimo:run --prd {slug}` |
+| Status-PR mismatch | Re-run `/karimo:run --prd {slug}` |
+| Pending cleanup | Re-run `/karimo:run --prd {slug}` |
+| Orphaned assets | Remove manually: `rm <filepath>` |
+| Broken asset references | Re-download asset or remove from manifest |
+| Asset size mismatch | Re-download asset |
+| Greptile rules missing/generic | `/karimo:configure --greptile` |
 
 Or if all checks pass:
 
@@ -1132,17 +1126,14 @@ done
 #### 8b. Issues Detected
 
 **Broken References:**
-
 - Files listed in manifest but missing from disk
 - Indicates accidental deletion or incomplete asset download
 
 **Orphaned Files:**
-
 - Files on disk in `assets/*/` folders but not tracked in manifest
 - Indicates manual file additions or manifest corruption
 
 **Size Mismatches:**
-
 - File size on disk doesn't match manifest metadata
 - Indicates file corruption or partial download
 
@@ -1172,18 +1163,17 @@ Summary:
 ```
 
 **Status determination:**
-
 - ✅ **Pass:** All assets valid (orphans are warnings, not failures)
-- ⚠️ **Warning:** Orphaned files exist (cleanup recommended)
+- ⚠️  **Warning:** Orphaned files exist (cleanup recommended)
 - ❌ **Fail:** Broken references exist (requires user action)
 
 #### Recommendations
 
-| Issue Type        | Recommendation                                   |
-| ----------------- | ------------------------------------------------ |
-| Orphaned files    | Remove manually or update manifest to track them |
-| Broken references | Re-download asset or remove manifest entry       |
-| Size mismatches   | Re-download asset (indicates corruption)         |
+| Issue Type | Recommendation |
+|------------|----------------|
+| Orphaned files | Remove manually or update manifest to track them |
+| Broken references | Re-download asset or remove manifest entry |
+| Size mismatches | Re-download asset (indicates corruption) |
 
 ---
 
@@ -1216,7 +1206,7 @@ If some files missing:
 ❌ Partial installation detected.
 
 Missing components:
-  - .claude/agents/karimo/pm.md
+  - .claude/plugins/karimo/agents/pm.md
   - .karimo/templates/TASK_SCHEMA.md
 
 Recommendation:
@@ -1253,10 +1243,11 @@ else
 fi
 
 # Check 2: Installation (manifest-driven, jq-free)
-# Helper functions for manifest parsing
+# Helper functions for manifest parsing (skips deprecated section)
+# Uses 2-space indent to find root-level arrays (not nested in deprecated)
 manifest_list() {
   local key="$1"
-  sed -n "/\"$key\"/,/]/p" .karimo/MANIFEST.json | grep '"' | grep -v "\"$key\"" | sed 's/.*"\([^"]*\)".*/\1/'
+  sed -n "/^  \"$key\":/,/^  ]/p" .karimo/MANIFEST.json | grep '"' | grep -v "\"$key\"" | sed 's/.*"\([^"]*\)".*/\1/'
 }
 
 manifest_count() {
@@ -1269,15 +1260,23 @@ EXPECTED_COMMANDS=$(manifest_count "commands")
 EXPECTED_SKILLS=$(manifest_count "skills")
 EXPECTED_TEMPLATES=$(manifest_count "templates")
 
-# Count actual files
-ACTUAL_AGENTS=$(ls .claude/agents/*.md 2>/dev/null | wc -l | tr -d ' ')
-ACTUAL_COMMANDS=$(ls .claude/commands/*.md 2>/dev/null | wc -l | tr -d ' ')
-ACTUAL_SKILLS=$(ls .claude/skills/*.md 2>/dev/null | wc -l | tr -d ' ')
+# Count actual files (plugins/karimo/ subdirectory per manifest structure)
+ACTUAL_AGENTS=$(ls .claude/plugins/karimo/agents/*.md 2>/dev/null | wc -l | tr -d ' ')
+ACTUAL_COMMANDS=$(ls .claude/plugins/karimo/commands/*.md 2>/dev/null | wc -l | tr -d ' ')
+ACTUAL_SKILLS=$(ls .claude/plugins/karimo/skills/*.md 2>/dev/null | wc -l | tr -d ' ')
 ACTUAL_TEMPLATES=$(ls .karimo/templates/*.md 2>/dev/null | wc -l | tr -d ' ')
 
-# Verify each file from manifest exists
+# Verify each file from manifest exists (handles plugins/karimo/ prefix)
 for agent in $(manifest_list "agents"); do
-  [ -f ".claude/agents/$agent" ] || echo "Missing: $agent"
+  [ -f ".claude/$agent" ] || echo "Missing: .claude/$agent"
+done
+
+for command in $(manifest_list "commands"); do
+  [ -f ".claude/$command" ] || echo "Missing: .claude/$command"
+done
+
+for skill in $(manifest_list "skills"); do
+  [ -f ".claude/$skill" ] || echo "Missing: .claude/$skill"
 done
 
 # Check 3: Configuration
@@ -1287,7 +1286,7 @@ if [ -f ".claude/CLAUDE.md" ]; then CLAUDE_MD=".claude/CLAUDE.md"; elif [ -f ".c
 
 # 3b: Check required config files exist
 [ -d ".karimo/learnings" ]
-[ -f ".claude/KARIMO_RULES.md" ]
+[ -f ".claude/plugins/karimo/KARIMO_RULES.md" ]
 [ -f ".karimo/config.yaml" ]
 
 # 3c: Check for _pending_ markers in config.yaml
@@ -1339,12 +1338,12 @@ done
 
 ## Related Commands
 
-| Command             | Purpose                                          |
-| ------------------- | ------------------------------------------------ |
-| `/karimo:configure` | Create or update project configuration           |
-| `/karimo:plan`      | Create PRD (configuration should be ready first) |
-| `/karimo:dashboard` | View execution progress and system health        |
-| `/karimo:feedback`  | Capture learnings                                |
+| Command | Purpose |
+|---------|---------|
+| `/karimo:configure` | Create or update project configuration |
+| `/karimo:plan` | Create PRD (configuration should be ready first) |
+| `/karimo:dashboard` | View execution progress and system health |
+| `/karimo:feedback` | Capture learnings |
 
 ---
 

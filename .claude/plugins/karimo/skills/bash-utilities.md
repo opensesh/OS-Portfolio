@@ -7,7 +7,6 @@ Reusable bash patterns and helper functions for KARIMO agents. These utilities a
 ## Overview
 
 KARIMO agents often need to:
-
 - Parse YAML configuration files
 - Read/update JSON status files
 - Update GitHub Project board statuses
@@ -255,17 +254,17 @@ update_project_status() {
 
 Call `update_project_status` at these transition points:
 
-| Transition            | Call                                                    |
-| --------------------- | ------------------------------------------------------- |
-| Task added to project | `update_project_status "$TASK_ID" "queued"`             |
-| Worker spawned        | `update_project_status "$TASK_ID" "running"`            |
-| PR created            | `update_project_status "$TASK_ID" "in-review"`          |
-| Greptile failure      | `update_project_status "$TASK_ID" "needs-revision"`     |
-| 3 failed attempts     | `update_project_status "$TASK_ID" "needs-human-review"` |
-| Merge conflicts       | `update_project_status "$TASK_ID" "needs-human-rebase"` |
-| PR merged             | `update_project_status "$TASK_ID" "done"`               |
-| Task failed           | `update_project_status "$TASK_ID" "failed"`             |
-| Task paused           | `update_project_status "$TASK_ID" "paused"`             |
+| Transition | Call |
+|------------|------|
+| Task added to project | `update_project_status "$TASK_ID" "queued"` |
+| Worker spawned | `update_project_status "$TASK_ID" "running"` |
+| PR created | `update_project_status "$TASK_ID" "in-review"` |
+| Greptile failure | `update_project_status "$TASK_ID" "needs-revision"` |
+| 3 failed attempts | `update_project_status "$TASK_ID" "needs-human-review"` |
+| Merge conflicts | `update_project_status "$TASK_ID" "needs-human-rebase"` |
+| PR merged | `update_project_status "$TASK_ID" "done"` |
+| Task failed | `update_project_status "$TASK_ID" "failed"` |
+| Task paused | `update_project_status "$TASK_ID" "paused"` |
 
 ---
 
@@ -483,13 +482,13 @@ node .karimo/scripts/karimo-assets.js add <prd-slug> <source> <stage> <descripti
 
 **Parameters:**
 
-| Parameter     | Description                                             |
-| ------------- | ------------------------------------------------------- |
-| `prd-slug`    | PRD identifier (e.g., "user-profiles")                  |
-| `source`      | URL or local file path to the asset                     |
-| `stage`       | Lifecycle stage: `research`, `planning`, or `execution` |
-| `description` | Human-readable description for the asset                |
-| `added-by`    | Agent or user name who added the asset                  |
+| Parameter | Description |
+|-----------|-------------|
+| `prd-slug` | PRD identifier (e.g., "user-profiles") |
+| `source` | URL or local file path to the asset |
+| `stage` | Lifecycle stage: `research`, `planning`, or `execution` |
+| `description` | Human-readable description for the asset |
+| `added-by` | Agent or user name who added the asset |
 
 **Example:**
 
@@ -542,10 +541,10 @@ node .karimo/scripts/karimo-assets.js list <prd-slug> [stage]
 
 **Parameters:**
 
-| Parameter  | Description                                             |
-| ---------- | ------------------------------------------------------- |
-| `prd-slug` | PRD identifier                                          |
-| `stage`    | Optional filter: `research`, `planning`, or `execution` |
+| Parameter | Description |
+|-----------|-------------|
+| `prd-slug` | PRD identifier |
+| `stage` | Optional filter: `research`, `planning`, or `execution` |
 
 **Example:**
 
@@ -592,9 +591,9 @@ node .karimo/scripts/karimo-assets.js reference <prd-slug> <identifier>
 
 **Parameters:**
 
-| Parameter    | Description                              |
-| ------------ | ---------------------------------------- |
-| `prd-slug`   | PRD identifier                           |
+| Parameter | Description |
+|-----------|-------------|
+| `prd-slug` | PRD identifier |
 | `identifier` | Asset ID (e.g., "asset-001") or filename |
 
 **Example:**
@@ -667,11 +666,11 @@ Run: rm <filepath> to remove orphaned assets
 
 Each agent uses assets at specific stages:
 
-| Agent              | Stage       | Example                                          |
-| ------------------ | ----------- | ------------------------------------------------ |
-| karimo-researcher  | `research`  | Architecture diagrams, documentation screenshots |
-| karimo-interviewer | `planning`  | User-provided mockups, design files              |
-| karimo-pm          | `execution` | Bug screenshots, error states                    |
+| Agent | Stage | Example |
+|-------|-------|---------|
+| karimo-researcher | `research` | Architecture diagrams, documentation screenshots |
+| karimo-interviewer | `planning` | User-provided mockups, design files |
+| karimo-pm | `execution` | Bug screenshots, error states |
 
 **Agent invocation pattern:**
 
@@ -700,14 +699,12 @@ node .karimo/scripts/karimo-assets.js add "$PRD_SLUG" "$IMAGE_SOURCE" "$STAGE" "
 ## Best Practices
 
 1. **Always set PRD_SLUG and STATUS_FILE** before using helpers:
-
    ```bash
    PRD_SLUG="user-profiles"
    STATUS_FILE=".karimo/prds/${PRD_SLUG}/status.json"
    ```
 
 2. **Check mode before GitHub operations:**
-
    ```bash
    if [ "$MODE" = "full" ]; then
      update_project_status "$TASK_ID" "running"
@@ -715,7 +712,6 @@ node .karimo/scripts/karimo-assets.js add "$PRD_SLUG" "$IMAGE_SOURCE" "$STAGE" "
    ```
 
 3. **Handle missing files gracefully:**
-
    ```bash
    if ! check_config_exists; then
      exit 1
@@ -723,7 +719,6 @@ node .karimo/scripts/karimo-assets.js add "$PRD_SLUG" "$IMAGE_SOURCE" "$STAGE" "
    ```
 
 4. **Use gh CLI's --jq flag** for GitHub API queries (built-in, no external jq):
-
    ```bash
    gh project list --owner "$OWNER" --format json --jq '.projects[].number'
    ```
@@ -732,4 +727,4 @@ node .karimo/scripts/karimo-assets.js add "$PRD_SLUG" "$IMAGE_SOURCE" "$STAGE" "
 
 ---
 
-_This skill provides standardized bash utilities for KARIMO agents._
+*This skill provides standardized bash utilities for KARIMO agents.*

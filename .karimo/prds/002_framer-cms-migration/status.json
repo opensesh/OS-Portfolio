@@ -10,6 +10,8 @@
   "completed_tasks": 20,
   "execution_mode": "feature-branch",
   "feature_branch": "feat/framer-cms-migration",
+  "final_pr_number": null,
+  "final_pr_created_at": "2026-04-07T12:29:00Z",
   "tasks": {
     "T001": "done",
     "T002": "done",

@@ -1,0 +1,226 @@
+{
+  "version": "1.0",
+  "prd_slug": "framer-cms-migration",
+  "prd_id": "002",
+  "execution_date": "2026-04-07",
+  "total_duration_minutes": 180,
+  "waves": {
+    "wave_1": {
+      "name": "Foundation",
+      "tasks": ["T001", "T002", "T003", "T004"],
+      "duration_minutes": 35,
+      "status": "complete"
+    },
+    "wave_2": {
+      "name": "Content Migration",
+      "tasks": ["T005", "T006", "T007", "T008", "T013"],
+      "duration_minutes": 55,
+      "status": "complete"
+    },
+    "wave_3": {
+      "name": "Component Updates",
+      "tasks": ["T009", "T010", "T011", "T012", "T014", "T019", "T020"],
+      "duration_minutes": 60,
+      "status": "complete"
+    },
+    "wave_4": {
+      "name": "Integration & Polish",
+      "tasks": ["T015", "T016", "T017", "T018"],
+      "duration_minutes": 30,
+      "status": "complete"
+    }
+  },
+  "tasks": {
+    "T001": {
+      "title": "Write image download script",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 8,
+      "status": "done"
+    },
+    "T002": {
+      "title": "Define enriched TypeScript schemas",
+      "complexity": 5,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 10,
+      "status": "done"
+    },
+    "T003": {
+      "title": "Create content directory structure",
+      "complexity": 2,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 5,
+      "status": "done"
+    },
+    "T004": {
+      "title": "Update next.config for image optimization",
+      "complexity": 3,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 7,
+      "status": "done"
+    },
+    "T005": {
+      "title": "Populate all project data",
+      "complexity": 7,
+      "model": "sonnet",
+      "loop_count": 2,
+      "escalated": false,
+      "duration_minutes": 15,
+      "status": "done"
+    },
+    "T006": {
+      "title": "Convert blog posts to MDX",
+      "complexity": 5,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 12,
+      "status": "done"
+    },
+    "T007": {
+      "title": "Migrate free resources",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 8,
+      "status": "done"
+    },
+    "T008": {
+      "title": "Migrate legal pages to MDX",
+      "complexity": 3,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 7,
+      "status": "done"
+    },
+    "T009": {
+      "title": "Implement category system",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 8,
+      "status": "done"
+    },
+    "T010": {
+      "title": "Build project detail page",
+      "complexity": 7,
+      "model": "sonnet",
+      "loop_count": 2,
+      "escalated": false,
+      "duration_minutes": 14,
+      "status": "done"
+    },
+    "T011": {
+      "title": "Build blog MDX renderer",
+      "complexity": 5,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 10,
+      "status": "done"
+    },
+    "T012": {
+      "title": "Build free resource components",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 8,
+      "status": "done"
+    },
+    "T013": {
+      "title": "Scaffold playbook data and routes",
+      "complexity": 3,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 6,
+      "status": "done"
+    },
+    "T014": {
+      "title": "Update project listing filter",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 8,
+      "status": "done"
+    },
+    "T015": {
+      "title": "Build lab page",
+      "complexity": 5,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 9,
+      "status": "done"
+    },
+    "T016": {
+      "title": "Add SEO metadata generation",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 7,
+      "status": "done"
+    },
+    "T017": {
+      "title": "Write content validation script",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 8,
+      "status": "done"
+    },
+    "T018": {
+      "title": "Write template stripping script",
+      "complexity": 3,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 6,
+      "status": "done"
+    },
+    "T019": {
+      "title": "Wire up homepage images",
+      "complexity": 3,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 5,
+      "status": "done"
+    },
+    "T020": {
+      "title": "Wire up about page images",
+      "complexity": 4,
+      "model": "sonnet",
+      "loop_count": 1,
+      "escalated": false,
+      "duration_minutes": 7,
+      "status": "done"
+    }
+  },
+  "summary": {
+    "total_tasks": 20,
+    "completed": 20,
+    "failed": 0,
+    "escalated": 0,
+    "total_loops": 22,
+    "avg_loops_per_task": 1.1,
+    "total_complexity_points": 89,
+    "primary_model": "sonnet",
+    "escalation_model": "opus"
+  }
+}
